@@ -1,3 +1,19 @@
+@font-face {
+    font-family: 'oswaldregular';
+    src: url('./assets/oswald-variablefont_wght-webfont.woff2') format('woff2'),
+         url('./assets/oswald-variablefont_wght-webfont.woff') format('woff');
+    font-weight: normal;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'robotoregular';
+    src: url('./assets/roboto-variablefont_wdthwght-webfont.woff2') format('woff2'),
+         url('./assets/roboto-variablefont_wdthwght-webfont.woff') format('woff');
+    font-weight: normal;
+    font-style: normal;
+}
+
 *, *::before, *::after {
   padding: 0;
   margin: 0;
@@ -5,7 +21,9 @@
 }
 
 :root {
-  --dark-bg: #565659;
+  --dark-bg: #8e8e96;
+  font-size: 1.2rem;
+  --full-task-div-font: 0.8rem
 }
 
 button {
@@ -22,6 +40,7 @@ body > main{
 body {
   background-color: var(--dark-bg);
   color: white;
+  font-family: "robotoregular";
   /*  */
   display: grid;
   grid-template-columns: 300px 1fr;
@@ -81,16 +100,87 @@ header {
 main {
   display: grid;
   grid-template-rows: max-content 1fr;
+  gap: 2em;
 }                          
           /* sort-search-bar-div */
 
 .sort-search-bar-div {
     display: grid;
-  grid-template-columns: 70px repeat(4, max-content);
+  grid-template-columns: max-content repeat(4, max-content);
+  grid-template-rows: auto auto;
+  gap: 1em;
 }
             /* search-div */
 
 .search-div {
-  grid-column: 1 / 6;
+  grid-column: 1 / -1;
   /* grid-template-columns: max-content 1fr; */
+  display: flex;
 }
+
+.search-div > input {
+  flex: 1;
+}
+
+                          /* viewing-div */
+.viewing-div {
+    border: 2px solid black;
+    margin: 6px;
+}    
+
+                          /* all-tasks-div (1) */
+.all-tasks-div {
+  padding: 1em;
+  /*  */
+  display: flex;
+  flex-direction: column;
+  /* align-items: flex-start; */
+  gap: 1em;
+}                                               
+
+                      /* full-task-div (2) */
+.full-task-div  {
+  font-size: var(--full-task-div-font);
+  border: 2px solid red;
+  padding: 6px;
+    /*  */
+    display: flex;
+    flex-direction: column;
+    gap: 0.4em;
+}                                                    
+                  /* task-progress-bar (3) */
+
+.task-progress-bar{
+    border: 4px solid green;
+
+    /*  */
+
+}                  
+
+                  /* task-parent-div (3) */
+.task-parent-div {
+    border: 2px solid blue;
+    padding: 5px;
+
+} 
+
+              /* primary-task-1 (4)*/
+              
+#primary-task-1 {
+  padding: 0.5em;
+  border: 2px solid white;
+  /*  */
+  display: flex;
+  align-items: center;
+  gap: 0.5em;
+  /*  */
+}              
+
+              /* task-children-div (4) */
+
+.task-children-div {
+  /* margin: 0.5em; */
+    border: 2px solid brown;
+    /*  */
+    margin-left: 50px;
+}              
