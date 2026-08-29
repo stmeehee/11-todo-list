@@ -1,3 +1,96 @@
+*, *::before, *::after {
+  padding: 0;
+  margin: 0;
+  box-sizing: border-box;
+}
+
+:root {
+  --dark-bg: #565659;
+}
+
+button {
+  width: 100px;
+  height: 35px;
+}
+
+body > div,
+body > header,
+body > main{
+  border: 2px solid black;
+}
+
 body {
-  background-color: darkkhaki;
+  background-color: var(--dark-bg);
+  color: white;
+  /*  */
+  display: grid;
+  grid-template-columns: 300px 1fr;
+  /*  */
+  margin-left: 1em;
+}
+
+                          /* logo-div */       
+.logo-div {
+  display: flex;
+  align-items: center;
+}                                           
+
+                          /* header */
+header {
+  display: grid;
+  grid-template-columns: 1fr 100px;
+  /*  */
+  padding: 1em;
+}
+
+          /* toolbar-div */
+
+.toolbar-div {
+  display: grid;
+  grid-template-columns: repeat(3,max-content);
+  gap: 0.5em;
+}          
+
+                          /* sidebar-div */
+.sidebar-div {
+  border: 2px solid black;
+  /*  */
+  display: grid;
+  gap: 3em;
+}
+          /* sidebar-main-div */
+
+.sidebar-main-div {
+  display: grid;
+  gap: 1em;
+}
+
+          /* sidebar-projects-div */
+
+.sidebar-projects-div {
+  display: grid;
+  gap: 1em;
+}          
+
+.sidebar-projects-div > .user-projects {
+  margin-left: 2em;
+  display: grid;
+  gap: 1em;
+}
+                          /* main */
+main {
+  display: grid;
+  grid-template-rows: max-content 1fr;
+}                          
+          /* sort-search-bar-div */
+
+.sort-search-bar-div {
+    display: grid;
+  grid-template-columns: 70px repeat(4, max-content);
+}
+            /* search-div */
+
+.search-div {
+  grid-column: 1 / 6;
+  /* grid-template-columns: max-content 1fr; */
 }

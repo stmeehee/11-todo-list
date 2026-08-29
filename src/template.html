@@ -20,26 +20,27 @@
         <button>dark/light</button>
     </header>
 
-    <main>
+    
+    <div class="sidebar-div">
+        <div class="sidebar-main-div">
+            <button>All tasks</button>
+            <button>Upcoming tasks</button>
+            <button>Overdue tasks</button>
+            <button>Deleted tasks</button>
+        </div>      
+        <div class="sidebar-projects-div">
+            <button>Add project</button>
+            <div class="user-projects">
+                <!--  btn's here added by JS -->
+                <button>Project 1</button> 
+                <button>Project 2</button> 
+                <button>Project 3</button> 
+                <button>Project 4</button> 
+            </div>
+        </div>          
+    </div>
 
-        <div class="sidebar-div">
-            <div class="sidebar-main-div">
-                <button>All tasks</button>
-                <button>Upcoming tasks</button>
-                <button>Overdue tasks</button>
-                <button>Deleted tasks</button>
-            </div>      
-            <div class="sidebar-projects-div">
-                <button>Add project</button>
-                <div class="user-projects">
-                    <!--  btn's here added by JS -->
-                    <button>Project 1</button> 
-                    <button>Project 2</button> 
-                    <button>Project 3</button> 
-                    <button>Project 4</button> 
-                </div>
-            </div>          
-        </div>
+    <main>
 
         <div class="sort-search-bar-div">
             <p>Sort by</p>
@@ -80,9 +81,19 @@
                     <option value="descending">Lower priority</option> 
                 </select>
             </div> 
+                
+            <div class="search-div>">
+                <img>
+                <label for="search">Search</label>
+                <input type="search" id="search" placeholder="search by title"> 
+            </div>
+
         </div>
 
-        
+        <div class="viewing-div">
+
+        </div>
+
     </main>
 
 </body>
