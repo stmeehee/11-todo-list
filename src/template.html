@@ -13,29 +13,69 @@
 
     <header>
         <div class="toolbar-div">
-            <button>add todo</button>
+            <button value="addTodo">Add new task</button>
             <!-- <button>idk1</button>
             <button>idk2</button> -->
         </div>
-        <button>dark/light</button>
+        <button class="theme-toggle">dark/light</button>
     </header>
 
     
     <div class="sidebar-div">
         <div class="sidebar-main-div">
-            <button>All tasks</button>
-            <button>Upcoming tasks</button>
-            <button>Overdue tasks</button>
-            <button>Deleted tasks</button>
+            <button value="allTasks">
+                <div>
+                    <img>
+                    <span>All tasks</span>
+                </div>            
+            </button>
+            <button value="UpcomingTasks">
+                <div>
+                    <img>
+                    <span>Upcoming tasks</span>
+                </div>            
+            </button>    
+            <button value="OverdueTasks">
+                <div>
+                    <img>
+                    <span>Overdue tasks</span>
+                </div>            
+            </button>   
+            <button value="DeletedTasks">
+                <div>
+                    <img>
+                    <span>Deleted tasks</span>
+                </div>            
+            </button>                                 
         </div>      
         <div class="sidebar-projects-div">
-            <button>Add project</button>
+            <button value="addProject">
+                <div>
+                    <span>Add a project</span>
+                </div>            
+            </button>   
             <div class="user-projects">
                 <!--  btn's here added by JS -->
-                <button>Project 1</button> 
-                <button>Project 2</button> 
-                <button>Project 3</button> 
-                <button>Project 4</button> 
+            <button value="project1">
+                <div>
+                    <span>Project 1</span>
+                </div>            
+            </button>    
+            <button value="project2">
+                <div>
+                    <span>Project 2</span>
+                </div>            
+            </button> 
+            <button value="project3">
+                <div>
+                    <span>Project 3</span>
+                </div>            
+            </button>       
+            <button value="project4">
+                <div>
+                    <span>Project 4</span>
+                </div>            
+            </button>                                              
             </div>
         </div>          
     </div>
@@ -101,7 +141,7 @@
                         <div class="task-progress-bar">
                             progress bar
                         </div>
-                        <button popovertarget="tasks-options-dialog" id="tasks-options">
+                        <button popovertarget="tasks-options-popover" id="tasks-options">
                             <div>...</div>
                         </button>
                     </div>
@@ -109,22 +149,44 @@
                     <!-- the parent task div has the main task and sub tasks,  -->
                     <div class="task-parent-div">
                         <!-- the main task div with task complete-btn, title,desc., priority and due date listed -->
-                        <div id="primary-task-1">
+                        <div id="primary-task">
                         <button>complete</button>
                         <div class="task-details">
-                            <p>Title:</p>
-                            <p>Description:</p>
-                            <div class="priority-high">
+                            <p>Title: do this</p>
+                            <p>Description: do this and that</p>
+                            <div class="tags">
+                                <span>Tags: </span>
                                 <!-- can have classes:low, medium, high  -->
-                                    <p>High priority</p>
+                                    <div class="tag high-priority">
+                                        <span>High priority </span>
+                                    </div>
                             </div>
                         </div>
                         </div>
                         <div class="task-children-div">
                         <!-- can remain empty if no subtasks here -->
-                            <p>e.g: child 1</p>
-                            <p>e.g: child 2</p>
-                            <p>e.g: child 3</p>
+                            <!-- <p>e.g: child 1</p> -->
+                            <!-- <p>e.g: child 2</p> -->
+                            <!-- <p>e.g: child 3</p> -->
+                             <div class="subtask-1-div">
+                                <input type="checkbox" id="subtask-checkbox-1">
+                                <label for="subtask-checkbox-1">title: Do task 1</label>
+                            </div>
+                            <hr>
+                            <div class="subtask-2-div">
+                                <input type="checkbox" id="subtask-checkbox-2">
+                                <label for="subtask-checkbox-2">title: Do task 2 </label>
+                            </div>
+                            <hr>
+                            <div class="subtask-3-div">
+                                <input type="checkbox" id="subtask-checkbox-3">
+                                <label for="subtask-checkbox-3">title: Do task 3 </label>
+                            </div>
+                            <hr>
+                            <div class="subtask-4-div">
+                                <input type="checkbox" id="subtask-checkbox-4">
+                                <label for="subtask-checkbox-4">title: Do task 4</label>
+                            </div>                                                        
                         </div>
                     </div>    
                  </div>
@@ -135,12 +197,19 @@
 
     </main>
 
-    <!-- task options dialog box -->
-     <dialog id="tasks-options-dialog" popover >
-        <button>Edit</button>
-        <button >Move to different project</button>
-        <button>Delete</button>
-        <button commandfor="tasks-options-dialog" command="close">Close</button>
+    <!-- task options popover box -->
+     <dialog id="tasks-options-popover" popover >
+        <button value="edit">
+            <div>Edit</div>
+        </button>
+        <button value="move">
+            <div>Move to different project</div>
+        </button>
+        <button value="delete">
+            <div>Delete</div>
+        </button>                
+        <!-- <button value="move">Move to different project</button> -->
+        <!-- <button value="delete">Delete</button> -->
     </dialog>
 
 </body>
