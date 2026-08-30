@@ -96,9 +96,16 @@
 
                 <!-- example -->
                  <div class="full-task-div">
-                    <div class="task-progress-bar">
-                        progress bar
+
+                    <div class="progress-bar-btn-div">
+                        <div class="task-progress-bar">
+                            progress bar
+                        </div>
+                        <button popovertarget="tasks-options-dialog" id="tasks-options">
+                            <div>...</div>
+                        </button>
                     </div>
+
                     <!-- the parent task div has the main task and sub tasks,  -->
                     <div class="task-parent-div">
                         <!-- the main task div with task complete-btn, title,desc., priority and due date listed -->
@@ -127,6 +134,14 @@
         </div>
 
     </main>
+
+    <!-- task options dialog box -->
+     <dialog id="tasks-options-dialog" popover >
+        <button>Edit</button>
+        <button >Move to different project</button>
+        <button>Delete</button>
+        <button commandfor="tasks-options-dialog" command="close">Close</button>
+    </dialog>
 
 </body>
 </html>
