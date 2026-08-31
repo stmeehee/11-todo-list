@@ -79,7 +79,6 @@ function setTheme() {
 function delegate(event) {
     console.log(`event --> delegate(): elem clicked =`)
     console.log(event.target)
-    // console.log(event.target.closest(".task-children-div"))
     if (event.target.closest(".theme-toggle")) {
         setTheme()
     }
@@ -88,10 +87,13 @@ function delegate(event) {
         updateProgress(event.target.checked)
     }
     if (event.target.closest(".tasks-options")) {
-        console.log(event.target.closest(".tasks-options"))
+        // console.log(event.target.closest(".tasks-options"))
         const taskOptionsBtn = event.target.closest(".tasks-options")
         anchorTasksOptions(taskOptionsBtn)
     }
+    // if (event.target.closest(".tasks-options")) {
+
+    // }
 }
 
 function init() {

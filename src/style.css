@@ -417,7 +417,7 @@ div[class$="-priority"] {
   transform: rotate(90deg);
 }
 
-.expand-subtask-div:has(input:checked) + .task-children-div {
+.expand-subtask-div:has(#show-subtasks:checked) + .task-children-div {
   display: flex;
 }
 
