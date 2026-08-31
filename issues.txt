@@ -1,0 +1,1 @@
+1. clicking on 2nd task's subtasks changes the prog. of the wrong task. (issue)
