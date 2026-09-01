@@ -267,7 +267,7 @@ main {
     border-radius: 6px;
 }              
 
-.full-task-div.done {
+.disAllow {
   pointer-events: none;
   opacity: 0.6;
 }

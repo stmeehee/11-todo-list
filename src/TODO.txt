@@ -1,4 +1,4 @@
 1. hide the complete btn on the task until all subtasks are done
-    then reveal that btn and make the task unresponsive to mark it as complete
+    then reveal that btn and make the task unresponsive to mark it as complete (DONE)
 
     

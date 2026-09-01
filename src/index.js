@@ -46,23 +46,21 @@ function getDomElements() {
     return {root, body, allTasksElem, barCssVars}
 }
 
-// allTrackers.get(id).object
-// allTrackers.get(id).element
-
 function disAllowTaskDiv(taskId) {
     // console.log(` > disAllowTaskDiv()`)
-    myTaskElements.get(taskId).classList.add("done")
+    const taskElem = myTaskElements.get(taskId)
+    const parentDiv = taskElem.querySelector(".task-parent-div")
+    parentDiv.classList.add("disAllow")
     // console.log(myTaskElements.get(taskId))
 }
 
 function completeTask(taskId) {
     console.log(` > completeTask()`)
-    myTaskElements.get(taskId).finished = true
+    myTaskElements.get(taskId).isFinished = true
 }
 
 function changeCompleteBtnPermit(taskId, allow) {
     console.log(` > changeCompleteBtn()`)
-    // TODO:
     const taskElem = myTaskElements.get(taskId) 
     const confirmBtn = taskElem.querySelector("#primary-task > button")
     confirmBtn.classList.remove("disable")
@@ -83,15 +81,10 @@ function getTaskElementId(descendentElem) {
     return descendentElem.closest(".full-task-div").id
 }
 
-// trackers.1a.current
-// trackers.1b.current
-
 function getProgressBar(taskId) {
     const taskElem = myTaskElements.get(taskId)
     const progBar = taskElem.querySelector(".task-progress-bar")
     return progBar
-        // const progBar = myTaskElements.get(taskId).querySelector(".task-progress-bar")
-
 }
 
 
@@ -115,30 +108,6 @@ function updateProgress(isChecked, taskId) {
     else {
         tracker.current -= 1
     }
-    // console.log(`current: ${tracker.current}`)
-    // console.log("myTrackers after updateing current: ")
-    // console.log(myTrackers)
-    // let label = null
-    // let color = null
-    // let percent = (tracker.current / Tracker.max ) * 100
-    // if (percent === 0)
-    //     color = percent, "red"
-    // else if (percent > 0 && percent < 100) {
-    //     label, color = percent, "yellow"
-    //     changeCompleteBtnPermit(taskId, false)
-    // }
-    // else {
-    //     // task is either finished or waiting for user to click complete
-    //     if (percent === 100 && !tracker.finished) {
-    //         label, color = percent, "teal"
-    //         changeCompleteBtnPermit(taskId, true)
-    //     }
-    //     else {
-    //         label, color = percent, "green"
-    //     }
-    // // renderProgressBar(label, color, taskId)
-    // return {label, color}
-    // }
 }
 
 function getBarLabelColor(percentVal) {
@@ -153,48 +122,21 @@ function getBarLabelColor(percentVal) {
         [label, color] = [`${percentVal} %`, yellow]
     }
     else {
-        // task is either finished or waiting for user to click complete
-        if (percentVal === 100 && !tracker.finished) {
+        // task is either isFinished or waiting for user to click complete
+        if (percentVal === 100 && !tracker.isFinished) {
             [label, color] = ["In limbo...", teal]
         }
         else {
             [label, color] = ["Complete!", green]
         }
-    // renderProgressBar(label, color, taskId)
     }
     return [label, color]
 }
 
 // change the label and color for the given taskID
 function renderProgressBar(labelToUse, colorToUse, setToThisWidth, taskId) {
-    // const taskTracker = myTrackers.get(taskId)
     const progBarElem = getProgressBar(taskId)
-    // const value = `${(taskTracker.current / Tracker.max ) * 100}`
     const barColor = domCache.barCssVars.barColorInUseName
-    // let colorToUse = null
-    // let labelToUse = `${value} %`
-
-    // // console.log(domCache.progressBarBefore)
-    // if (value === 0) {
-    //     colorToUse = `var(${domCache.BarColors.cssVarColorRed})`
-    // }
-    // else if (value > 0 && value < 100) {
-    //     colorToUse = `var(${domCache.BarColors.cssVarColorYellow})`
-    //     changeCompleteBtnPermit(taskId, false)
-    // }
-    // else {
-    //     // task is either finished or waiting for user to click complete
-    //     if (value === 100 && !taskTracker.finished) {
-    //         colorToUse = `var(${domCache.BarColors.cssVarColorTeal})`
-    //         labelToUse = `Task in limbo...`
-    //         changeCompleteBtnPermit(taskId, true)
-    //     }
-    //     else {
-    //         progBarElem.style.setProperty("--bg-progress-bar-color", "var(--bg-progress-bar-complete)")
-    //         labelToUse = `Complete!`
-    //         changeCompleteBtnPermit(taskId, false)
-    //     }
-    // }
     progBarElem.style.setProperty(domCache.barCssVars.barWidthName, setToThisWidth)
     console.log(getComputedStyle(document.documentElement).getPropertyValue("--progress-bar-width"))
     progBarElem.dataset.label = labelToUse
@@ -223,6 +165,9 @@ function delegate(event) {
         let pct = myTrackers.get(taskId).currentPercent
         let [label, color] = getBarLabelColor(pct)
         renderProgressBar(label, color, `${pct}%`, taskId)
+        console.log(myTrackers.get(taskId).isFinished)
+        changeCompleteBtnPermit(taskId, myTrackers.get(taskId).isFinished)
+
     }
     if (event.target.closest(".tasks-options")) {
         // console.log(event.target.closest(".tasks-options"))
@@ -237,6 +182,10 @@ function delegate(event) {
         // TODO: make the progress bar turn green!
         // renderProgressBar()
         disAllowTaskDiv(taskId)
+        let color = domCache.barCssVars.barColorGreenName
+        let pct = myTrackers.get(taskId).currentPercent
+        let label = "Complete!"
+        renderProgressBar(label, color, `${pct}%`, taskId)
     }
 }
 

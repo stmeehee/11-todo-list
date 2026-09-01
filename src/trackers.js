@@ -2,7 +2,7 @@ export default class Tracker {
 
     static max = 4
     _current = 0
-    _finished = false
+    _isFinished = false
 
     constructor(taskId) {
         this._id = taskId
@@ -21,22 +21,32 @@ export default class Tracker {
         // if (val  0 && val <= Tracker.max) {
             this._current = val
         }
+        this.checkIsFinished()
     }
 
     get max() {
         return  Tracker.max
     }
 
-    get finished() {
-        return this._finished
+    get isFinished() {
+        return this._isFinished
     }    
 
-    set finished(bool) {
-        this._finished = bool
+    set isFinished(bool) {
+        this._isFinished = bool
     }
 
     get currentPercent() {
         return (this.current / Tracker.max) * 100
+    }
+
+    checkIsFinished() {
+        if (this.currentPercent === 100) {
+            this._isFinished = true
+        }
+        else {
+            this._isFinished = false
+        }
     }
 
 }
