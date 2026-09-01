@@ -2,6 +2,7 @@ export default class Tracker {
 
     static max = 4
     _current = 0
+    _finished = false
 
     constructor(taskId) {
         this._id = taskId
@@ -14,6 +15,7 @@ export default class Tracker {
     get current() {
         return this._current
     }
+
     set current(val) {
         if (this._current >= 0 && this._current <= Tracker.max) {
         // if (val  0 && val <= Tracker.max) {
@@ -23,6 +25,18 @@ export default class Tracker {
 
     get max() {
         return  Tracker.max
+    }
+
+    get finished() {
+        return this._finished
+    }    
+
+    set finished(bool) {
+        this._finished = bool
+    }
+
+    get currentPercent() {
+        return (this.current / Tracker.max) * 100
     }
 
 }

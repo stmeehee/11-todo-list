@@ -21,6 +21,17 @@
   box-sizing: border-box;
 }
 
+button {
+  all: unset;
+  /* Restores the clickable pointer icon */
+  cursor: pointer; 
+}
+
+button:focus-visible {
+  /* Crucial for web accessibility */
+  outline: 2px solid #0066cc; 
+}
+
 :root {
   --dark-bg: #8e8e96;
   font-size: 1.2rem;
@@ -36,6 +47,7 @@
   --priority-font: "oswaldregular";
   --bg-progress-bar-empty: red;
   --bg-progress-bar-normal: yellow;
+  --bg-progress-bar-inComplete:teal;
   --bg-progress-bar-complete: green;
   --bg-progress-bar-color: var(--bg-progress-bar-empty);
   --progress-bar-width: 0%;
@@ -59,9 +71,22 @@
     --border-color: black;
 }
 
+button {
+  background-color: var(--bg-color);
+  color: var(--text-color);
+  border: 2px solid var(--border-color);
+  border-radius: 6px;
+  /* */
+  /*  */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
 header button {
   width: 100px;
   height: 35px;
+  font-size: 1em;
 }
 
 button[value="addTodo"] {
@@ -69,14 +94,16 @@ button[value="addTodo"] {
   color: white;
   border-radius: 6px;
   border: none;
+  font-size: 0.8em;
 }
 
-button:active {
+button:not(.disable):active {
   /* opacity: 0.1;    */
   transform: scale(0.96);
 }
 
-button:hover {
+
+button:not(.disable):hover {
   opacity: 0.8;
 }
 
@@ -239,6 +266,11 @@ main {
     border: 2px solid var(--border-color);
     border-radius: 6px;
 }              
+
+.full-task-div.done {
+  pointer-events: none;
+  opacity: 0.6;
+}
                     /* progress-bar-btn-div (3) */
 .progress-bar-btn-div {
   /* border: 2px solid black; */
@@ -347,7 +379,16 @@ button.tasks-options:active {
   /*  */
     border: 2px solid var(--border-color);
     border-radius: 6px;
-}        
+}
+
+#primary-task > button.disable {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+#primary-task > button.finalize {
+  border: 2px solid yellow;
+}
 
           /* Tags (5) */
 

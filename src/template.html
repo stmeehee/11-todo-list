@@ -41,6 +41,12 @@
                     <span>Overdue tasks</span>
                 </div>            
             </button>   
+            <button value="CompletedTasks">
+                <div>
+                    <img>
+                    <span>Completed Tasks</span>
+                </div>            
+            </button>              
             <button value="DeletedTasks">
                 <div>
                     <img>
@@ -151,7 +157,7 @@
                     <div class="task-parent-div">
                         <!-- the main task div with task complete-btn, title,desc., priority and due date listed -->
                         <div id="primary-task">
-                            <button>complete</button>
+                            <button class="disable">complete</button>
                             <div class="task-details">
                                 <p>Title: do this</p>
                                 <p>Description: do this and that</p>
@@ -222,7 +228,7 @@
                     <div class="task-parent-div">
                         <!-- the main task div with task complete-btn, title,desc., priority and due date listed -->
                         <div id="primary-task">
-                            <button>complete</button>
+                            <button class="disable">complete</button>
                             <div class="task-details">
                                 <p>Title: do this</p>
                                 <p>Description: do this and that</p>
