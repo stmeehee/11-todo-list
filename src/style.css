@@ -51,6 +51,9 @@ button:focus-visible {
   --bg-progress-bar-complete: green;
   --bg-progress-bar-color: var(--bg-progress-bar-empty);
   --progress-bar-width: 0%;
+  --bg-color-confirm-edit: green;
+  --bg-color-cancel-edit: red;
+  --bg-color-toggle: gray;
 }
 
 :root.dark {
@@ -60,6 +63,7 @@ button:focus-visible {
   /* --br-color-button: #3C3C3C; */
   --br-color-button: #262626;
   --border-color: white;
+  --bg-color-input-field: #333333 ;
 }
 
 :root.light {
@@ -69,6 +73,7 @@ button:focus-visible {
   --bg-color-sidebar: #c9c9c9;
     --br-color-button: #c9c9c9;
     --border-color: black;
+    --bg-color-input-field: white; 
 }
 
 button {
@@ -105,7 +110,8 @@ button:not(.disable):active {
 }
 
 
-button:not(.disable):hover {
+button:not(.disable):hover,
+.toggle-label:not(.disable):hover {
   opacity: 0.8;
 }
 
@@ -381,6 +387,7 @@ button.tasks-options:active {
   /*  */
     border: 2px solid var(--border-color);
     border-radius: 6px;
+    /*  */
 }
 
 #primary-task > button.disable {
@@ -401,21 +408,136 @@ button.tasks-options:active {
 
         /* task-details-edit (5) */
 
+.edit-field-selectors {
+  display: flex;
+  justify-content: space-between;
+}        
+
+.edit-field-selectors input {
+  display: none;
+  /*  */
+}
+
+.edit-field-selectors .toggle-label {
+  /* border: 1px solid var(--border-color) ; */
+  background-color: var(--bg-color-toggle);
+  width: 8ch;
+  text-align: center;
+  opacity: 0.6;
+  /* font-weight: 900; */
+  color: white;
+}
+
+.toggle-label {
+  font-size: 0.8em;
+  border: none;
+}
+
+.toggle-input-edit:checked + .toggle-label {
+    opacity: 1;
+}
+
 .task-details-edit {
   flex: 1;
   display: flex;
   flex-direction: column;
+  /* height: 120px ; */
 }        
 
-.task-details-edit > div,
-.task-details-edit > form {
-  border: 2px solid var(--border-color);
+.task-details-edit > div {
+  padding: 0.5em;
 }
 
-.edit-field-selectors {
+.edit-form {
+  /* padding: 1em; */
+  /*  */
+  /* display: grid;
+  grid-template-columns: 1fr 30px;
+  grid-template-rows: 1fr 1fr;
+  gap: 0.5em; */
+  /*  */
   display: flex;
-  justify-content: space-evenly;
+  /* height: 100px; */
+  justify-content: space-between;
+  padding: 0.5em;
+  gap: 0.5em;
+  background-color: var(--bg-color-input-field);
 }
+
+/* .task-details-edit > div, */
+.task-details-edit  {
+  border: 2px solid var(--border-color);
+  border-radius: 6px;
+  /* gap: 0.5em; */
+}
+
+.edit-form > fieldset {
+  display: flex;
+    border: none;
+    flex: auto;
+}
+
+.edit-form > fieldset > div:not(.hidden-div)  {
+  /* border: 2px solid red; */
+  display: flex;
+    width: 100%;
+    border: none;
+    gap: 0.5em;
+}
+
+
+
+.edit-form > fieldset > div:not(.hidden-div) > textarea,
+.edit-form > fieldset > div:not(.hidden-div) > input {
+  flex: 1;
+  background-color: var(--bg-color-input-field);
+  color: var(--text-color);
+  border:none;
+  /* outline: 1px solid var(--border-color); */
+}
+
+/* .edit-form > fieldset > div:not(.hidden-div) > input, */
+ .edit-form > fieldset > div:not(.hidden-div) > input {
+  /* height: 50%;   */
+}
+
+input[type="date"]::-webkit-calendar-picker-indicator,
+input[type="time"]::-webkit-calendar-picker-indicator {
+  /* opacity: 0.5; */
+  /* border: 2px solid red; */
+  outline: 2px solid var(--border-color);
+  color: var(--bg-color);
+  background-color: white;
+  margin-right: 200px;
+  scale: 2;
+}
+
+.edit-form-buttons {
+  /* border: 2px solid var(--border-color); */
+  /* border: 2px solid red; */
+  display: flex;
+  gap: 0.5em;
+}
+
+.edit-form-buttons > button {
+  color: white;
+  font-weight: 900;
+}
+.edit-form-buttons > .confirm-edit {
+  background-color: var(--bg-color-confirm-edit);
+}
+
+.edit-form-buttons > .cancel-edit {
+  background-color: var(--bg-color-cancel-edit);
+
+}
+
+.edit-form-buttons > button {
+  width: 30px;
+  height: 30px;
+}
+
+
 
           /* Tags (6) */
 
@@ -562,7 +684,7 @@ div[class$="-priority"] {
   
 }
 
-form {
+#add-task-dialog > form {
   padding: 1em;
   display: flex;
   flex-direction: column;
@@ -593,7 +715,7 @@ input, textarea, select {
   width: 110px;
 }
 
-form > div:last-child {
+#add-task-dialog > form > div:last-child {
   display: grid;
   grid-template-columns: 1fr 1fr ;
   gap: 1em;
