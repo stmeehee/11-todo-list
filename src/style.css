@@ -95,6 +95,8 @@ button[value="addTodo"] {
   border-radius: 6px;
   border: none;
   font-size: 0.8em;
+  /*  */
+  anchor-name: --add-task-dialog;
 }
 
 button:not(.disable):active {
@@ -390,7 +392,32 @@ button.tasks-options:active {
   border: 2px solid yellow;
 }
 
-          /* Tags (5) */
+        /* task-details (5) */
+
+
+.task-details.hidden-div {
+  display: none;
+}
+
+        /* task-details-edit (5) */
+
+.task-details-edit {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}        
+
+.task-details-edit > div,
+.task-details-edit > form {
+  border: 2px solid var(--border-color);
+}
+
+.edit-field-selectors {
+  display: flex;
+  justify-content: space-evenly;
+}
+
+          /* Tags (6) */
 
 .tags {
   /* border: 2px solid var(--border-color); */
@@ -432,13 +459,13 @@ div[class$="-priority"] {
 }
 
               /* expand-subtask-checkbox (4) */
-.expand-subtask-div {
+.expand-adjacent {
   display: flex;
   justify-content: flex-start;
 }
 
 /* hidden checkbox */
-#show-subtasks {
+.expand {
   display: none;
 }              
 
@@ -453,18 +480,18 @@ div[class$="-priority"] {
   font-weight: bold;
 }
 
-.show-children > #show-subtasks:checked + .arrow {
+.show-children > .expand:checked + .arrow {
   display: inline-block;
   transform: rotate(90deg);
 }
 
-.expand-subtask-div:has(#show-subtasks:checked) + .task-children-div {
+.expand-adjacent:has(.expand:checked) + .hidden-div {
   display: flex;
 }
 
               /* task-children-div (4) */
 
-.task-children-div {
+.hidden-div {
   /* margin: 0.5em; */
     /* border: 2px solid brown; */
     /*  */
@@ -474,12 +501,12 @@ div[class$="-priority"] {
     gap: 0.5em;
 }
 
-.task-children-div > div:not(:first-child):not(:last-child) {
+.hidden-div > div:not(:first-child):not(:last-child) {
       /* border: 2px solid var(--border-color); */
     border-radius: 6px;
 }
 
-/* tasks-options-dialog */
+                                  /* tasks-options-dialog */
 
 #tasks-options-popover {
   /* position: absolute; */
@@ -513,4 +540,75 @@ div[class$="-priority"] {
   background-color: var(--button-color-delete-task);
   /* background-color: red; */
   color: white;
+}
+
+                                /* add-task-dialog */
+
+#add-task-dialog {
+  /* position-anchor: --add-task-dialog;
+  top: anchor(bottom);
+  left: anchor(center); */
+  /* transform: translateX(-50%); */
+  /*  */
+  justify-self: center;
+  align-self: center;
+  width: 400px;
+  height: 720px;
+  /*  */
+  background-color: var(--bg-color);
+  color: var(--text-color);
+  /*  */
+  border-radius: 6px;
+  
+}
+
+form {
+  padding: 1em;
+  display: flex;
+  flex-direction: column;
+  gap: 1em;
+  font-size: 1em;
+}
+
+form > div {
+  display: flex;
+  flex-direction: column;
+}
+
+input, textarea, select {
+  font-size: inherit;
+  font-family: inherit;
+}
+
+.note > #note {
+    resize: none; 
+    width: 300px;
+}
+
+.add-subtask-btn, .add-note-btn {
+  background-color: var(--button-color-add-task);
+}
+
+.add-note-btn {
+  width: 110px;
+}
+
+form > div:last-child {
+  display: grid;
+  grid-template-columns: 1fr 1fr ;
+  gap: 1em;
+}
+
+.pick-time {
+  display: flex; 
+  justify-content: space-between;
+}
+
+.pick-time > :last-child {
+  display: none;
+}
+
+.pick-time:has(#time-picker:checked) > :last-child {
+  outline: 3px solid red;
+  display: inline-block;
 }

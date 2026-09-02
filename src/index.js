@@ -1,34 +1,18 @@
 import "./style.css";
-import Tracker from "./trackers.js";
+import Task from "./task.js";
 
 // tasksOptionsPrev is the last cicked .tasksOptions btn, we keep it to remove the anchor-active id from it
 // when a new btn is clicked
 let tasksOptionsPrev = null
 let domCache = null
-let myTrackers = new Map()
+let myTasks = new Map()
 let myTaskElements = new Map()
+let hiddenDivPrev = null
 
-const tracker = (() => {
-    const max = 4
-    let current = 0 
-
-    return {
-        get current() {
-            return  current
-        },
-        set current(val) {
-            if (current >= 0 && current <= max) {
-                current = val
-            }
-            return
-        },
-        get max() {
-            return  max
-        },
+function getDomElements(getElemWithId) {
+    if (getElemWithId) {
+        return document.getElementById(getElemWithId)
     }
-})();
-
-function getDomElements() {
     // console.log(` > getDomElements()`)
     const root = document.documentElement;
     const body = document.querySelector("body")
@@ -41,9 +25,36 @@ function getDomElements() {
         barColorTealName: "--bg-progress-bar-inComplete",
         barColorGreenName: "--bg-progress-bar-complete",
     }
-    // console.log(BarColors.cssVarColorInUse)
+    const date = document.querySelector(`input[type="date"]`)
 
-    return {root, body, allTasksElem, barCssVars}
+    return {root, body, allTasksElem, barCssVars, date}
+}
+
+function addTask(myFormData) {
+    //TODO
+}
+
+
+function setMinDate() {
+    const presentDate = new Date()
+    const year = presentDate.getFullYear()
+    const month = String(presentDate.getMonth() + 1).padStart(2,"0")
+    const day = String(presentDate.getDate()).padStart(2,"0")
+    const minDate = `${year}-${month}-${day}`
+    domCache.date.setAttribute("min", minDate)
+    domCache.date.setAttribute("value", minDate)
+}
+
+function showHiddenDiv(hiddenDiv) {
+    // console.log(` > showInputField()`)
+    // console.log(` > showInputField(${showElem}) `)
+    console.log(hiddenDiv)
+    if (hiddenDivPrev) {
+        hiddenDivPrev.classList.add("hidden-div")
+    }
+    hiddenDiv.classList.remove("hidden-div")
+    hiddenDivPrev = hiddenDiv
+
 }
 
 function disAllowTaskDiv(taskId) {
@@ -77,7 +88,7 @@ function changeCompleteBtnPermit(taskId, allow) {
 }
 
 // finds the task up the dom tree and returns its id
-function getTaskElementId(descendentElem) {
+function getTaskIdFromElement(descendentElem) {
     return descendentElem.closest(".full-task-div").id
 }
 
@@ -86,7 +97,6 @@ function getProgressBar(taskId) {
     const progBar = taskElem.querySelector(".task-progress-bar")
     return progBar
 }
-
 
 function anchorTasksOptions(tasksOptionsBtnEl) {
     if (tasksOptionsPrev) {
@@ -99,14 +109,14 @@ function anchorTasksOptions(tasksOptionsBtnEl) {
 }
 
 function updateProgress(isChecked, taskId) {
-    const tracker = myTrackers.get(taskId)
+    const Task = myTasks.get(taskId)
     // console.log(` > updateProgress()`)
-    // console.log(`task id clicked: ${tracker._id}`)    
+    // console.log(`task id clicked: ${Task._id}`)    
     if (isChecked) {
-        tracker.current += 1
+        Task.current += 1
     }
     else {
-        tracker.current -= 1
+        Task.current -= 1
     }
 }
 
@@ -123,12 +133,12 @@ function getBarLabelColor(percentVal) {
     }
     else {
         // task is either isFinished or waiting for user to click complete
-        if (percentVal === 100 && !tracker.isFinished) {
+        if (percentVal === 100) {
             [label, color] = ["In limbo...", teal]
         }
-        else {
-            [label, color] = ["Complete!", green]
-        }
+        // else {
+        //     [label, color] = ["Complete!", green]
+        // }
     }
     return [label, color]
 }
@@ -150,23 +160,23 @@ function setTheme() {
 
 function delegate(event) {
     // console.log(`event --> delegate(): elem clicked =`)
-    console.log(event.target)
+    // console.log(event.target)
     let taskId = null
     if (event.target.closest(".theme-toggle")) {
         setTheme()
     }
-    if (event.target.closest(".task-children-div") && event.target.type == "checkbox") {
+    if (event.target.closest(".hidden-div") && event.target.type == "checkbox") {
         // console.log(`checkbox state: ${event.target.checked}, from: ${event.target.type}`)
         // console.log(event.target)
         const checkBoxElem = event.target
         const isChecked = checkBoxElem.checked
-        taskId = getTaskElementId(checkBoxElem)
+        taskId = getTaskIdFromElement(checkBoxElem)
         updateProgress(checkBoxElem.checked, taskId)
-        let pct = myTrackers.get(taskId).currentPercent
+        let pct = myTasks.get(taskId).currentPercent
         let [label, color] = getBarLabelColor(pct)
         renderProgressBar(label, color, `${pct}%`, taskId)
-        console.log(myTrackers.get(taskId).isFinished)
-        changeCompleteBtnPermit(taskId, myTrackers.get(taskId).isFinished)
+        console.log(myTasks.get(taskId).isFinished)
+        changeCompleteBtnPermit(taskId, myTasks.get(taskId).isFinished)
 
     }
     if (event.target.closest(".tasks-options")) {
@@ -177,41 +187,87 @@ function delegate(event) {
     if (event.target.closest(".finalize")) {
         const confirmBtn = event.target
         console.log(confirmBtn)
-        taskId = getTaskElementId(confirmBtn)
+        taskId = getTaskIdFromElement(confirmBtn)
         completeTask(taskId)
         // TODO: make the progress bar turn green!
         // renderProgressBar()
         disAllowTaskDiv(taskId)
         let color = domCache.barCssVars.barColorGreenName
-        let pct = myTrackers.get(taskId).currentPercent
+        let pct = myTasks.get(taskId).currentPercent
         let label = "Complete!"
         renderProgressBar(label, color, `${pct}%`, taskId)
     }
+
+    if (event.target.closest(".edit-field-selectors") && event.target.type == "radio") {
+        // console.log(event.target.type )
+        console.log(event.target.value)
+        const elem = event.target
+        const elemClass = `.${event.target.value}`
+        const hiddenDiv = getElemFromTaskElemAndChildClassId(elem, elemClass)
+        // const 
+        // get the main-task-div from child elem
+        // console.log(hiddenDiv)
+        showHiddenDiv(hiddenDiv)
+    }
+}
+
+// return the descendant element from the childElem and child class/id
+function getElemFromTaskElemAndChildClassId(childElem, childClassId) {
+    const taskElem = getTaskElemFromChildElem(childElem)
+    const resElem = taskElem.querySelector(childClassId)
+    return resElem
+}
+
+// find and return maintask element from child element 
+function getTaskElemFromChildElem(childElem) {
+    const taskId = getTaskIdFromElement(childElem)
+    const taskEl = myTaskElements.get(taskId)
+    return taskEl    
 }
 
 
-
-function setTrackersAndTaskElements() {
-    console.log(` > getTrackers()`)
-    for (const task of domCache.allTasksElem) {
-        let id = task.id
-        myTrackers.set(id, new Tracker(id))
-        myTaskElements.set(id, task)
+function setTasksAndTaskElements() {
+    console.log(` > getTasks()`)
+    for (const taskEl of domCache.allTasksElem) {
+        let id = taskEl.id
+        myTasks.set(id, new Task(id))
+        myTaskElements.set(id, taskEl)
     }
-    // console.log(myTrackers.get("1a"))
+    // console.log(myTasks.get("1a"))
 }
 
 
 function init() {
     console.log(` > init()`)
     domCache = getDomElements()
-    setTrackersAndTaskElements()
-    // console.log({myTrackers})
+    setTasksAndTaskElements()
+    // setMinDate()
+        console.log(`formatted date: ${setMinDate()}`)
+        console.log()
+    // console.log({myTasks})
     // console.log({myTaskElements})
+    console.log("date: ")
+    console.log(new Date().toLocaleDateString())
+    console.log(new Date().toLocaleTimeString())
 
     domCache.body.addEventListener("click", (event) => {
         delegate(event)
     })
+
+        domCache.body.addEventListener("submit", (event) => {
+        // delegate(event)
+        // if (event.submitter && event.submitter.getAttribute('command') === 'close') {
+        //     return // HOW DOES THIS WORK ?? 
+        // }
+        const myData = new FormData(event.target)
+        // {title: 'aa', desc: 'aa', date: '2026-09-01', priority: 'high', note: 'aaa', …}
+        console.log(Object.fromEntries(myData))
+        // console.log(`date from form: ${myData.get(date)}`)
+        addTask(myData)
+
+        // event.target.closest("dialog").close()
+    })
+
 }
 
 function main() {

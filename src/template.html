@@ -13,9 +13,7 @@
 
     <header>
         <div class="toolbar-div">
-            <button value="addTodo">Add new task</button>
-            <!-- <button>idk1</button>
-            <button>idk2</button> -->
+            <button value="addTodo" command="show-modal" commandfor="add-task-dialog">Add new task</button>
         </div>
         <button class="theme-toggle">dark/light</button>
     </header>
@@ -158,9 +156,11 @@
                         <!-- the main task div with task complete-btn, title,desc., priority and due date listed -->
                         <div id="primary-task">
                             <button class="disable">complete</button>
-                            <div class="task-details">
+                            <div class="task-details hidden-div">
                                 <p>Title: do this</p>
                                 <p>Description: do this and that</p>
+                                <!-- DUE DATE -->
+                                 <p>Due date: 1/9/2026</p>
                                 <div class="tags">
                                     <span>Tags: </span>
                                     <!-- can have classes:low, medium, high  -->
@@ -178,14 +178,55 @@
                                     </div>                                                                        
                                 </div>
                             </div>
+                            <!-- TODO -->
+                            <!-- Edit task: Add a div with fields -->
+                            <div class="task-details-edit">
+                                <div class="edit-field-selectors">
+                                    <label><input type="radio" name="edit-field" value="edit-title-div">Title</label>
+                                    <label><input type="radio" name="edit-field" value="edit-date-div">Date</label>
+                                    <label><input type="radio" name="edit-field" value="edit-desc-div">Description</label>
+                                    <label><input type="radio" name="edit-field" value="edit-time-div">Time</label>
+                                    <label><input type="radio" name="edit-field" value="edit-tags-div">Tags</label>
+                                </div>
+
+                                <form>
+                                    <fieldset>
+                                        <div class="hidden-div edit-title-div">                                            
+                                            <label for="edit-title">Title: </label>
+                                            <input type="text" id="edit-title">
+                                        </div>
+                                        <div class="hidden-div edit-date-div">
+                                            <label for="edit-date">Date: </label>
+                                            <input type="date" id="edit-date">
+                                        </div>                                 
+                                        <div class="hidden-div edit-desc-div">
+                                            <label for="edit-desc">Desc.: </label>
+                                            <input type="text" id="edit-desc">
+                                        </div>  
+                                        <div class="hidden-div edit-time-div">
+                                            <label for="edit-time">Time: </label>
+                                            <input type="time" id="edit-time">
+                                        </div>     
+                                        <div class="hidden-div edit-tags-div"> 
+                                            <label for="edit-tags">Tags: </label>
+                                            <input type="text" id="edit-tags">
+                                        </div>  
+                                    </fieldset>
+                                    <div>
+                                        <button type="button" class="edit-note">edit note</button>
+                                        <button type="button" class="confirm-edit">✓</button>
+                                        <button type="button" class="confirm-edit">X</button>                                        
+                                    </div>
+                                </form>
+                            </div>
                         </div>
-                        <div class="expand-subtask-div">
+                        <div class="expand-adjacent">
                             <label class="show-children">
-                                <input type="checkbox" id="show-subtasks">
+                                <input type="checkbox" class="expand">
                                 <span class="arrow">></span>
                             </label>    
                         </div>
-                        <div class="task-children-div">
+                        <div class="hidden-div">
                         <!-- can remain empty if no subtasks here -->
                              <div class="subtask-1-div">
                                 <input type="checkbox" id="subtask-checkbox-2-1">
@@ -250,13 +291,13 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="expand-subtask-div">
+                        <div class="expand-adjacent">
                             <label class="show-children">
-                                <input type="checkbox" id="show-subtasks">
+                                <input type="checkbox" class="expand">
                                 <span class="arrow">></span>
                             </label>    
                         </div>
-                        <div class="task-children-div">
+                        <div class="hidden-div">
                         <!-- can remain empty if no subtasks here -->
                             <!-- <p>e.g: child 1</p> -->
                             <!-- <p>e.g: child 2</p> -->
@@ -304,6 +345,101 @@
         <!-- <button value="move">Move to different project</button> -->
         <!-- <button value="delete">Delete</button> -->
     </dialog>
+    
+    <!-- Add new task dialogue box -->
+     <dialog id="add-task-dialog">
+        <form>
+            <div class="title">
+                <label for="title">Title:</label>
+                <input type="text" id="title" name="title" required>
+            </div>
+            <div class="desc">
+                <label for="desc">Description</label>
+                <input type="text" id="desc" name="desc">                
+            </div>
+            <div class="date">
+                <label for="date">Due date</label>
+                <input type="date" id="date" name="date" required>                
+            </div>
+            <div class="time">
+                <!-- TODO -->
+                <!-- either current time, or choose -->
+                 <fieldset>
+                    <div>
+                        <label for="now">this time</label>
+                        <input type="radio" id="now" name="now-or-pick-time" value="now" checked>
+                    </div>
+                    <div class="pick-time" >
+                        <div>
+                            <label for="time-picker">Pick a time</label>
+                            <input type="radio" id="time-picker" name="now-or-pick-time" value="pick-time">
+                        </div>
+                        <input type="time" name="pick-time" value="00:00">
+                    </div>
+                </fieldset>
+
+            </div>
+            <div class="priority">
+                <label for="priority">Priority</label>
+                <select id="priority" name="priority">    
+                    <option value="high">High</option>       
+                    <option value="medium">Medium</option> 
+                    <option value="low">Low</option>  
+                </select>    
+            </div>  
+            <hr>
+            <!-- add form btn -->
+            <div class="expand-adjacent">
+                <label class="show-children add-note-btn .button">
+                    <input type="checkbox" class="expand">
+                    <span>Add note</span>
+                </label>    
+            </div>   
+            
+            <div class="hidden-div">
+                <div class="note">
+                    <!-- <label for="note">Add note</label> -->
+                    <textarea id="note" name="note" placeholder="(optional)" rows="5"></textarea>                
+                </div>
+            </div>                 
+
+            <hr>
+            <div class="project-select">
+                <label for="project-select">Add to existing project</label>
+                <select id="project-select" name="projectSelect" >  
+                    <option value="proj1">This doesnt exist!</option>              
+                    <!-- TODO: add projects available by user -->
+                </select>
+            </div>                                               
+            <hr>
+            <div class="new-subtask">
+
+                <div class="expand-adjacent">
+                    <label class="show-children add-subtask-btn">
+                        <input type="checkbox" class="expand">
+                        <span>Add subtask</span>
+                    </label>    
+                </div>
+                <!-- NOte: add new input label/input elements for each click to expand-adjacent -->
+                <div class="hidden-div">
+                    <div class="new-subtask">
+                        <label>subtask 1
+                            <input type="text" name="subtaskTitle1">
+                        </label>
+                    </div>
+                </div> 
+
+            </div>    
+            <hr>
+            <div>
+                <button formmethod="dialog" type="submit"> Add task</button>
+                <!-- <button formmethod="dialog" type="submit" command="close" formnovalidate>Cancel</button>  -->
+                <button  commandfor="add-task-dialog" command="close" type="button">Cancel</button>  
+            </div>
+        </form>
+        <!-- <button  commandfor="add-task-dialog" command="close" formnovalidate>Cancel</button>   -->
+     </dialog>
+     
 
 </body>
 </html>

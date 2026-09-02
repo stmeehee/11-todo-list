@@ -1,4 +1,28 @@
 1. hide the complete btn on the task until all subtasks are done
     then reveal that btn and make the task unresponsive to mark it as complete (DONE)
 
+
+FRONT END:
+
+    Working in progress:
     
+    1. Add dialog box when clicking on "Add new task" (Mostly done)
+    2. Add edit capability to the main task div (somewhat done)
+
+    FEATURES TO ADD:
+
+    1. Add dialog box when clicking on "Add new task" 
+
+    2. complete misc. button sub-buttons
+        1. Add dialogue box when clicking  "... > edit"
+        2. Add dialogue box when clicking  "... > move to different project"
+        3. Add delete functionality
+
+    3. Add sort fnctionality to visible tasks in "all-tasks-div"
+
+    4. Enable search field to only show searched tasks in "all-taasks-div "
+
+    5. Add new projects creation dialog when clicking on "Add a project"
+
+    6. filter tasks from tall-tasks when user clicks btns in "sidebar-main-div "
+

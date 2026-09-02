@@ -1,8 +1,18 @@
-export default class Tracker {
+// a test class for testing html, css
+export default class Task {
 
     static max = 4
     _current = 0
     _isFinished = false
+
+    // fields for checking
+    title= null
+    desc = null
+    date = null
+    priority = null
+    note = null
+    project = null
+    subtasks = []
 
     constructor(taskId) {
         this._id = taskId
@@ -17,7 +27,7 @@ export default class Tracker {
     }
 
     set current(val) {
-        if (this._current >= 0 && this._current <= Tracker.max) {
+        if (this._current >= 0 && this._current <= Task.max) {
         // if (val  0 && val <= Tracker.max) {
             this._current = val
         }
@@ -25,7 +35,7 @@ export default class Tracker {
     }
 
     get max() {
-        return  Tracker.max
+        return  Task.max
     }
 
     get isFinished() {
@@ -37,7 +47,7 @@ export default class Tracker {
     }
 
     get currentPercent() {
-        return (this.current / Tracker.max) * 100
+        return (this.current / Task.max) * 100
     }
 
     checkIsFinished() {
