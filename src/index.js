@@ -1,5 +1,6 @@
 import "./style.css";
 import Task from "./task.js";
+import taskDomCtrl from "./taskDomCtrl.js";
 
 // tasksOptionsPrev is the last cicked .tasksOptions btn, we keep it to remove the anchor-active id from it
 // when a new btn is clicked
@@ -7,7 +8,13 @@ let tasksOptionsPrev = null
 let domCache = null
 let myTasks = new Map()
 let myTaskElements = new Map()
-let hiddenDivPrev = null
+let myTaskDomCtrlMap = new Map()
+// const hiddenDivs = {
+//     // hiddenEditFieldDivPrev: the last edit-field div that was shown; to be hidden later when a new div is shown
+//     editFieldDivPrev: null,
+//     taskDetailsDivPrev: null
+// }
+
 
 function getDomElements(getElemWithId) {
     if (getElemWithId) {
@@ -25,13 +32,25 @@ function getDomElements(getElemWithId) {
         barColorTealName: "--bg-progress-bar-inComplete",
         barColorGreenName: "--bg-progress-bar-complete",
     }
-    const date = document.querySelector(`input[type="date"]`)
+    const dateInputs = document.querySelectorAll(`input[type="date"]`)
+    const tasksOptionsPopover = document.querySelector(`#tasks-options-popover`)
 
-    return {root, body, allTasksElem, barCssVars, date}
+    return {root, body, allTasksElem, barCssVars, dateInputs, tasksOptionsPopover}
 }
 
 function addTask(myFormData) {
     //TODO
+}
+
+function focusInputTextarea(focusInthisElem) {
+    const inputElem = (focusInthisElem.querySelector("input"))
+    if (inputElem !== null ) {
+        inputElem.focus()
+    }
+    else {
+        const textareaElem = (focusInthisElem.querySelector("textarea"))
+        textareaElem.focus()
+    }
 }
 
 
@@ -41,20 +60,24 @@ function setMinDate() {
     const month = String(presentDate.getMonth() + 1).padStart(2,"0")
     const day = String(presentDate.getDate()).padStart(2,"0")
     const minDate = `${year}-${month}-${day}`
-    domCache.date.setAttribute("min", minDate)
-    domCache.date.setAttribute("value", minDate)
+    // domCache.date.setAttribute("min", minDate)
+    // domCache.date.setAttribute("value", minDate)
+    domCache.dateInputs.forEach((date) => {
+        date.setAttribute("min", minDate)
+        date.setAttribute("value", minDate)
+    })
 }
 
-function showHiddenDiv(hiddenDiv) {
-    // console.log(` > showInputField()`)
-    // console.log(` > showInputField(${showElem}) `)
-    console.log(hiddenDiv)
-    if (hiddenDivPrev) {
-        hiddenDivPrev.classList.add("hidden-div")
+function toggleElemVisibility(elemToShow, elemToHide) {
+    // shows the clicked toggle-label div and hides the prev div of that nature
+    // console.log(elemToShow, elemToHide)
+    if (elemToHide) {
+        // hide element
+        elemToHide.classList.add("hidden-div")
     }
-    hiddenDiv.classList.remove("hidden-div")
-    hiddenDivPrev = hiddenDiv
-
+    // show element
+    elemToShow.classList.remove("hidden-div")
+    // keep track of last shown div
 }
 
 function disAllowTaskDiv(taskId) {
@@ -104,6 +127,11 @@ function anchorTasksOptions(tasksOptionsBtnEl) {
     }
     tasksOptionsBtnEl.id = "active-anchor"
     tasksOptionsPrev  = tasksOptionsBtnEl
+    // make tasks-options-popover dialog remember which task it was opened for, 
+    // so taskOptionsBtnEl btns know which task its btns corrodpond to
+    const taskId = getTaskIdFromElement(tasksOptionsBtnEl)
+    console.log(domCache.tasksOptionsPopover)
+    domCache.tasksOptionsPopover.dataset.prevSetTo = taskId
     // console.log(`after adding active-anchor id:`)
     //     console.log(tasksOptionsBtnEl)
 }
@@ -197,21 +225,70 @@ function delegate(event) {
         let label = "Complete!"
         renderProgressBar(label, color, `${pct}%`, taskId)
     }
-
     if (event.target.closest(".edit-field-selectors") && event.target.type == "radio") {
+        // show edit divs 
         // console.log(event.target.type )
         console.log(event.target.value)
         const elem = event.target
         const elemClass = `.${event.target.value}`
-        const hiddenDiv = getElemFromTaskElemAndChildClassId(elem, elemClass)
+        const taskId = getTaskIdFromElement(elem)
+        const divToShow = getElemFromTaskElemAndChildClassId(elem, elemClass)
+        const divToHide = myTaskDomCtrlMap.get(taskId).editFieldDivInView
         // const 
         // get the main-task-div from child elem
-        // console.log(hiddenDiv)
-        showHiddenDiv(hiddenDiv)
+        // TODO: each task must have its own taskDomTracker instance
+        // console.log(hiddenEditFieldDiv)
+        toggleElemVisibility(divToShow, divToHide)
+
+        focusInputTextarea(divToShow)
+        myTaskDomCtrlMap.get(taskId).editFieldDivInView = divToShow
+        // save the div in view
+    }
+    if (event.target.closest(".cancel-edit")) {
+        // closetask-details-edit div and show task-details div
+        // console.log(myTaskDomCtrlMap.get('1a').taskDetailsDivInView)
+        const closeBtnElem = event.target
+        closeEditor(closeBtnElem)
+        // console.log(closeBtnElem)
+        // const divClassToShow = `.${closeBtnElem.dataset.class_show}`
+        // const divClassToHide = `.${closeBtnElem.dataset.class_hide}`
+        // const taskId = getTaskIdFromElement(closeBtnElem)
+        // console.log(`divClassToShow: ${divClassToShow}, divClassToHide: ${divClassToHide}`)
+        // const divToShow = getElemFromTaskElemAndChildClassId(closeBtnElem, divClassToShow)
+        // const divToHide = myTaskDomCtrlMap.get(taskId).taskDetailsDivInView
+        // console.log({divToShow})
+        // toggleElemVisibility(divToShow, divToHide)
+        // myTaskDomCtrlMap.get(taskId).taskDetailsDivInView = divToShow
+    }
+    if (event.target.closest("#tasks-options-popover")) {
+        const taskId = event.target.closest("#tasks-options-popover").dataset.prevSetTo
+        const btnClicked = event.target
+        const editBtn = btnClicked.classList.contains("popover-edit") 
+        if (editBtn) {
+            const divToShow = myTaskElements.get(taskId).querySelector(".task-details-edit")
+            const divToHide = myTaskElements.get(taskId).querySelector(".task-details")
+            // console.log({divToShow}, {divToHide})
+            toggleElemVisibility(divToShow, divToHide)
+            myTaskDomCtrlMap.get(taskId).taskDetailsDivInView = divToShow
+            // console.log(myTaskDomCtrlMap.get(taskId).taskDetailsDivInView)
+        }
     }
 }
 
+function closeEditor(btnElem) {
+    const divClassToShow = `.${btnElem.dataset.class_show}`
+    const divClassToHide = `.${btnElem.dataset.class_hide}`
+    const taskId = getTaskIdFromElement(btnElem)
+    // console.log(`divClassToShow: ${divClassToShow}, divClassToHide: ${divClassToHide}`)
+    const divToShow = getElemFromTaskElemAndChildClassId(btnElem, divClassToShow)
+    const divToHide = myTaskDomCtrlMap.get(taskId).taskDetailsDivInView
+    // console.log({divToShow})
+    toggleElemVisibility(divToShow, divToHide)
+    myTaskDomCtrlMap.get(taskId).taskDetailsDivInView = divToShow    
+}
+
 // return the descendant element from the childElem and child class/id
+// childElem -> mainTaskDiv -> childClassId (aka destination id)
 function getElemFromTaskElemAndChildClassId(childElem, childClassId) {
     const taskElem = getTaskElemFromChildElem(childElem)
     const resElem = taskElem.querySelector(childClassId)
@@ -222,7 +299,7 @@ function getElemFromTaskElemAndChildClassId(childElem, childClassId) {
 function getTaskElemFromChildElem(childElem) {
     const taskId = getTaskIdFromElement(childElem)
     const taskEl = myTaskElements.get(taskId)
-    return taskEl    
+    return taskEl 
 }
 
 
@@ -232,6 +309,7 @@ function setTasksAndTaskElements() {
         let id = taskEl.id
         myTasks.set(id, new Task(id))
         myTaskElements.set(id, taskEl)
+        myTaskDomCtrlMap.set(id, new taskDomCtrl())
     }
     // console.log(myTasks.get("1a"))
 }
@@ -241,29 +319,45 @@ function init() {
     console.log(` > init()`)
     domCache = getDomElements()
     setTasksAndTaskElements()
-    // setMinDate()
-        console.log(`formatted date: ${setMinDate()}`)
-        console.log()
+    setMinDate()
+
+    // myTaskDomCtrlMap.get("1a").editFieldDivPrev =  document.querySelector("#1a #edit-title-radio")
+    // console.log(myTaskDomCtrlMap.get("1a").editFieldDivPrev)
+        // console.log(`formatted date: ${setMinDate()}`)
+        // console.log()
     // console.log({myTasks})
     // console.log({myTaskElements})
-    console.log("date: ")
-    console.log(new Date().toLocaleDateString())
-    console.log(new Date().toLocaleTimeString())
+    // console.log("date: ")
+    // console.log(new Date().toLocaleDateString())
+    // console.log(new Date().toLocaleTimeString())
 
     domCache.body.addEventListener("click", (event) => {
         delegate(event)
     })
 
         domCache.body.addEventListener("submit", (event) => {
-        // delegate(event)
         // if (event.submitter && event.submitter.getAttribute('command') === 'close') {
         //     return // HOW DOES THIS WORK ?? 
         // }
+        event.preventDefault()
         const myData = new FormData(event.target)
+        // check whether form was for "add new task" or "confirm edit"
+        if (event.target.dataset.id === "newForm") {
+            console.log("newForm")
+            console.log(Object.fromEntries(myData))
+            addTask(myData)
+        }
+        if (event.target.dataset.id === "editForm") {
+            console.log("editForm")
+            console.log(Object.fromEntries(myData))
+            // editTask()
+            const submitBtn = event.submitter
+            console.log(submitBtn)
+            closeEditor(submitBtn)
+        }
         // {title: 'aa', desc: 'aa', date: '2026-09-01', priority: 'high', note: 'aaa', …}
-        console.log(Object.fromEntries(myData))
+        // console.log(Object.fromEntries(myData))
         // console.log(`date from form: ${myData.get(date)}`)
-        addTask(myData)
 
         // event.target.closest("dialog").close()
     })

@@ -489,7 +489,6 @@ button.tasks-options:active {
 
 .edit-form > fieldset > div:not(.hidden-div) > textarea,
 .edit-form > fieldset > div:not(.hidden-div) > input {
-  flex: 1;
   background-color: var(--bg-color-input-field);
   color: var(--text-color);
   border:none;
@@ -497,9 +496,23 @@ button.tasks-options:active {
 }
 
 /* .edit-form > fieldset > div:not(.hidden-div) > input, */
- .edit-form > fieldset > div:not(.hidden-div) > input {
-  /* height: 50%;   */
+ .edit-form > fieldset > div:not(.hidden-div) > input:not(textarea) {
+  flex: 1;
+  height: 50%;  
+  align-self: center;
+  outline: 1px solid white;
 }
+
+ .edit-form > fieldset > div:not(.hidden-div) > input[type="time"],
+  .edit-form > fieldset > div:not(.hidden-div) > input[type="date"] {
+    flex: 0;
+ }
+
+.edit-form > fieldset > div:not(.hidden-div) > textarea {
+  flex: 1;
+  outline: none;
+}
+
 
 input[type="date"]::-webkit-calendar-picker-indicator,
 input[type="time"]::-webkit-calendar-picker-indicator {
@@ -508,8 +521,8 @@ input[type="time"]::-webkit-calendar-picker-indicator {
   outline: 2px solid var(--border-color);
   color: var(--bg-color);
   background-color: white;
-  margin-right: 200px;
-  scale: 2;
+  margin-right: 20px;
+  scale: 1.2;
 }
 
 .edit-form-buttons {
@@ -658,7 +671,7 @@ div[class$="-priority"] {
     padding: 0.5em;
 }
 
-#tasks-options-popover > button[value="delete"] {
+#tasks-options-popover > :last-child {
   background-color: var(--button-color-delete-task);
   /* background-color: red; */
   color: white;

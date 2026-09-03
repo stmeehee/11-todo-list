@@ -156,7 +156,7 @@
                         <!-- the main task div with task complete-btn, title,desc., priority and due date listed -->
                         <div id="primary-task">
                             <button class="disable">complete</button>
-                            <div class="task-details hidden-div">
+                            <div class="task-details ">
                                 <p>Title: do this</p>
                                 <p>Description: do this and that</p>
                                 <!-- DUE DATE -->
@@ -178,60 +178,70 @@
                                     </div>                                                                        
                                 </div>
                             </div>
-                            <!-- TODO -->
-                            <!-- Edit task: Add a div with fields -->
-                            <div class="task-details-edit">
+                            <div class="task-details-edit hidden-div">
                                 <div class="edit-field-selectors">
-                                    <input type="radio" id="edit-title-radio" name="edit-field" value="edit-title-div" class="toggle-input-edit">
-                                    <label for="edit-title-radio" class="toggle-label">Title</label>
+                                    <input type="radio" id="edit-title-radio-1a" name="edit-field-1a" value="edit-title-div" class="toggle-input-edit">
+                                    <label for="edit-title-radio-1a" class="toggle-label">Title</label>
 
-                                    <input type="radio" id="edit-date-radio" name="edit-field" value="edit-date-div" class="toggle-input-edit">
-                                    <label for="edit-date-radio" class="toggle-label">Date</label>
+                                    <input type="radio" id="edit-date-radio-1a" name="edit-field-1a" value="edit-date-div" class="toggle-input-edit">
+                                    <label for="edit-date-radio-1a" class="toggle-label">Date</label>
 
-                                    <input type="radio" id="edit-desc-radio" name="edit-field" value="edit-desc-div" class="toggle-input-edit">
-                                    <label for="edit-desc-radio" class="toggle-label">Desc.</label>
+                                    <input type="radio" id="edit-desc-radio-1a" name="edit-field-1a" value="edit-desc-div" class="toggle-input-edit">
+                                    <label for="edit-desc-radio-1a" class="toggle-label">Desc.</label>
 
-                                    <input type="radio" id="edit-time-radio" name="edit-field" value="edit-time-div" class="toggle-input-edit">
-                                    <label for="edit-time-radio" class="toggle-label">Time</label>
+                                    <input type="radio" id="edit-time-radio-1a" name="edit-field-1a" value="edit-time-div" class="toggle-input-edit">
+                                    <label for="edit-time-radio-1a" class="toggle-label">Time</label>
 
-                                    <input type="radio" id="edit-tags-radio" name="edit-field" value="edit-tags-div" class="toggle-input-edit">
-                                    <label for="edit-tags-radio" class="toggle-label">Tags</label>
+                                    <input type="radio" id="edit-tags-radio-1a" name="edit-field-1a" value="edit-tags-div" class="toggle-input-edit">
+                                    <label for="edit-tags-radio-1a" class="toggle-label">Tags</label>
 
-                                    <input type="radio" id="edit-note-radio" name="edit-field" value="edit-note-div" class="toggle-input-edit">
-                                    <label for="edit-note-radio" class="toggle-label">Note</label>
+                                    <input type="radio" id="edit-note-radio-1a" name="edit-field-1a" value="edit-note-div" class="toggle-input-edit">
+                                    <label for="edit-note-radio-1a" class="toggle-label">Note</label>
                                 </div>
                                 <hr>
-                                <form class="edit-form">
+                                <form class="edit-form" data-id="editForm">
                                     <fieldset>
                                         <div class="hidden-div edit-title-div">                                            
                                             <label for="edit-title"></label>
-                                            <input type="text" id="edit-title" placeholder="Title">
+                                            <input type="text" id="edit-title" placeholder="Title" name="title">
                                         </div>
                                         <div class="hidden-div edit-date-div">
                                             <label for="edit-date">Date: </label>
-                                            <input type="date" id="edit-date" placeholder="">
+                                            <input type="date" id="edit-date" name="date">
                                         </div>                                 
                                         <div class="hidden-div edit-desc-div">
                                             <label for="edit-desc"></label>
-                                            <input type="text" id="edit-desc" placeholder="Description">
+                                            <input type="text" id="edit-desc" placeholder="Description" name="desc">
                                         </div>  
                                         <div class="hidden-div edit-time-div">
-                                            <label for="edit-time">Time: </label>
-                                            <input type="time" id="edit-time" placeholder="">
+                                            <label for="edit-time" >Time: </label>
+                                            <input type="time" id="edit-time" name="time">
                                         </div>     
                                         <div class="hidden-div edit-tags-div"> 
                                             <label for="edit-tags"></label>
-                                            <input type="text" id="edit-tags" placeholder="Tags">
+                                            <input type="text" id="edit-tags" placeholder="Tags" name="tags">
                                         </div>  
                                         <div class="hidden-div edit-note-div"> 
                                             <label for="edit-note"></label>
-                                            <textarea id="edit-note" placeholder="Note"></textarea>
+                                            <textarea id="edit-note" placeholder="Note" name="note"></textarea>
                                         </div>                                        
                                     </fieldset>
                                     <!-- <hr> -->
                                     <div class="edit-form-buttons">
-                                        <button type="button" class="confirm-edit">✓</button>
-                                        <button type="button" class="cancel-edit">X</button>                                        
+                                        <!-- TODO -->
+                                         <!-- make submit-button, cancel-edit buttons, work! -->
+                                        <button 
+                                            type="submit" 
+                                            class="confirm-edit" 
+                                            data-class_show="task-details"
+                                            data-class_hide="task-details-edit">✓
+                                        </button>
+                                        <button 
+                                            type="button" 
+                                            class="cancel-edit"
+                                            data-class_show="task-details"
+                                            data-class_hide="task-details-edit">X
+                                        </button>                                      
                                     </div>
                                 </form>
                             </div>
@@ -306,6 +316,73 @@
                                     </div>                                                                        
                                 </div>
                             </div>
+                            <div class="task-details-edit hidden-div">
+                                <div class="edit-field-selectors">
+                                    <input type="radio" id="edit-title-radio-1b" name="edit-field-1b" value="edit-title-div" class="toggle-input-edit">
+                                    <label for="edit-title-radio-1b" class="toggle-label">Title</label>
+
+                                    <input type="radio" id="edit-date-radio-1b" name="edit-field-1b" value="edit-date-div" class="toggle-input-edit">
+                                    <label for="edit-date-radio-1b" class="toggle-label">Date</label>
+
+                                    <input type="radio" id="edit-desc-radio-1b" name="edit-field-1b" value="edit-desc-div" class="toggle-input-edit">
+                                    <label for="edit-desc-radio-1b" class="toggle-label">Desc.</label>
+
+                                    <input type="radio" id="edit-time-radio-1b" name="edit-field-1b" value="edit-time-div" class="toggle-input-edit">
+                                    <label for="edit-time-radio-1b" class="toggle-label">Time</label>
+
+                                    <input type="radio" id="edit-tags-radio-1b" name="edit-field-1b" value="edit-tags-div" class="toggle-input-edit">
+                                    <label for="edit-tags-radio-1b" class="toggle-label">Tags</label>
+
+                                    <input type="radio" id="edit-note-radio-1b" name="edit-field-1b" value="edit-note-div" class="toggle-input-edit">
+                                    <label for="edit-note-radio-1b" class="toggle-label">Note</label>
+                                </div>
+                                <hr>
+                                <form class="edit-form" data-id="editForm">
+                                    <fieldset>
+                                        <div class="hidden-div edit-title-div">                                            
+                                            <label for="edit-title"></label>
+                                            <input type="text" id="edit-title" placeholder="Title" name="title">
+                                        </div>
+                                        <div class="hidden-div edit-date-div">
+                                            <label for="edit-date">Date: </label>
+                                            <input type="date" id="edit-date" name="date">
+                                        </div>                                 
+                                        <div class="hidden-div edit-desc-div">
+                                            <label for="edit-desc"></label>
+                                            <input type="text" id="edit-desc" placeholder="Description" name="desc">
+                                        </div>  
+                                        <div class="hidden-div edit-time-div">
+                                            <label for="edit-time" >Time: </label>
+                                            <input type="time" id="edit-time" name="time">
+                                        </div>     
+                                        <div class="hidden-div edit-tags-div"> 
+                                            <label for="edit-tags"></label>
+                                            <input type="text" id="edit-tags" placeholder="Tags" name="tags">
+                                        </div>  
+                                        <div class="hidden-div edit-note-div"> 
+                                            <label for="edit-note"></label>
+                                            <textarea id="edit-note" placeholder="Note" name="note"></textarea>
+                                        </div>                                        
+                                    </fieldset>
+                                    <!-- <hr> -->
+                                    <div class="edit-form-buttons">
+                                        <!-- TODO -->
+                                         <!-- make submit-button, cancel-edit buttons, work! -->
+                                        <button 
+                                            type="submit" 
+                                            class="confirm-edit" 
+                                            data-class_show="task-details"
+                                            data-class_hide="task-details-edit">✓
+                                        </button>
+                                        <button 
+                                            type="button" 
+                                            class="cancel-edit"
+                                            data-class_show="task-details"
+                                            data-class_hide="task-details-edit">X
+                                        </button>                                        
+                                    </div>
+                                </form>
+                            </div>                            
                         </div>
                         <div class="expand-adjacent">
                             <label class="show-children">
@@ -348,15 +425,15 @@
     </main>
 
     <!-- task options popover box -->
-     <dialog id="tasks-options-popover" popover >
-        <button value="edit">
-            <div>Edit</div>
+     <dialog id="tasks-options-popover" data-prev-set-to="" popover >
+        <button >
+            <div class="popover-edit">Edit</div>
         </button>
-        <button value="move">
-            <div>Move to different project</div>
+        <button >
+            <div class="popover-move">Move to different project</div>
         </button>
-        <button value="delete">
-            <div>Delete</div>
+        <button>
+            <div  class="popover-delete">Delete</div>
         </button>                
         <!-- <button value="move">Move to different project</button> -->
         <!-- <button value="delete">Delete</button> -->
@@ -364,7 +441,7 @@
     
     <!-- Add new task dialogue box -->
      <dialog id="add-task-dialog">
-        <form>
+        <form data-id="newForm">
             <div class="title">
                 <label for="title">Title:</label>
                 <input type="text" id="title" name="title" required>
@@ -448,8 +525,9 @@
             </div>    
             <hr>
             <div>
-                <button formmethod="dialog" type="submit"> Add task</button>
-                <!-- <button formmethod="dialog" type="submit" command="close" formnovalidate>Cancel</button>  -->
+                <button type="submit">Add task</button>
+                <!-- prev. dialog submit btn -->
+                <!-- <button formmethod="dialog" type="submit"> Add task</button> --> 
                 <button  commandfor="add-task-dialog" command="close" type="button">Cancel</button>  
             </div>
         </form>
