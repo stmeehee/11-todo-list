@@ -9,11 +9,6 @@ let domCache = null
 let myTasks = new Map()
 let myTaskElements = new Map()
 let myTaskDomCtrlMap = new Map()
-// const hiddenDivs = {
-//     // hiddenEditFieldDivPrev: the last edit-field div that was shown; to be hidden later when a new div is shown
-//     editFieldDivPrev: null,
-//     taskDetailsDivPrev: null
-// }
 
 
 function getDomElements(getElemWithId) {
@@ -34,12 +29,57 @@ function getDomElements(getElemWithId) {
     }
     const dateInputs = document.querySelectorAll(`input[type="date"]`)
     const tasksOptionsPopover = document.querySelector(`#tasks-options-popover`)
+    const newTaskdialogBox = document.querySelector("#add-task-dialog")
+    // newSubtaskDiv: where subtask divs go when + btn is clicked in dialog"
+    const newSubtaskDivsContainer = document.querySelector(".new-subtask-divs")
+    console.log("checking new-subtask-div")
+    console.log(document.querySelector(".new-subtask-divs"))
 
-    return {root, body, allTasksElem, barCssVars, dateInputs, tasksOptionsPopover}
+    return {root, body, allTasksElem, barCssVars, dateInputs, tasksOptionsPopover, newTaskdialogBox, newSubtaskDivsContainer}
+}
+
+function unCheckSubtasks(taskId) {
+    const subtasks = myTaskElements.get(taskId).querySelectorAll('.task-parent-div > .hidden-div input[type="checkbox"]')
+    console.log(subtasks)
+    subtasks.forEach((checkboxElem) => {
+        checkboxElem.checked = false
+    })
+}
+
+function resetTask(taskId) {
+    myTaskElements.get(taskId).classList.remove("done")
+    myTasks.get(taskId).current = 0
+    unCheckSubtasks(taskId)
+        let pct = myTasks.get(taskId).currentPercent
+        let [label, color] = getBarLabelColor(pct)
+    renderProgressBar(label, color, `${pct}%`, taskId)  
+    completeBtnOnOff(taskId, false)
 }
 
 function addTask(myFormData) {
     //TODO
+}
+
+function addSubtaskDialog() {
+    console.log("newSubtaskDiv:",domCache.newSubtaskDivsContainer)
+    const newSubTaskNo =  domCache.newSubtaskDivsContainer.children.length + 1
+    const newSubtaskDivHtml = `
+        <div class="subtask-div">
+            <label class="subtask-${newSubTaskNo}">subtask ${newSubTaskNo}
+                <input type="text" name="subtaskTitle${newSubTaskNo}">
+            </label>
+            <button type="button" class="remove-subtask">X</button>
+        </div>
+        `
+    domCache.newSubtaskDivsContainer.insertAdjacentHTML(
+        "beforeend",
+        newSubtaskDivHtml
+    )
+}
+
+function removeSubtaskDiv(SubTaskDiv) {
+    console.log(SubTaskDiv)
+    SubTaskDiv.remove()
 }
 
 function focusInputTextarea(focusInthisElem) {
@@ -52,7 +92,6 @@ function focusInputTextarea(focusInthisElem) {
         textareaElem.focus()
     }
 }
-
 
 function setMinDate() {
     const presentDate = new Date()
@@ -80,20 +119,28 @@ function toggleElemVisibility(elemToShow, elemToHide) {
     // keep track of last shown div
 }
 
-function disAllowTaskDiv(taskId) {
+function disAllowDiv(taskId) {
     // console.log(` > disAllowTaskDiv()`)
     const taskElem = myTaskElements.get(taskId)
     const parentDiv = taskElem.querySelector(".task-parent-div")
     parentDiv.classList.add("disAllow")
+    // toggle allow
     // console.log(myTaskElements.get(taskId))
+}
+
+function allowDiv(taskId) {
+    const taskElem = myTaskElements.get(taskId)
+    const parentDiv = taskElem.querySelector(".task-parent-div")
+    parentDiv.classList.remove("disAllow")
 }
 
 function completeTask(taskId) {
     console.log(` > completeTask()`)
+    myTaskElements.get(taskId).classList.add("done")
     myTaskElements.get(taskId).isFinished = true
 }
 
-function changeCompleteBtnPermit(taskId, allow) {
+function completeBtnOnOff(taskId, allow) {
     console.log(` > changeCompleteBtn()`)
     const taskElem = myTaskElements.get(taskId) 
     const confirmBtn = taskElem.querySelector("#primary-task > button")
@@ -122,16 +169,38 @@ function getProgressBar(taskId) {
 }
 
 function anchorTasksOptions(tasksOptionsBtnEl) {
+    // console.log(tasksOptionsBtnEl)
     if (tasksOptionsPrev) {
         tasksOptionsPrev.id = ""
     }
     tasksOptionsBtnEl.id = "active-anchor"
+
     tasksOptionsPrev  = tasksOptionsBtnEl
     // make tasks-options-popover dialog remember which task it was opened for, 
     // so taskOptionsBtnEl btns know which task its btns corrodpond to
     const taskId = getTaskIdFromElement(tasksOptionsBtnEl)
-    console.log(domCache.tasksOptionsPopover)
+    // console.log(domCache.tasksOptionsPopover)
     domCache.tasksOptionsPopover.dataset.prevSetTo = taskId
+    // check if the taskId main-div has disAllow
+    const resetBtnDiv = domCache.tasksOptionsPopover.querySelector('.popover-reset')
+    const editBtnDiv = domCache.tasksOptionsPopover.querySelector('.popover-edit')
+    // console.log(resetBtnDiv)
+    const completedTask = myTaskElements.get(taskId).classList.contains("done")
+    if (completedTask) {
+        // console.log("SHOWING RESET BTN")
+        if (resetBtnDiv.classList.contains("hidden")) {
+            // show the reset btn and hide edit btn
+            resetBtnDiv.classList.remove("hidden")
+        }
+        editBtnDiv.classList.add("hidden")
+    }
+    // hide reset and show edit
+    else {
+        if (editBtnDiv.classList.contains("hidden")) {
+            editBtnDiv.classList.remove("hidden")
+        }
+        resetBtnDiv.classList.add("hidden")   
+    }
     // console.log(`after adding active-anchor id:`)
     //     console.log(tasksOptionsBtnEl)
 }
@@ -187,7 +256,7 @@ function setTheme() {
 }
 
 function delegate(event) {
-    // console.log(`event --> delegate(): elem clicked =`)
+    // console.log({"event --> delegate(): elem clicked =":event.target})
     // console.log(event.target)
     let taskId = null
     if (event.target.closest(".theme-toggle")) {
@@ -204,8 +273,7 @@ function delegate(event) {
         let [label, color] = getBarLabelColor(pct)
         renderProgressBar(label, color, `${pct}%`, taskId)
         console.log(myTasks.get(taskId).isFinished)
-        changeCompleteBtnPermit(taskId, myTasks.get(taskId).isFinished)
-
+        completeBtnOnOff(taskId, myTasks.get(taskId).isFinished)
     }
     if (event.target.closest(".tasks-options")) {
         // console.log(event.target.closest(".tasks-options"))
@@ -214,16 +282,16 @@ function delegate(event) {
     }
     if (event.target.closest(".finalize")) {
         const confirmBtn = event.target
-        console.log(confirmBtn)
+        // console.log(confirmBtn)
         taskId = getTaskIdFromElement(confirmBtn)
         completeTask(taskId)
-        // TODO: make the progress bar turn green!
-        // renderProgressBar()
-        disAllowTaskDiv(taskId)
+        disAllowDiv(taskId)
+        collapseSubTasks(taskId)
         let color = domCache.barCssVars.barColorGreenName
         let pct = myTasks.get(taskId).currentPercent
         let label = "Complete!"
         renderProgressBar(label, color, `${pct}%`, taskId)
+        closeEditor(confirmBtn)
     }
     if (event.target.closest(".edit-field-selectors") && event.target.type == "radio") {
         // show edit divs 
@@ -246,19 +314,8 @@ function delegate(event) {
     }
     if (event.target.closest(".cancel-edit")) {
         // closetask-details-edit div and show task-details div
-        // console.log(myTaskDomCtrlMap.get('1a').taskDetailsDivInView)
         const closeBtnElem = event.target
         closeEditor(closeBtnElem)
-        // console.log(closeBtnElem)
-        // const divClassToShow = `.${closeBtnElem.dataset.class_show}`
-        // const divClassToHide = `.${closeBtnElem.dataset.class_hide}`
-        // const taskId = getTaskIdFromElement(closeBtnElem)
-        // console.log(`divClassToShow: ${divClassToShow}, divClassToHide: ${divClassToHide}`)
-        // const divToShow = getElemFromTaskElemAndChildClassId(closeBtnElem, divClassToShow)
-        // const divToHide = myTaskDomCtrlMap.get(taskId).taskDetailsDivInView
-        // console.log({divToShow})
-        // toggleElemVisibility(divToShow, divToHide)
-        // myTaskDomCtrlMap.get(taskId).taskDetailsDivInView = divToShow
     }
     if (event.target.closest("#tasks-options-popover")) {
         const taskId = event.target.closest("#tasks-options-popover").dataset.prevSetTo
@@ -273,30 +330,63 @@ function delegate(event) {
             // console.log(myTaskDomCtrlMap.get(taskId).taskDetailsDivInView)
         }
     }
+    if (event.target.closest(".add-subtask-option")) {
+        // add subtask div
+        // console.log(event.target)
+        // check if add/remove subtask was clicked
+        const addTaskDialogBtn = event.target.closest(`button[class="new-subtask"]`)
+        const rmTaskDialogBtn = event.target.closest(`button[class="remove-subtask"]`)
+        if (addTaskDialogBtn) {
+            console.log(addTaskDialogBtn)
+            // const addInThisDiv = 
+            addSubtaskDialog()
+        }
+        if (rmTaskDialogBtn) {
+            console.log(rmTaskDialogBtn)
+            const divToRm = rmTaskDialogBtn.closest(".subtask-div")
+            removeSubtaskDiv(divToRm)
+        }        
+        
+        // console.log(rmTaskDialogBtn)
+    }
+    if (event.target.closest(".popover-reset")) {
+        const btn = event.target
+        const taskId = btn.closest("#tasks-options-popover").dataset.prevSetTo
+        // console.log(taskId)
+        resetTask(taskId)
+        allowDiv(taskId)
+    }
+}
+
+function collapseSubTasks(taskId) {
+    const arrowBtn = myTaskElements.get(taskId).querySelector('.expand[type="checkbox"]')
+    // console.log(arrowBtn.checked)
+    arrowBtn.checked = false
 }
 
 function closeEditor(btnElem) {
-    const divClassToShow = `.${btnElem.dataset.class_show}`
-    const divClassToHide = `.${btnElem.dataset.class_hide}`
+    // useful if the btnElem has the info for which to open 
+    // otherwise use toggleElemVisibility() instead
+    const divToShowClass = `.${btnElem.dataset.class_show}`
     const taskId = getTaskIdFromElement(btnElem)
     // console.log(`divClassToShow: ${divClassToShow}, divClassToHide: ${divClassToHide}`)
-    const divToShow = getElemFromTaskElemAndChildClassId(btnElem, divClassToShow)
+    const divToShow = getElemFromTaskElemAndChildClassId(btnElem, divToShowClass)
     const divToHide = myTaskDomCtrlMap.get(taskId).taskDetailsDivInView
     // console.log({divToShow})
     toggleElemVisibility(divToShow, divToHide)
     myTaskDomCtrlMap.get(taskId).taskDetailsDivInView = divToShow    
 }
 
-// return the descendant element from the childElem and child class/id
-// childElem -> mainTaskDiv -> childClassId (aka destination id)
+// return the element from the childElem and child class/id
+// childElem -> mainTaskDiv -> childClassId (aka destination id) -> return elem with that id/class
 function getElemFromTaskElemAndChildClassId(childElem, childClassId) {
-    const taskElem = getTaskElemFromChildElem(childElem)
+    const taskElem = getFullTaskDivElemFromChildElem(childElem)
     const resElem = taskElem.querySelector(childClassId)
     return resElem
 }
 
 // find and return maintask element from child element 
-function getTaskElemFromChildElem(childElem) {
+function getFullTaskDivElemFromChildElem(childElem) {
     const taskId = getTaskIdFromElement(childElem)
     const taskEl = myTaskElements.get(taskId)
     return taskEl 
@@ -321,16 +411,6 @@ function init() {
     setTasksAndTaskElements()
     setMinDate()
 
-    // myTaskDomCtrlMap.get("1a").editFieldDivPrev =  document.querySelector("#1a #edit-title-radio")
-    // console.log(myTaskDomCtrlMap.get("1a").editFieldDivPrev)
-        // console.log(`formatted date: ${setMinDate()}`)
-        // console.log()
-    // console.log({myTasks})
-    // console.log({myTaskElements})
-    // console.log("date: ")
-    // console.log(new Date().toLocaleDateString())
-    // console.log(new Date().toLocaleTimeString())
-
     domCache.body.addEventListener("click", (event) => {
         delegate(event)
     })
@@ -346,6 +426,7 @@ function init() {
             console.log("newForm")
             console.log(Object.fromEntries(myData))
             addTask(myData)
+            domCache.newTaskdialogBox.close()
         }
         if (event.target.dataset.id === "editForm") {
             console.log("editForm")
@@ -365,6 +446,7 @@ function init() {
 }
 
 function main() {
+
     document.documentElement.className = "dark"
     init()
 }

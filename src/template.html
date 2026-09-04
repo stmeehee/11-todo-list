@@ -155,7 +155,7 @@
                     <div class="task-parent-div">
                         <!-- the main task div with task complete-btn, title,desc., priority and due date listed -->
                         <div id="primary-task">
-                            <button class="disable">complete</button>
+                            <button class="disable" data-class_show="task-details">complete</button>
                             <div class="task-details ">
                                 <p>Title: do this</p>
                                 <p>Description: do this and that</p>
@@ -228,8 +228,6 @@
                                     </fieldset>
                                     <!-- <hr> -->
                                     <div class="edit-form-buttons">
-                                        <!-- TODO -->
-                                         <!-- make submit-button, cancel-edit buttons, work! -->
                                         <button 
                                             type="submit" 
                                             class="confirm-edit" 
@@ -250,11 +248,15 @@
                             <label class="show-children">
                                 <input type="checkbox" class="expand">
                                 <span class="arrow">></span>
-                            </label>    
+                            </label>
+                            <div class="subtask-status">
+                                <p>Subtasks: 4/4</p>
+                            </div>
                         </div>
-                        <div class="hidden-div">
+                        <div class="hidden-div shift-left">
                         <!-- can remain empty if no subtasks here -->
-                             <div class="subtask-1-div">
+                            <hr>
+                            <div class="subtask-1-div">
                                 <input type="checkbox" id="subtask-checkbox-2-1">
                                 <label for="subtask-checkbox-2-1">title: Do task 1</label>
                             </div>
@@ -295,7 +297,7 @@
                     <div class="task-parent-div">
                         <!-- the main task div with task complete-btn, title,desc., priority and due date listed -->
                         <div id="primary-task">
-                            <button class="disable">complete</button>
+                            <button class="disable" data-class_show="task-details">complete</button>
                             <div class="task-details">
                                 <p>Title: do this</p>
                                 <p>Description: do this and that</p>
@@ -366,8 +368,6 @@
                                     </fieldset>
                                     <!-- <hr> -->
                                     <div class="edit-form-buttons">
-                                        <!-- TODO -->
-                                         <!-- make submit-button, cancel-edit buttons, work! -->
                                         <button 
                                             type="submit" 
                                             class="confirm-edit" 
@@ -388,14 +388,18 @@
                             <label class="show-children">
                                 <input type="checkbox" class="expand">
                                 <span class="arrow">></span>
-                            </label>    
+                            </label>   
+                            <div class="subtask-status">
+                                <p>Subtasks: 4/4</p>
+                            </div>
                         </div>
-                        <div class="hidden-div">
+                        <div class="hidden-div shift-left">
                         <!-- can remain empty if no subtasks here -->
                             <!-- <p>e.g: child 1</p> -->
                             <!-- <p>e.g: child 2</p> -->
                             <!-- <p>e.g: child 3</p> -->
-                             <div class="subtask-1-div">
+                            <hr>
+                            <div class="subtask-1-div">
                                 <input type="checkbox" id="subtask-checkbox-1">
                                 <label for="subtask-checkbox-1">title: Do task 1</label>
                             </div>
@@ -429,9 +433,12 @@
         <button >
             <div class="popover-edit">Edit</div>
         </button>
-        <button >
+        <button>
             <div class="popover-move">Move to different project</div>
         </button>
+        <button>
+            <div class="popover-reset hidden" data-class_show="task-details">Reset</div>
+        </button>        
         <button>
             <div  class="popover-delete">Delete</div>
         </button>                
@@ -442,6 +449,7 @@
     <!-- Add new task dialogue box -->
      <dialog id="add-task-dialog">
         <form data-id="newForm">
+            <p>New task details</p>
             <div class="title">
                 <label for="title">Title:</label>
                 <input type="text" id="title" name="title" required>
@@ -455,8 +463,6 @@
                 <input type="date" id="date" name="date" required>                
             </div>
             <div class="time">
-                <!-- TODO -->
-                <!-- either current time, or choose -->
                  <fieldset>
                     <div>
                         <label for="now">this time</label>
@@ -505,20 +511,30 @@
                 </select>
             </div>                                               
             <hr>
-            <div class="new-subtask">
+            <div class="add-subtask-option">
 
                 <div class="expand-adjacent">
                     <label class="show-children add-subtask-btn">
-                        <input type="checkbox" class="expand">
+                        <input type="checkbox" class="expand add-subtask" >
                         <span>Add subtask</span>
                     </label>    
                 </div>
-                <!-- NOte: add new input label/input elements for each click to expand-adjacent -->
                 <div class="hidden-div">
-                    <div class="new-subtask">
-                        <label>subtask 1
-                            <input type="text" name="subtaskTitle1">
-                        </label>
+                    <button type="button" class="new-subtask">+</button>
+                    <div class="new-subtask-divs">
+                        <!-- TODO: add subtasks via js -->
+                        <div class="subtask-div">
+                            <label class="subtask-1">subtask 1
+                                <input type="text" name="subtaskTitle1">
+                            </label>
+                            <button type="button" class="remove-subtask">X</button>
+                        </div>   
+                        <div class="subtask-div">
+                            <label class="subtask-1">subtask 1
+                                <input type="text" name="subtaskTitle1">
+                            </label>
+                            <button type="button" class="remove-subtask">X</button>
+                        </div>                                               
                     </div>
                 </div> 
 

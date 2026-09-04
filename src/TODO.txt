@@ -7,8 +7,15 @@ FRONT END:
     Working in progress:
     
     1. Add dialog box when clicking on "Add new task"                           (Mostly done)
+        1. add missing btn to add more tasks from dialog box                    (Done)
     2. Add edit capability to the main task div                                 (Mostly done)
+        1. add option to enable task div & change prog bar state to "Limbo"     (Done; reset the whole task instead)
+            after finalizing task            
+        2. hide the Edit btn in popover once task is finalized                  (Dpne)                                       
     3. make submit-button, cancel-edit buttons, work!                           (done)
+    -. Add a tag system that can also add priority                              (Out of scope!)
+    4. Add option to add new Project in sidebar and in "add new task"           ()
+    5. Begin work on task/Project data modei                                    ()  
 
     FEATURES TO ADD:
 
@@ -19,11 +26,11 @@ FRONT END:
         2. Add dialogue box when clicking  "... > move to different project"    ()
         3. Add delete functionality                                             ()
 
-    3. Add sort fnctionality to visible tasks in "all-tasks-div"
+    3. Add sort fnctionality to visible tasks in "all-tasks-div"        
 
     4. Enable search field to only show searched tasks in "all-taasks-div "
 
     5. Add new projects creation dialog when clicking on "Add a project"
 
-    6. filter tasks from tall-tasks when user clicks btns in "sidebar-main-div "
+    6. filter tasks from all-tasks when user clicks btns in "sidebar-main-div "
 

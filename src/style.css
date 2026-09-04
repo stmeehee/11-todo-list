@@ -88,6 +88,10 @@ button {
   align-items: center;
 }
 
+.hidden {
+  display: none;
+}
+
 header button {
   width: 100px;
   height: 35px;
@@ -550,8 +554,6 @@ input[type="time"]::-webkit-calendar-picker-indicator {
   height: 30px;
 }
 
-
-
           /* Tags (6) */
 
 .tags {
@@ -596,7 +598,12 @@ div[class$="-priority"] {
               /* expand-subtask-checkbox (4) */
 .expand-adjacent {
   display: flex;
-  justify-content: flex-start;
+  gap: 1em;
+}
+
+.status-checkbox {
+  display: flex;
+  align-items: center;
 }
 
 /* hidden checkbox */
@@ -620,8 +627,13 @@ div[class$="-priority"] {
   transform: rotate(90deg);
 }
 
-.expand-adjacent:has(.expand:checked) + .hidden-div {
+.expand-adjacent:has(.expand:checked) ~ .hidden-div {
   display: flex;
+}
+
+.subtask-status {
+  display: flex;
+  align-items: center;
 }
 
               /* task-children-div (4) */
@@ -630,7 +642,6 @@ div[class$="-priority"] {
   /* margin: 0.5em; */
     /* border: 2px solid brown; */
     /*  */
-    margin-left: 50px;
     display: none;
     flex-direction: column;
     gap: 0.5em;
@@ -639,6 +650,10 @@ div[class$="-priority"] {
 .hidden-div > div:not(:first-child):not(:last-child) {
       /* border: 2px solid var(--border-color); */
     border-radius: 6px;
+}
+
+.shift-left {
+  margin-left: 40px;
 }
 
                                   /* tasks-options-dialog */
@@ -697,6 +712,10 @@ div[class$="-priority"] {
   
 }
 
+#add-task-dialog > form > p {
+  text-align: center;
+}
+
 #add-task-dialog > form {
   padding: 1em;
   display: flex;
@@ -720,12 +739,57 @@ input, textarea, select {
     width: 300px;
 }
 
+.add-subtask-option {
+    display: flex;
+    gap: 0.5em;
+}
+
+.hidden-div > button[class="new-subtask"] {
+  width: 30px;
+  height: 30px;
+  background-color: var(--button-color-add-task);
+  border: none;
+    user-select: none; /* Standard syntax */
+}
+
 .add-subtask-btn, .add-note-btn {
   background-color: var(--button-color-add-task);
 }
 
 .add-note-btn {
   width: 110px;
+}
+
+.new-subtask-divs {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5em;
+}
+
+.new-subtask-divs > div {
+  display: flex;
+  align-items: center;
+  gap: 0.5em;
+  /* flex-direction: column; */
+}
+
+.new-subtask-divs > div > label {
+  display: flex;
+  flex: 1;
+}
+
+.subtask-div > label > input {
+  /* height: 30px; */
+  flex: 1;
+  min-width: 0;
+}
+
+.new-subtask-divs > div > button {
+  width: 15px;
+  height: 15px;
+  background-color: var(--bg-color-cancel-edit);
+  user-select: none; 
+  border-radius: 50%;
 }
 
 #add-task-dialog > form > div:last-child {
