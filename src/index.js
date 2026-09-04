@@ -180,7 +180,7 @@ function anchorTasksOptions(tasksOptionsBtnEl) {
     // so taskOptionsBtnEl btns know which task its btns corrodpond to
     const taskId = getTaskIdFromElement(tasksOptionsBtnEl)
     // console.log(domCache.tasksOptionsPopover)
-    domCache.tasksOptionsPopover.dataset.prevSetTo = taskId
+    domCache.tasksOptionsPopover.dataset.anchoredToTaskId = taskId
     // check if the taskId main-div has disAllow
     const resetBtnDiv = domCache.tasksOptionsPopover.querySelector('.popover-reset')
     const editBtnDiv = domCache.tasksOptionsPopover.querySelector('.popover-edit')
@@ -318,16 +318,17 @@ function delegate(event) {
         closeEditor(closeBtnElem)
     }
     if (event.target.closest("#tasks-options-popover")) {
-        const taskId = event.target.closest("#tasks-options-popover").dataset.prevSetTo
+        const taskId = event.target.closest("#tasks-options-popover").dataset.anchoredToTaskId
         const btnClicked = event.target
         const editBtn = btnClicked.classList.contains("popover-edit") 
         if (editBtn) {
-            const divToShow = myTaskElements.get(taskId).querySelector(".task-details-edit")
-            const divToHide = myTaskElements.get(taskId).querySelector(".task-details")
+            // const divToShow = myTaskElements.get(taskId).querySelector(".task-details-edit")
+            // const divToHide = myTaskElements.get(taskId).querySelector(".task-details")
             // console.log({divToShow}, {divToHide})
-            toggleElemVisibility(divToShow, divToHide)
-            myTaskDomCtrlMap.get(taskId).taskDetailsDivInView = divToShow
+            // toggleElemVisibility(divToShow, divToHide)
+            // myTaskDomCtrlMap.get(taskId).taskDetailsDivInView = divToShow
             // console.log(myTaskDomCtrlMap.get(taskId).taskDetailsDivInView)
+            openEditor()
         }
     }
     if (event.target.closest(".add-subtask-option")) {
@@ -351,7 +352,7 @@ function delegate(event) {
     }
     if (event.target.closest(".popover-reset")) {
         const btn = event.target
-        const taskId = btn.closest("#tasks-options-popover").dataset.prevSetTo
+        const taskId = btn.closest("#tasks-options-popover").dataset.anchoredToTaskId
         // console.log(taskId)
         resetTask(taskId)
         allowDiv(taskId)
@@ -362,6 +363,15 @@ function collapseSubTasks(taskId) {
     const arrowBtn = myTaskElements.get(taskId).querySelector('.expand[type="checkbox"]')
     // console.log(arrowBtn.checked)
     arrowBtn.checked = false
+}
+
+function openEditor() {
+    // open the editor by checking which full-task-div popover misc menu is at 
+    const taskId = domCache.tasksOptionsPopover.dataset.anchoredToTaskId
+    const divToShow = myTaskElements.get(taskId).querySelector(".task-details-edit")
+    const divToHide = myTaskElements.get(taskId).querySelector(".task-details")
+    toggleElemVisibility(divToShow, divToHide)
+    myTaskDomCtrlMap.get(taskId).taskDetailsDivInView = divToShow
 }
 
 function closeEditor(btnElem) {
@@ -392,7 +402,6 @@ function getFullTaskDivElemFromChildElem(childElem) {
     return taskEl 
 }
 
-
 function setTasksAndTaskElements() {
     console.log(` > getTasks()`)
     for (const taskEl of domCache.allTasksElem) {
@@ -403,7 +412,6 @@ function setTasksAndTaskElements() {
     }
     // console.log(myTasks.get("1a"))
 }
-
 
 function init() {
     console.log(` > init()`)

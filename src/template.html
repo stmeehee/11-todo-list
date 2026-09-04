@@ -429,19 +429,28 @@
     </main>
 
     <!-- task options popover box -->
-     <dialog id="tasks-options-popover" data-prev-set-to="" popover >
-        <button >
-            <div class="popover-edit">Edit</div>
+     <dialog id="tasks-options-popover" data-anchored-to-task-id="" popover >
+        <button
+            type="button"
+            commandfor="tasks-options-popover"
+            command="hide-popover">
+            <div class="popover-edit" data-class_show="task-details-edit">Edit</div>
         </button>
         <button>
             <div class="popover-move">Move to different project</div>
         </button>
-        <button>
+        <button
+            type="button"
+            commandfor="tasks-options-popover"
+            command="hide-popover">
             <div class="popover-reset hidden" data-class_show="task-details">Reset</div>
         </button>        
-        <button>
-            <div  class="popover-delete">Delete</div>
-        </button>                
+        <button
+            type="button"
+            commandfor="tasks-options-popover"
+            command="hide-popover">
+            <div class="popover-delete">Delete</div>
+        </button>               
         <!-- <button value="move">Move to different project</button> -->
         <!-- <button value="delete">Delete</button> -->
     </dialog>
