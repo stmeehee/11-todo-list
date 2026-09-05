@@ -32,10 +32,12 @@ function getDomElements(getElemWithId) {
     const newTaskdialogBox = document.querySelector("#add-task-dialog")
     // newSubtaskDiv: where subtask divs go when + btn is clicked in dialog"
     const newSubtaskDivsContainer = document.querySelector(".new-subtask-divs")
-    console.log("checking new-subtask-div")
-    console.log(document.querySelector(".new-subtask-divs"))
+    const userProjectsContainer = document.querySelector(".user-projects")
 
-    return {root, body, allTasksElem, barCssVars, dateInputs, tasksOptionsPopover, newTaskdialogBox, newSubtaskDivsContainer}
+    return {
+        root, body, allTasksElem, barCssVars, dateInputs, tasksOptionsPopover, newTaskdialogBox, 
+        newSubtaskDivsContainer, userProjectsContainer
+    }
 }
 
 function unCheckSubtasks(taskId) {
@@ -52,7 +54,7 @@ function resetTask(taskId) {
     unCheckSubtasks(taskId)
         let pct = myTasks.get(taskId).currentPercent
         let [label, color] = getBarLabelColor(pct)
-    renderProgressBar(label, color, `${pct}%`, taskId)  
+    renderProgressBar(label, color, `${pct}%`, taskId)
     completeBtnOnOff(taskId, false)
 }
 
@@ -61,7 +63,7 @@ function addTask(myFormData) {
 }
 
 function addSubtaskDialog() {
-    console.log("newSubtaskDiv:",domCache.newSubtaskDivsContainer)
+    // console.log("newSubtaskDiv:",domCache.newSubtaskDivsContainer)
     const newSubTaskNo =  domCache.newSubtaskDivsContainer.children.length + 1
     const newSubtaskDivHtml = `
         <div class="subtask-div">
@@ -78,7 +80,7 @@ function addSubtaskDialog() {
 }
 
 function removeSubtaskDiv(SubTaskDiv) {
-    console.log(SubTaskDiv)
+    // console.log(SubTaskDiv)
     SubTaskDiv.remove()
 }
 
@@ -296,15 +298,12 @@ function delegate(event) {
     if (event.target.closest(".edit-field-selectors") && event.target.type == "radio") {
         // show edit divs 
         // console.log(event.target.type )
-        console.log(event.target.value)
+        // console.log(event.target.value)
         const elem = event.target
         const elemClass = `.${event.target.value}`
         const taskId = getTaskIdFromElement(elem)
         const divToShow = getElemFromTaskElemAndChildClassId(elem, elemClass)
         const divToHide = myTaskDomCtrlMap.get(taskId).editFieldDivInView
-        // const 
-        // get the main-task-div from child elem
-        // TODO: each task must have its own taskDomTracker instance
         // console.log(hiddenEditFieldDiv)
         toggleElemVisibility(divToShow, divToHide)
 
@@ -321,6 +320,7 @@ function delegate(event) {
         const taskId = event.target.closest("#tasks-options-popover").dataset.anchoredToTaskId
         const btnClicked = event.target
         const editBtn = btnClicked.classList.contains("popover-edit") 
+        const resetBtn = btnClicked.classList.contains("popover-reset")
         if (editBtn) {
             // const divToShow = myTaskElements.get(taskId).querySelector(".task-details-edit")
             // const divToHide = myTaskElements.get(taskId).querySelector(".task-details")
@@ -330,13 +330,16 @@ function delegate(event) {
             // console.log(myTaskDomCtrlMap.get(taskId).taskDetailsDivInView)
             openEditor()
         }
+        if (resetBtn) {
+            resetTask(taskId)
+            allowDiv(taskId)
+        }
     }
     if (event.target.closest(".add-subtask-option")) {
         // add subtask div
-        // console.log(event.target)
-        // check if add/remove subtask was clicked
-        const addTaskDialogBtn = event.target.closest(`button[class="new-subtask"]`)
-        const rmTaskDialogBtn = event.target.closest(`button[class="remove-subtask"]`)
+        console.log(event.target)
+        const addTaskDialogBtn = event.target.closest(`button.new-subtask`)
+        const rmTaskDialogBtn = event.target.closest(`button.remove-subtask`)
         if (addTaskDialogBtn) {
             console.log(addTaskDialogBtn)
             // const addInThisDiv = 
@@ -350,13 +353,21 @@ function delegate(event) {
         
         // console.log(rmTaskDialogBtn)
     }
-    if (event.target.closest(".popover-reset")) {
-        const btn = event.target
-        const taskId = btn.closest("#tasks-options-popover").dataset.anchoredToTaskId
-        // console.log(taskId)
-        resetTask(taskId)
-        allowDiv(taskId)
+    if (event.target.closest(".add-project")) {
+        // add project
+        console.log(event.target)
+        addProjectDiv()
     }
+}
+
+function addProjectDiv() {
+    const projectDiv = domCache.userProjectsContainer
+    // 1. user clicks add project btn
+    // 2. unhide a text field inside projectDiv and take input
+    // 3. if field empty and add is clicked, reject making user project 
+    //      3.1. field empty + add clicked: hide the add btn  
+    // 4. else if field not empty, add a btn with a div that has newProject
+    // 5. 
 }
 
 function collapseSubTasks(taskId) {
@@ -424,12 +435,8 @@ function init() {
     })
 
         domCache.body.addEventListener("submit", (event) => {
-        // if (event.submitter && event.submitter.getAttribute('command') === 'close') {
-        //     return // HOW DOES THIS WORK ?? 
-        // }
         event.preventDefault()
         const myData = new FormData(event.target)
-        // check whether form was for "add new task" or "confirm edit"
         if (event.target.dataset.id === "newForm") {
             console.log("newForm")
             console.log(Object.fromEntries(myData))

@@ -53,33 +53,31 @@
             </button>                                 
         </div>      
         <div class="sidebar-projects-div">
-            <button value="addProject">
-                <div>
+            <!-- <div class="expand-adjacent">
+                <button class="add-project expand">
                     <span>Add a project</span>
-                </div>            
-            </button>   
-            <div class="user-projects">
+                </button>
+            </div> -->
+            <div class="expand-adjacent">
+                <label class="add-project">Add a Project
+                    <input type="checkbox" class="expand">
+                </label>
+            </div>
+            <div class="add-project-name hidden-div"> 
+                <div>
+                    <label for="add-project-name">name</label>
+                    <input type="text" id="add-project-name" name="userProjectName">
+                    <button class="small-btn">add</button>
+                </div>
+            </div>
+            <hr>      
+            <div class="user-projects shift-left">
                 <!--  btn's here added by JS -->
-            <button value="project1">
-                <div>
-                    <span>Project 1</span>
-                </div>            
-            </button>    
-            <button value="project2">
-                <div>
-                    <span>Project 2</span>
-                </div>            
-            </button> 
-            <button value="project3">
-                <div>
-                    <span>Project 3</span>
-                </div>            
-            </button>       
-            <button value="project4">
-                <div>
-                    <span>Project 4</span>
-                </div>            
-            </button>                                              
+                <button value="project1">
+                    <div>
+                        <span>Project 1</span>
+                    </div>            
+                </button>                                                
             </div>
         </div>          
     </div>
@@ -529,7 +527,7 @@
                     </label>    
                 </div>
                 <div class="hidden-div">
-                    <button type="button" class="new-subtask">+</button>
+                    <button type="button" class="new-subtask small-btn">+</button>
                     <div class="new-subtask-divs">
                         <!-- TODO: add subtasks via js -->
                         <div class="subtask-div">
