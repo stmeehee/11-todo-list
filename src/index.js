@@ -33,11 +33,47 @@ function getDomElements(getElemWithId) {
     // newSubtaskDiv: where subtask divs go when + btn is clicked in dialog"
     const newSubtaskDivsContainer = document.querySelector(".new-subtask-divs")
     const userProjectsContainer = document.querySelector(".user-projects")
+    // addNewProjectCheckBox: uncheck add project to collapse project name field
+    const addNewProjectCheckBox = document.querySelector('.add-project > input[type="checkbox"]')
 
     return {
         root, body, allTasksElem, barCssVars, dateInputs, tasksOptionsPopover, newTaskdialogBox, 
-        newSubtaskDivsContainer, userProjectsContainer
+        newSubtaskDivsContainer, userProjectsContainer, addNewProjectCheckBox
     }
+}
+
+//TODO
+function addTask(myFormData) {
+    //TODO
+}
+
+function addProjectToSideBar(formElem) {
+    // 1. user clicks add project btn
+    // 2. unhide a text field inside projectDiv and take input
+    // 3. if field empty and add is clicked, reject making user project 
+    //      3.1. field empty + add clicked: hide the add btn  
+    // 4. else if field not empty, add a btn with a div that has newProject
+    // 5. 
+
+    // domCache.userProjectsContainer
+
+    const projectName = formElem.get("newProject")
+    const projNum = domCache.userProjectsContainer.children.length + 1
+    const userProjectDiv= `<div class="user-project">
+                                <button value="${projectName}">
+                                    <div>
+                                        <span>${projNum} - </span>
+                                        <span>${projectName}</span>
+                                    </div>            
+                                </button>
+                                <button type="button" class="remove-project small-delete-btn">X</button>
+                            </div>
+                            `
+    domCache.userProjectsContainer.insertAdjacentHTML(
+        "beforeend",
+        userProjectDiv
+    )
+    
 }
 
 function unCheckSubtasks(taskId) {
@@ -58,10 +94,6 @@ function resetTask(taskId) {
     completeBtnOnOff(taskId, false)
 }
 
-function addTask(myFormData) {
-    //TODO
-}
-
 function addSubtaskDialog() {
     // console.log("newSubtaskDiv:",domCache.newSubtaskDivsContainer)
     const newSubTaskNo =  domCache.newSubtaskDivsContainer.children.length + 1
@@ -79,7 +111,7 @@ function addSubtaskDialog() {
     )
 }
 
-function removeSubtaskDiv(SubTaskDiv) {
+function removeDiv(SubTaskDiv) {
     // console.log(SubTaskDiv)
     SubTaskDiv.remove()
 }
@@ -288,7 +320,8 @@ function delegate(event) {
         taskId = getTaskIdFromElement(confirmBtn)
         completeTask(taskId)
         disAllowDiv(taskId)
-        collapseSubTasks(taskId)
+        const arrowBtn = myTaskElements.get(taskId).querySelector('input.expand[type="checkbox"]')
+        collapseHiddenDiv(arrowBtn)
         let color = domCache.barCssVars.barColorGreenName
         let pct = myTasks.get(taskId).currentPercent
         let label = "Complete!"
@@ -347,33 +380,21 @@ function delegate(event) {
         }
         if (rmTaskDialogBtn) {
             console.log(rmTaskDialogBtn)
-            const divToRm = rmTaskDialogBtn.closest(".subtask-div")
-            removeSubtaskDiv(divToRm)
+            const subtaskDiv = rmTaskDialogBtn.closest(".subtask-div")
+            removeDiv(subtaskDiv)
         }        
         
         // console.log(rmTaskDialogBtn)
     }
-    if (event.target.closest(".add-project")) {
-        // add project
-        console.log(event.target)
-        addProjectDiv()
+    if (event.target.closest(".remove-project")) {
+        const userProjectDiv = event.target.closest(".user-project")
+        removeDiv(userProjectDiv)
+        // removeProject()
     }
 }
 
-function addProjectDiv() {
-    const projectDiv = domCache.userProjectsContainer
-    // 1. user clicks add project btn
-    // 2. unhide a text field inside projectDiv and take input
-    // 3. if field empty and add is clicked, reject making user project 
-    //      3.1. field empty + add clicked: hide the add btn  
-    // 4. else if field not empty, add a btn with a div that has newProject
-    // 5. 
-}
-
-function collapseSubTasks(taskId) {
-    const arrowBtn = myTaskElements.get(taskId).querySelector('.expand[type="checkbox"]')
-    // console.log(arrowBtn.checked)
-    arrowBtn.checked = false
+function collapseHiddenDiv(Elem) {
+    Elem.checked = false
 }
 
 function openEditor() {
@@ -437,19 +458,26 @@ function init() {
         domCache.body.addEventListener("submit", (event) => {
         event.preventDefault()
         const myData = new FormData(event.target)
-        if (event.target.dataset.id === "newForm") {
+            // console.log(Object.fromEntries(myData))
+        if (event.target.dataset.formName === "newForm") {
             console.log("newForm")
             console.log(Object.fromEntries(myData))
             addTask(myData)
             domCache.newTaskdialogBox.close()
         }
-        if (event.target.dataset.id === "editForm") {
+        if (event.target.dataset.formName === "editForm") {
             console.log("editForm")
             console.log(Object.fromEntries(myData))
             // editTask()
             const submitBtn = event.submitter
             console.log(submitBtn)
             closeEditor(submitBtn)
+        }
+        if (event.target.dataset.formName === ("newProject")) {
+            console.log("newProject")
+            console.log(Object.fromEntries(myData)) 
+            collapseHiddenDiv(domCache.addNewProjectCheckBox)
+            addProjectToSideBar(myData)
         }
         // {title: 'aa', desc: 'aa', date: '2026-09-01', priority: 'high', note: 'aaa', …}
         // console.log(Object.fromEntries(myData))

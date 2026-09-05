@@ -53,31 +53,30 @@
             </button>                                 
         </div>      
         <div class="sidebar-projects-div">
-            <!-- <div class="expand-adjacent">
-                <button class="add-project expand">
-                    <span>Add a project</span>
-                </button>
-            </div> -->
             <div class="expand-adjacent">
                 <label class="add-project">Add a Project
                     <input type="checkbox" class="expand">
                 </label>
             </div>
             <div class="add-project-name hidden-div"> 
-                <div>
+                <form data-form-name="newProject">
                     <label for="add-project-name">name</label>
-                    <input type="text" id="add-project-name" name="userProjectName">
-                    <button class="small-btn">add</button>
-                </div>
+                    <input type="text" id="add-project-name" name="newProject" required>
+                    <button class="small-add-btn">add</button>
+                </form>
             </div>
             <hr>      
             <div class="user-projects shift-left">
                 <!--  btn's here added by JS -->
-                <button value="project1">
-                    <div>
-                        <span>Project 1</span>
-                    </div>            
-                </button>                                                
+                  <div class="user-project">
+                    <button value="project1">
+                        <div>
+                            <span>1 - </span>
+                            <span>My Project</span>           
+                        </div>       
+                    </button>
+                    <button type="button" class="remove-project small-delete-btn">X</button>             
+                </div>
             </div>
         </div>          
     </div>
@@ -197,7 +196,7 @@
                                     <label for="edit-note-radio-1a" class="toggle-label">Note</label>
                                 </div>
                                 <hr>
-                                <form class="edit-form" data-id="editForm">
+                                <form class="edit-form" data-form-name="editForm">
                                     <fieldset>
                                         <div class="hidden-div edit-title-div">                                            
                                             <label for="edit-title"></label>
@@ -337,7 +336,7 @@
                                     <label for="edit-note-radio-1b" class="toggle-label">Note</label>
                                 </div>
                                 <hr>
-                                <form class="edit-form" data-id="editForm">
+                                <form class="edit-form" data-form-name="editForm">
                                     <fieldset>
                                         <div class="hidden-div edit-title-div">                                            
                                             <label for="edit-title"></label>
@@ -455,7 +454,7 @@
     
     <!-- Add new task dialogue box -->
      <dialog id="add-task-dialog">
-        <form data-id="newForm">
+        <form data-form-name="newForm">
             <p>New task details</p>
             <div class="title">
                 <label for="title">Title:</label>
@@ -527,20 +526,20 @@
                     </label>    
                 </div>
                 <div class="hidden-div">
-                    <button type="button" class="new-subtask small-btn">+</button>
+                    <button type="button" class="new-subtask small-add-btn">+</button>
                     <div class="new-subtask-divs">
                         <!-- TODO: add subtasks via js -->
                         <div class="subtask-div">
                             <label class="subtask-1">subtask 1
                                 <input type="text" name="subtaskTitle1">
                             </label>
-                            <button type="button" class="remove-subtask">X</button>
+                            <button type="button" class="remove-subtask small-delete-btn">X</button>
                         </div>   
                         <div class="subtask-div">
                             <label class="subtask-1">subtask 1
                                 <input type="text" name="subtaskTitle1">
                             </label>
-                            <button type="button" class="remove-subtask">X</button>
+                            <button type="button" class="remove-subtask small-delete-btn">X</button>
                         </div>                                               
                     </div>
                 </div> 

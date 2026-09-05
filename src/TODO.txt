@@ -14,7 +14,7 @@ FRONT END:
         2. hide the Edit btn in popover once task is finalized                  (Dpne)                                       
     3. make submit-button, cancel-edit buttons, work!                           (done)
     -. Add a tag system that can also add priority                              (Out of scope!)
-    4. Add option to add new Project in sidebar and in "add new task"           ()
+    4. Add option to add new Project in sidebar and in "add new task"           (half done; need to add to new task dialog)
     5. Begin work on task/Project data modei                                    ()  
 
     FEATURES TO ADD:
