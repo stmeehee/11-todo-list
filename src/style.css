@@ -184,6 +184,7 @@ header {
   /*  */
   background-color: var(--bg-color-sidebar);
   display: grid;
+  grid-template-rows: max-content 1fr;
   gap: 2em;
 }
 
@@ -868,4 +869,24 @@ input, textarea, select {
 .pick-time:has(#time-picker:checked) > :last-child {
   outline: 3px solid red;
   display: inline-block;
+}
+
+/* project-select */
+
+.project-select {
+  gap: 1em;
+}
+
+.project-select > div {
+  display: flex;
+  justify-content: space-between;
+}
+
+.project-select > .existing-project > select {
+  height: 50%;
+}
+
+.project-select > .existing-project > select,
+.project-select > .new-project input {
+  width: 120px;
 }

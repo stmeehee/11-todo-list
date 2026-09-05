@@ -102,7 +102,7 @@ function addSubtaskDialog() {
             <label class="subtask-${newSubTaskNo}">subtask ${newSubTaskNo}
                 <input type="text" name="subtaskTitle${newSubTaskNo}">
             </label>
-            <button type="button" class="remove-subtask">X</button>
+            <button type="button" class="remove-subtask small-delete-btn">X</button>
         </div>
         `
     domCache.newSubtaskDivsContainer.insertAdjacentHTML(

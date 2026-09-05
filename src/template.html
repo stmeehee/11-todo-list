@@ -464,6 +464,7 @@
                 <label for="desc">Description</label>
                 <input type="text" id="desc" name="desc">                
             </div>
+            <hr>
             <div class="date">
                 <label for="date">Due date</label>
                 <input type="date" id="date" name="date" required>                
@@ -482,8 +483,8 @@
                         <input type="time" name="pick-time" value="00:00">
                     </div>
                 </fieldset>
-
             </div>
+            <hr>
             <div class="priority">
                 <label for="priority">Priority</label>
                 <select id="priority" name="priority">    
@@ -493,6 +494,20 @@
                 </select>    
             </div>  
             <hr>
+            <div class="project-select">
+                <div class="existing-project">
+                    <label for="project-select">Add to existing project:</label>
+                    <select id="project-select" name="projectSelect" >  
+                        <option>This doesnt exist!</option>              
+                        <!-- TODO: add projects available by user -->
+                    </select>
+                </div>
+                <div class="new-project">
+                    <label for="new-project">Add to new project:</label>
+                    <input type="text" id="new-project" name="newProject">
+                </div>
+            </div>                                               
+            <hr>
             <!-- add form btn -->
             <div class="expand-adjacent">
                 <label class="show-children add-note-btn .button">
@@ -500,25 +515,14 @@
                     <span>Add note</span>
                 </label>    
             </div>   
-            
             <div class="hidden-div">
                 <div class="note">
                     <!-- <label for="note">Add note</label> -->
                     <textarea id="note" name="note" placeholder="(optional)" rows="5"></textarea>                
                 </div>
             </div>                 
-
-            <hr>
-            <div class="project-select">
-                <label for="project-select">Add to existing project</label>
-                <select id="project-select" name="projectSelect" >  
-                    <option value="proj1">This doesnt exist!</option>              
-                    <!-- TODO: add projects available by user -->
-                </select>
-            </div>                                               
-            <hr>
+            <hr>            
             <div class="add-subtask-option">
-
                 <div class="expand-adjacent">
                     <label class="show-children add-subtask-btn">
                         <input type="checkbox" class="expand add-subtask" >
@@ -534,13 +538,7 @@
                                 <input type="text" name="subtaskTitle1">
                             </label>
                             <button type="button" class="remove-subtask small-delete-btn">X</button>
-                        </div>   
-                        <div class="subtask-div">
-                            <label class="subtask-1">subtask 1
-                                <input type="text" name="subtaskTitle1">
-                            </label>
-                            <button type="button" class="remove-subtask small-delete-btn">X</button>
-                        </div>                                               
+                        </div>                                              
                     </div>
                 </div> 
 
