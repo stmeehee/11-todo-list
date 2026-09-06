@@ -1,0 +1,76 @@
+1. clicking on 2nd task's subtasks changes the prog. of the wrong task. (fixed)
+
+task -> project -> Dom.showProject(project)
+
+task has: title, desc., duedate, time, priority, tags, note, subtasks
+
+TODO-1: Make a task with a 2 subtasks and add task to project 'working'
+        sol: 
+            task = Task.make(formData)
+            subtask = Subtask.makeSubtask(formData)
+            task.addSubtask(subtask)
+            working = Project.addTask(task)
+// DomCtrl module: has direct access to DOM and manipulates it; useful for btn/menu routing
+// DomMaker module: creates task elements, subtask inpuit fields, project input fields
+// filter module: returns a list of task objects filtered according to the passed-in arg
+// index.js (application): acts as  the glue between DomCtrl and DomMaker     
+// static Project.allProjectsMap: {
+    projectName: {
+        taskId: taskObject 
+        }
+     }     
+// static DomCtrl.taskElements {
+    projectName: {
+        taskId: taskHtmlEl
+    }
+}
+TODO-2: user submits newTask; Display all projects and tasks
+        sol:
+            newTaskForm = event.target
+            task, subtasks = Task.make(newTaskForm), Subtask.make(newTaskForm) <- main.handleNewTask(newTaskForm)
+            Task.addSubtasks(subtasks)
+            project = Project.addTask(task) // newTaskForm.projectName != empty; Project.addTask(projectName,task)
+            projEl = DomMaker.makeEl(proj)
+            DomCtrl.addProject(projEl)
+TODO-3: user clicks tsk Edit and submits 
+        sol:
+            [taskId, editForm] = [event.target.closest("main-task-div").id, event.target]
+            allTasksInProj = myProjects.get(editForm.get(projectName))
+            taskObj = allTasksInProj.get(taskId)
+            taskObj.Edit(editForm) 
+            DomCtrl.Edit(taskObj, taskId)
+TODO-4: user moves task to otherProject
+        sol:
+            moveToProjName = event.target.value
+            taskId = #tasks-options-popover.dataset.anchored-to-task-id 
+            task = get task from taskid
+            Project.move(task, moveToProjName) <- main.handleMoveProject
+            Project.updateAllProjectsMap(moveToProjName, taskId) // update the projectMap
+            DomCtrl.updatetaskElementsMap(moveToProjName, taskId) // update 
+            DomCtrl.refresh()
+TODO-5: user deletes a task
+        sol:
+            taskId = #tasks-options-popover.dataset.anchored-to-task-id
+            Project.deleteTask(taskId)
+            Project.updateAllProjectsMap(moveToProjName, taskId)
+            DomCtrl.refresh()
+TODO-6: user deletes a project
+       sol: 
+            projName = event.target.value
+            Project.move(allTasks, "deletedTasks") // add project tasks to deletedTasks project instead of actual delete 
+            Project.delete(projName) // Project.allProjectsMap.remove(projName)
+            DomCtrl.deleteProject(projName)
+TODO-7: user selects one of btns in sidebar-main-div (alltasks,upcoming,overdue,completed,delete)
+        sol:
+            btn = event.target
+            if (btn.value is "allTasks/deletedTasks"); 
+                projName = btn.value
+                project = Project.allProjectsMap.get(projName)
+                DomCtrl.showProject(project)
+            else;
+                filterCriteria = btn.value
+                Filter.
+
+            DomCtrl.viewingDiv(btn.value) // display the name of projectName/filterCriteria at the top
+
+

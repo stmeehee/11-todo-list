@@ -325,8 +325,8 @@ main {
     margin: 6px;
 }    
 
-                          /* all-tasks-div (1) */
-.all-tasks-div {
+                          /* project-name-div (1) */
+.project-name-div {
   padding: 1em;
   /*  */
   display: flex;
@@ -335,7 +335,7 @@ main {
   gap: 1em;
 }      
 
-.all-tasks-div > p {
+.project-name-div > p {
   font-weight: 900;
 }
 

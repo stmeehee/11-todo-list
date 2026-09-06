@@ -132,7 +132,7 @@
         </div>
 
         <div class="viewing-div">
-            <div class="all-tasks-div">
+            <div class="project-name-div">
                 <p>All tasks</p>
 
 <!-- example --> <!-- ----------------- -->
@@ -254,22 +254,22 @@
                         <!-- can remain empty if no subtasks here -->
                             <hr>
                             <div class="subtask-1-div">
-                                <input type="checkbox" id="subtask-checkbox-2-1">
+                                <input type="checkbox" id="subtask-checkbox-2-1" value="subtaskTitle1">
                                 <label for="subtask-checkbox-2-1">title: Do task 1</label>
                             </div>
                             <hr>
                             <div class="subtask-2-div">
-                                <input type="checkbox" id="subtask-checkbox-2-2">
+                                <input type="checkbox" id="subtask-checkbox-2-2" value="subtaskTitle2">
                                 <label for="subtask-checkbox-2-2">title: Do task 2 </label>
                             </div>
                             <hr>
                             <div class="subtask-3-div">
-                                <input type="checkbox" id="subtask-checkbox-2-3">
+                                <input type="checkbox" id="subtask-checkbox-2-3" value="subtaskTitle3">
                                 <label for="subtask-checkbox-2-3">title: Do task 3 </label>
                             </div>
                             <hr>
                             <div class="subtask-4-div">
-                                <input type="checkbox" id="subtask-checkbox-2-4">
+                                <input type="checkbox" id="subtask-checkbox-2-4" value="subtaskTitle4">
                                 <label for="subtask-checkbox-2-4">title: Do task 4</label>
                             </div>                                                        
                         </div>
@@ -497,7 +497,7 @@
             <div class="project-select">
                 <div class="existing-project">
                     <label for="project-select">Add to existing project:</label>
-                    <select id="project-select" name="projectSelect" >  
+                    <select id="project-select" name="existingProject" >  
                         <option>This doesnt exist!</option>              
                         <!-- TODO: add projects available by user -->
                     </select>
@@ -532,7 +532,6 @@
                 <div class="hidden-div">
                     <button type="button" class="new-subtask small-add-btn">+</button>
                     <div class="new-subtask-divs">
-                        <!-- TODO: add subtasks via js -->
                         <div class="subtask-div">
                             <label class="subtask-1">subtask 1
                                 <input type="text" name="subtaskTitle1">

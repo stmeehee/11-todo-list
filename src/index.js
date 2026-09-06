@@ -4,13 +4,13 @@ import taskDomCtrl from "./taskDomCtrl.js";
 
 // tasksOptionsPrev is the last cicked .tasksOptions btn, we keep it to remove the anchor-active id from it
 // when a new btn is clicked
-let tasksOptionsPrev = null
-let domCache = null
-let myTasks = new Map()
-let myTaskElements = new Map()
-let myTaskDomCtrlMap = new Map()
+let tasksOptionsPrev = null // DomCtrl
+let domCache = null // DomCtrl
+let myTasks = new Map() // Task
+let myTaskElements = new Map() // DomCtrl
+let myTaskDomCtrlMap = new Map() // DomCtrl?; might need an instance to kep track of elem state for each Task instance  
 
-
+// DomCtrl
 function getDomElements(getElemWithId) {
     if (getElemWithId) {
         return document.getElementById(getElemWithId)
@@ -18,7 +18,7 @@ function getDomElements(getElemWithId) {
     // console.log(` > getDomElements()`)
     const root = document.documentElement;
     const body = document.querySelector("body")
-    const allTasksElem = document.querySelectorAll(".all-tasks-div > div")
+    const allTasksElem = document.querySelectorAll(".project-name-div > div")
     const barCssVars =  {
         barWidthName: "--progress-bar-width",
         barColorInUseName: "--bg-progress-bar-color",
@@ -42,21 +42,16 @@ function getDomElements(getElemWithId) {
     }
 }
 
+// Task method
 //TODO
 function addTask(myFormData) {
     //TODO
 }
 
+// DomCtrl & HtmlMaker methods
+// TODO: Separate this
 function addProjectToSideBar(formElem) {
-    // 1. user clicks add project btn
-    // 2. unhide a text field inside projectDiv and take input
-    // 3. if field empty and add is clicked, reject making user project 
-    //      3.1. field empty + add clicked: hide the add btn  
-    // 4. else if field not empty, add a btn with a div that has newProject
-    // 5. 
-
     // domCache.userProjectsContainer
-
     const projectName = formElem.get("newProject")
     const projNum = domCache.userProjectsContainer.children.length + 1
     const userProjectDiv= `<div class="user-project">
@@ -73,9 +68,9 @@ function addProjectToSideBar(formElem) {
         "beforeend",
         userProjectDiv
     )
-    
 }
 
+// DomCtrl
 function unCheckSubtasks(taskId) {
     const subtasks = myTaskElements.get(taskId).querySelectorAll('.task-parent-div > .hidden-div input[type="checkbox"]')
     console.log(subtasks)
@@ -84,16 +79,21 @@ function unCheckSubtasks(taskId) {
     })
 }
 
+// DomMaker & Task methoda
+// TODO: separate this! 
 function resetTask(taskId) {
     myTaskElements.get(taskId).classList.remove("done")
+    // app/task duty
     myTasks.get(taskId).current = 0
     unCheckSubtasks(taskId)
-        let pct = myTasks.get(taskId).currentPercent
-        let [label, color] = getBarLabelColor(pct)
+    let pct = myTasks.get(taskId).currentPercent
+    let [label, color] = getBarLabelColor(pct)
     renderProgressBar(label, color, `${pct}%`, taskId)
     completeBtnOnOff(taskId, false)
 }
 
+// HtmlMaker & DomCtrl method
+// TODO; separate this! this is making and adding html
 function addSubtaskDialog() {
     // console.log("newSubtaskDiv:",domCache.newSubtaskDivsContainer)
     const newSubTaskNo =  domCache.newSubtaskDivsContainer.children.length + 1
@@ -111,11 +111,13 @@ function addSubtaskDialog() {
     )
 }
 
+// DomCtrl
 function removeDiv(SubTaskDiv) {
     // console.log(SubTaskDiv)
     SubTaskDiv.remove()
 }
 
+// DomCtrl
 function focusInputTextarea(focusInthisElem) {
     const inputElem = (focusInthisElem.querySelector("input"))
     if (inputElem !== null ) {
@@ -127,6 +129,8 @@ function focusInputTextarea(focusInthisElem) {
     }
 }
 
+// DomCtrl & app method
+// TODO: break this apart!
 function setMinDate() {
     const presentDate = new Date()
     const year = presentDate.getFullYear()
@@ -141,6 +145,7 @@ function setMinDate() {
     })
 }
 
+// DomCtrl
 function toggleElemVisibility(elemToShow, elemToHide) {
     // shows the clicked toggle-label div and hides the prev div of that nature
     // console.log(elemToShow, elemToHide)
@@ -153,6 +158,7 @@ function toggleElemVisibility(elemToShow, elemToHide) {
     // keep track of last shown div
 }
 
+// DomCtrl
 function disAllowDiv(taskId) {
     // console.log(` > disAllowTaskDiv()`)
     const taskElem = myTaskElements.get(taskId)
@@ -162,20 +168,24 @@ function disAllowDiv(taskId) {
     // console.log(myTaskElements.get(taskId))
 }
 
+// DomCtrl
 function allowDiv(taskId) {
     const taskElem = myTaskElements.get(taskId)
     const parentDiv = taskElem.querySelector(".task-parent-div")
     parentDiv.classList.remove("disAllow")
 }
 
+// DomCtrl & Task method;
+// TODO: make this more seperate in responsibilities
 function completeTask(taskId) {
     console.log(` > completeTask()`)
     myTaskElements.get(taskId).classList.add("done")
     myTaskElements.get(taskId).isFinished = true
 }
 
+// DomCtrl
 function completeBtnOnOff(taskId, allow) {
-    console.log(` > changeCompleteBtn()`)
+    // console.log(` > changeCompleteBtn()`)
     const taskElem = myTaskElements.get(taskId) 
     const confirmBtn = taskElem.querySelector("#primary-task > button")
     confirmBtn.classList.remove("disable")
@@ -188,20 +198,23 @@ function completeBtnOnOff(taskId, allow) {
         confirmBtn.classList.add("disable")
         confirmBtn.classList.remove("finalize")
     }
-    console.log(taskElem)
+    // console.log(taskElem)
 }
 
+// DomCtrl
 // finds the task up the dom tree and returns its id
 function getTaskIdFromElement(descendentElem) {
     return descendentElem.closest(".full-task-div").id
 }
 
+// DomCtrl
 function getProgressBar(taskId) {
     const taskElem = myTaskElements.get(taskId)
     const progBar = taskElem.querySelector(".task-progress-bar")
     return progBar
 }
 
+// DomCtrl
 function anchorTasksOptions(tasksOptionsBtnEl) {
     // console.log(tasksOptionsBtnEl)
     if (tasksOptionsPrev) {
@@ -239,6 +252,7 @@ function anchorTasksOptions(tasksOptionsBtnEl) {
     //     console.log(tasksOptionsBtnEl)
 }
 
+// DomCtrl
 function updateProgress(isChecked, taskId) {
     const Task = myTasks.get(taskId)
     // console.log(` > updateProgress()`)
@@ -251,6 +265,7 @@ function updateProgress(isChecked, taskId) {
     }
 }
 
+// DomCtrl
 function getBarLabelColor(percentVal) {
     let label = null, color = null
     const red = domCache.barCssVars.barColorRedName
@@ -274,24 +289,31 @@ function getBarLabelColor(percentVal) {
     return [label, color]
 }
 
+// DomCtrl
 // change the label and color for the given taskID
 function renderProgressBar(labelToUse, colorToUse, setToThisWidth, taskId) {
     const progBarElem = getProgressBar(taskId)
     const barColor = domCache.barCssVars.barColorInUseName
     progBarElem.style.setProperty(domCache.barCssVars.barWidthName, setToThisWidth)
-    console.log(getComputedStyle(document.documentElement).getPropertyValue("--progress-bar-width"))
+    // console.log(getComputedStyle(document.documentElement).getPropertyValue("--progress-bar-width"))
     progBarElem.dataset.label = labelToUse
     progBarElem.style.setProperty(barColor, `var(${colorToUse})`)
 }
 
+// DomCtrl
 function setTheme() {
     const newTheme = domCache.root.className === 'dark' ? 'light' : 'dark';
     domCache.root.className = newTheme;
 }
 
+// app; main driver & orchestrator
 function delegate(event) {
     // console.log({"event --> delegate(): elem clicked =":event.target})
-    // console.log(event.target)
+    // console.log(event.target.checked)
+    if (event.target.checked) {
+        console.log(event.target.value)
+        console.log("here!")
+    }
     let taskId = null
     if (event.target.closest(".theme-toggle")) {
         setTheme()
@@ -306,7 +328,7 @@ function delegate(event) {
         let pct = myTasks.get(taskId).currentPercent
         let [label, color] = getBarLabelColor(pct)
         renderProgressBar(label, color, `${pct}%`, taskId)
-        console.log(myTasks.get(taskId).isFinished)
+        // console.log(myTasks.get(taskId).isFinished)
         completeBtnOnOff(taskId, myTasks.get(taskId).isFinished)
     }
     if (event.target.closest(".tasks-options")) {
@@ -370,7 +392,7 @@ function delegate(event) {
     }
     if (event.target.closest(".add-subtask-option")) {
         // add subtask div
-        console.log(event.target)
+        // console.log(event.target)
         const addTaskDialogBtn = event.target.closest(`button.new-subtask`)
         const rmTaskDialogBtn = event.target.closest(`button.remove-subtask`)
         if (addTaskDialogBtn) {
@@ -393,10 +415,12 @@ function delegate(event) {
     }
 }
 
+// DomCtrl
 function collapseHiddenDiv(Elem) {
     Elem.checked = false
 }
 
+// DomCtrl
 function openEditor() {
     // open the editor by checking which full-task-div popover misc menu is at 
     const taskId = domCache.tasksOptionsPopover.dataset.anchoredToTaskId
@@ -406,6 +430,7 @@ function openEditor() {
     myTaskDomCtrlMap.get(taskId).taskDetailsDivInView = divToShow
 }
 
+// DomCtrl
 function closeEditor(btnElem) {
     // useful if the btnElem has the info for which to open 
     // otherwise use toggleElemVisibility() instead
@@ -419,6 +444,7 @@ function closeEditor(btnElem) {
     myTaskDomCtrlMap.get(taskId).taskDetailsDivInView = divToShow    
 }
 
+// DomCtrl
 // return the element from the childElem and child class/id
 // childElem -> mainTaskDiv -> childClassId (aka destination id) -> return elem with that id/class
 function getElemFromTaskElemAndChildClassId(childElem, childClassId) {
@@ -427,6 +453,7 @@ function getElemFromTaskElemAndChildClassId(childElem, childClassId) {
     return resElem
 }
 
+// DomCtrl
 // find and return maintask element from child element 
 function getFullTaskDivElemFromChildElem(childElem) {
     const taskId = getTaskIdFromElement(childElem)
@@ -434,6 +461,8 @@ function getFullTaskDivElemFromChildElem(childElem) {
     return taskEl 
 }
 
+// saves Tasks, task html elements & tracks editor open/close + other state for each task html element
+// TODO: seperate this 
 function setTasksAndTaskElements() {
     console.log(` > getTasks()`)
     for (const taskEl of domCache.allTasksElem) {
@@ -445,6 +474,7 @@ function setTasksAndTaskElements() {
     // console.log(myTasks.get("1a"))
 }
 
+// app
 function init() {
     console.log(` > init()`)
     domCache = getDomElements()
@@ -485,7 +515,6 @@ function init() {
 
         // event.target.closest("dialog").close()
     })
-
 }
 
 function main() {

@@ -6,13 +6,6 @@ export default class Task {
     _isFinished = false
 
     // fields for checking
-    title= null
-    desc = null
-    date = null
-    priority = null
-    note = null
-    project = null
-    subtasks = []
 
     constructor(taskId) {
         this._id = taskId
