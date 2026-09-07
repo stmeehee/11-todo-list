@@ -1,4 +1,4 @@
-export default class Subtask {
+export default class Subtasks {
     // key: i same as name="subtaskTitle1" for subtask html inputs
     key = null
     // title": is the value of above html from add subtask dialog
@@ -15,6 +15,10 @@ export default class Subtask {
             throw new Error("assign a boolean value to subtask!")
         }
         this._isDone = boolean
+    }
+
+    get isDone() {
+        return this._isDone
     }
 
     // TODO:
