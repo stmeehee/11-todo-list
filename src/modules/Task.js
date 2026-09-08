@@ -2,28 +2,30 @@ import Subtask from "./Subtask.js"
 
 
 export default class Task {
+    #id = null
     #title= null
     #description = null
     #date = null
     #time = null
     #priority = null
     #note = null
-    #projectName = null
+    #projectNames = ["allTasks"]
     #subtasks = []
     #finishedSubtasks = 0
     #unFinishedSubtasks = 0
     _isFinished = false
-    testFormData = this.testAddFieldsToForm(new FormData())
 
-    constructor(formData) {
+    constructor(formData, testAddProjectName) {
         if (!formData) { // temp condition
-            this.setFields(this.testFormData, "addProjectName")
+            const testForm = this.testGetFormObj()
+            this.setFields(testForm, "addProjectName", testAddProjectName)
             return
         }
-        this.setFields(testFormData, "addProjectName")
+        this.setFields(formData, "addProjectName", null)
     }
 
-    setFields(formData, addProjectName) {
+    setFields(formData, addProjectName, forceAddProjectName) {
+        let newProjName = null
         this.#title = formData.get("title")
         this.#description = formData.get("desc")
         this.#date = formData.get("date")
@@ -31,11 +33,18 @@ export default class Task {
         this.#priority = formData.get("priority")
         this.#note = formData.get("note")
         if (addProjectName) {
-            this.projectName = (formData.get("existingProject") !== "") 
-                                ? formData.get("existingProject")
-                                : (formData.get("newProject") || "All Tasks")
+            if (forceAddProjectName) {
+                newProjName = forceAddProjectName
+            }
+            else {
+                newProjName = (formData.get("existingProject") !== "") 
+                                    ? formData.get("existingProject")
+                                    : (formData.get("newProject") || "All Tasks")
+            }
+            this.#projectNames.push(newProjName)
         }
-        this.subtask = this.addSubtasks(formData)
+        this.addSubtasks(formData)
+        this.#unFinishedSubtasks = this.#subtasks.length 
     }
     
     addSubtasks(formData) {
@@ -94,20 +103,51 @@ export default class Task {
     //     return map
     // }
 
-    testAddFieldsToForm(formObject) {
-
+    testGetFormObj() {
+        const formObject = new FormData()
         formObject.append("title", "testTitle")
         formObject.append("desc", "testDesc")
         formObject.append("date", "test-2026-09-01")
         formObject.append("pickTime", "test-00:00")
         formObject.append("priority", "high")
-        formObject.append("newProject", "test")
+        formObject.append("newProject", "mine")
         formObject.append("note", "testAaa")
         formObject.append("subtaskTitle1", "test - Do the dishes")
         formObject.append("subtaskTitle2", "test - wash clothes")
         formObject.append("subtaskTitle3", "test - pre-bedtime scream")
         formObject.append("subtaskTitle4", "test - sleep")
+        formObject.append("existingProject", "")
+        
         return formObject
+    }
+
+    toJSON() {
+            return {
+                id: this.getShortId(),
+                title: this.#title,
+                description: this.#description,
+                date: this.#date,
+                time: this.#time,
+                priority: this.#priority,
+                note: this.#note,
+                projectNames: this.#projectNames,
+                "subtasks size": this.#subtasks.list,
+                finishedSubtasks: this.#finishedSubtasks,
+                unFinishedSubtasks: this.#unFinishedSubtasks,
+                _isFinished: this._isFinished
+            };
+        }
+    
+    set id(value) {
+        this.#id = value
+    }
+
+    get id() {
+        return this.#id
+    }
+
+    getShortId() {
+        return this.#id.slice(0,3)
     }
 
     get taskProgress() {
@@ -117,6 +157,14 @@ export default class Task {
     static testGetTask() {
         return new Task()
     }
+
+    get finishedSubtasks() {
+        return this.#finishedSubtasks
+    }
+
+    get unFinishedSubtasks() {
+        return this.#unFinishedSubtasks
+    }    
 
     get isFinished() {
         return this._isFinished
@@ -143,20 +191,52 @@ export default class Task {
         }
     }
 
+    getSubtaskTitles() {
+        const lst = []
+        this.#subtasks.forEach( (subtask) => {
+            lst.push(subtask.title)
+        })
+        return lst
+    }
+
+    get projectNames() {
+        return this.#projectNames
+    }
+
+    getInfo() {
+        return {
+            title: this.#title,
+            description: this.#description,
+            dueDate: this.#date,
+        }
+    }
+
+    getTags() {
+        console.log("tags dont exist yet!")
+        // TODO: add tags list private field and return return that list 
+    }
+
+    // set projectNames(name) {
+    //     this.#projectNames = name
+    // }
+
+
 }
 
 // test get subtasks progression
-const task = Task.testGetTask()
+// const task = Task.testGetTask()
 
-task.updateProgress("subtaskTitle1", true)
-task.updateProgress("subtaskTitle1", false)
-task.updateProgress("subtaskTitle2", true)
-task.updateProgress("subtaskTitle3", true)
-task.updateProgress("subtaskTitle4", true)
+// task.updateProgress("subtaskTitle1", true)
+// task.updateProgress("subtaskTitle1", false)
+// task.updateProgress("subtaskTitle2", true)
+// task.updateProgress("subtaskTitle3", true)
+// task.updateProgress("subtaskTitle4", true)
 
-console.log(`tickedSubtasks: ${task.finishedSubtasks}`)
-console.log(`unTickedSubtasks: ${task.unFinishedSubtasks}`)
+// console.log(`tickedSubtasks: ${task.finishedSubtasks}`)
+// console.log(`unTickedSubtasks: ${task.unFinishedSubtasks}`)
 
-let pct = task.taskProgress 
-console.log(`completed: ${pct}%`) // expected: 75%
+// let pct = task.taskProgress 
+// console.log(task)
+// console.log(`completed: ${pct}%`) // expected: 75%
+
 

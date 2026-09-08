@@ -21,9 +21,5 @@ export default class Subtasks {
         return this._isDone
     }
 
-    // TODO:
-    // find a way to change isDone of this instance by using its key
-    // empty subtasks fields name in new task dialog and the subtask checkbox value must be same
-    // 
     
 }

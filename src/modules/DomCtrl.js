@@ -1,5 +1,6 @@
 import taskDomCtrl from "./taskDomCtrl.js";
 import HtmlMaker from "./htmlMaker.js";
+import { html } from "webpack";
 
 export default class DomCtrl {
     // some frequently used static  elements
@@ -33,6 +34,7 @@ export default class DomCtrl {
         const userProjectsContainer = document.querySelector(".user-projects")
         // addNewProjectCheckBox: uncheck add project to collapse project name field
         const addNewProjectCheckBox = document.querySelector('.add-project > input[type="checkbox"]')
+        const projectNamePara = document.querySelector("project-name-div")
 
         return {
             root, body, allTasksElem, barCssVars, dateInputs, tasksOptionsPopover, newTaskdialogBox, 
@@ -291,6 +293,17 @@ export default class DomCtrl {
             "beforeend",
             userProjectDiv
         )
-    }    
+    }   
+
+    static displayProjectName(projectName) {
+        this.cache.projectNamePara.textContent = projectName
+    }
+    
+    static displayProjectTasks(projectName, tasksMap) {
+        for (const task of tasksMap.values()) {
+            let taskElem = html.getTaskElem(task)
+            this.cache.projectNameDiv.append(taskElem)
+        }
+    }   
         
 }

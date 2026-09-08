@@ -24,11 +24,24 @@ TODO-1: Make a task with a 2 subtasks and add task to project 'working'
         taskId: taskHtmlEl
     }
 }
+
+TODO-1.1: user loads the site (load the saved tasks to the viewing div)
+            sol:
+                allProjMap = new Map()
+                loadedData = TaskLoader.testLoadTasks(3) / loadFromFile()
+                for each task from loadedData:
+                    task 
+                    projName = task.projectName
+                    addToAllProjMap(projName, task)
+                    displaytasksForProject("allTasks", allProjMap)
+                    
+
+
+
 TODO-2: user submits newTask; Display all projects and tasks
         sol:
             newTaskForm = event.target
-            task, subtasks = Task.make(newTaskForm), Subtask.make(newTaskForm) <- main.handleNewTask(newTaskForm)
-            Task.addSubtasks(subtasks)
+            task, subtasks = new Task(newTaskForm) <- NewTask(newTaskForm)
             project = Project.addTask(task) // newTaskForm.projectName != empty; Project.addTask(projectName,task)
             projEl = DomMaker.makeEl(proj)
             DomCtrl.addProject(projEl)
@@ -72,5 +85,3 @@ TODO-7: user selects one of btns in sidebar-main-div (alltasks,upcoming,overdue,
                 Filter.
 
             DomCtrl.viewingDiv(btn.value) // display the name of projectName/filterCriteria at the top
-
-

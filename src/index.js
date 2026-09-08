@@ -4,34 +4,14 @@ import Task from "./modules/Task.js";
 import taskDomCtrl from "./modules/taskDomCtrl.js";
 import DomCtrl from "./modules/DomCtrl.js";
 
-// tasksOptionsPrev is the last cicked .tasksOptions btn, we keep it to remove the anchor-active id from it
-// when a new btn is clicked
-// let tasksOptionsPrev = null // DomCtrl
-let myTasks = new Map() // Task
-// let myTaskElements = new Map() // DomCtrl
-// let myTaskDomCtrlMap = new Map() // DomCtrl?; might need an instance to kep track of elem state for each Task instance  
-
-// DomCtrl
-
+let myTasks = new Map() // Task  
+let projectMap = new Map()
 
 // Task method
 //TODO
 function addTask(myFormData) {
     //TODO
 }
-
-// DomCtrl & HtmlMaker methods: addProjectToSideBar(formElem)
-
-// DomCtrl: unCheckSubtasks(taskId)
-
-// DomCtrl: resetTaskElement
-
-// HtmlMaker & DomCtrl method: addSubtaskDialog()
-// TODO; separate this! this is making and adding html
-
-// DomCtrl: removeDiv(SubTaskDiv)
-
-// DomCtrl: focusInputTextarea(focusInthisElem)
 
 // DomCtrl & app method
 // TODO: break this apart!
@@ -49,44 +29,14 @@ function setMinDate() {
     })
 }
 
-// DomCtrl: toggleElemVisibility(elemToShow, elemToHide)
-
-
-// DomCtrl: disAllowDiv(taskId)
-
-// DomCtrl: allowDiv(taskId) 
-
-// DomCtrl: markTaskComplete(taskId) 
-
-// DomCtrl: completeBtnOnOff(taskId, allow)
-
-// DomCtrl: getTaskIdFromElement
-
-// DomCtrl: getProgressBar(taskId)
-
-
-// DomCtrl: anchorTasksOptions(tasksOptionsBtnEl) 
-
-// DomCtrl: updateProgress(isChecked, taskId)
-
-
-// DomCtrl: getBarLabelColor(percentVal)
-
-
-// DomCtrl: renderProgressBar(labelToUse, colorToUse, setToThisWidth, taskId)
-// change the label and color for the given taskID
-
-// DomCtrl
-
-
 // app; main driver & orchestrator
 function delegate(event) {
     // console.log({"event --> delegate(): elem clicked =":event.target})
     // console.log(event.target.checked)
-    if (event.target.checked) {
-        console.log(event.target.value)
-        console.log("here!")
-    }
+    // if (event.target.checked) {
+    //     console.log(event.target.value)
+    //     console.log("here!")
+    // }
     let taskId = null
     const changeTheme = event.target.closest(".theme-toggle")
     const subTaskCheckboxClick = (event.target.closest(".hidden-div") && event.target.type == "checkbox") 
@@ -203,35 +153,71 @@ function delegate(event) {
     }
 }
 
-// DomCtrl: collapseHiddenDiv(Elem)
-
-// DomCtrl: openEditor()
-
-// DomCtrl: closeEditor(btnElem)
-
-
-// DomCtrl: getElemFromTaskElemAndChildClassId(childElem, childClassId)
-
-// DomCtrl: getFullTaskDivElemFromChildElem(childElem)
-
 // saves Tasks, task html elements & tracks editor open/close + other state for each task html element
 // TODO: seperate this 
-function setTasksAndTaskElements() {
+function setTaskElementsMap() {
     console.log(` > getTasks()`)
     for (const taskEl of DomCtrl.cache.allTasksElem) {
         let id = taskEl.id
-        myTasks.set(id, new Task())
+        // myTasks.set(id, new Task())
+        // myTasks.set(id, task)
         DomCtrl.myTaskElements.set(id, taskEl)
         taskDomCtrl.myTaskDomCtrlMap.set(id, new taskDomCtrl())
     }
     // console.log(myTasks.get("1a"))
 }
+    // function mapProjectToTasks() {
+    //     let task = new Task() // task-a, id=1a, // task-b, id=1b // task-c, id=1c
+    //     task.projectName = "new-project"
+    //     let projectName = task.projectName // now // later // now
+    //     if (!projectMap.has(projectName)) {
+    //         projectMap.set(projectName, new Map()) // {now: new Map(), later: new Map()}
+    //     }
+    //     projectMap.set(projectName, projectMap.get(projectName).set(id, task)) // {now: { {id: task} }}
+    // }
+
+// function extractProjectName(formData) {
+//     let existingProj = formData.get("existingProject")
+//     let newProject = formData.get("newProject")
+//     if (newProject) {
+//         return newProject
+//     } 
+//     return existingProj
+// }
+
+// ProjectMap {projectName: {taskId: taskObj}}
+
+function newTask(formData) {
+    // const task = new Task(formData)
+    // projectName = extractProjectName(formData)
+    // projectMap.set(projectName, task)
+    // console.log(task)
+}
+
+function loadTaskToProjectMap(taskList) {
+    for (const task of taskList) {
+        let taskProjectNames = task.projectNames
+        for (const projName of taskProjectNames) {
+            if (!projectMap.has(projName)) {
+                projectMap.set(projName, new Map()) // {now: new Map(), later: new Map()}
+            }
+            projectMap.set(projName, projectMap.get(projName).set(task.getShortId(), task)) // {now: { {id: task} }}
+        }
+    }
+}
 
 // app
 function init() {
     console.log(` > init()`)
+    let tasksList = TaskLoader.testLoadTasks(3)
+    loadTaskToProjectMap(tasksList)
+    // TODO: make DomCtrl.displayTasks(projectMap)  
+    // to load tasks from projectsMap and make taskElement obects
+    // keep a viewingProject var to easily switch to it using:  
+    //      DomCtrl.displayTasks(projectMap.get(viewingProject), htmlMaker.getTaskElTemplate()))  
+
     DomCtrl.cache = DomCtrl.getDomElements()
-    setTasksAndTaskElements()
+    setTaskElementsMap()
     setMinDate()
     DomCtrl.setTheme("dark")
 
@@ -244,9 +230,9 @@ function init() {
         const myData = new FormData(event.target)
             // console.log(Object.fromEntries(myData))
         if (event.target.dataset.formName === "newForm") {
-            console.log("newForm")
-            console.log(Object.fromEntries(myData))
-            addTask(myData)
+            // console.log("newForm")
+            // console.log(Object.fromEntries(myData))
+            newTask(myData)
             DomCtrl.cache.newTaskdialogBox.close()
         }
         if (event.target.dataset.formName === "editForm") {
@@ -263,17 +249,12 @@ function init() {
             DomCtrl.addProjectToSideBar(myData)
             DomCtrl.collapseHiddenDiv(null, DomCtrl.cache.addNewProjectCheckBox)
         }
-        // {title: 'aa', desc: 'aa', date: '2026-09-01', priority: 'high', note: 'aaa', …}
-        // console.log(Object.fromEntries(myData))
-        // console.log(`date from form: ${myData.get(date)}`)
-
-        // event.target.closest("dialog").close()
     })
 }
 
 function main() {
-
     init()
 }
 
 main()
+
