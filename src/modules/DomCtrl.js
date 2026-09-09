@@ -1,6 +1,6 @@
 import taskDomCtrl from "./taskDomCtrl.js";
 import HtmlMaker from "./htmlMaker.js";
-import { html } from "webpack";
+// import { html } from "webpack";
 
 export default class DomCtrl {
     // some frequently used static  elements
@@ -17,7 +17,8 @@ export default class DomCtrl {
         // console.log(` > DomCtrl.getDomElements()`)
         const root = document.documentElement;
         const body = document.querySelector("body")
-        const allTasksElem = document.querySelectorAll(".project-name-div > div")
+        // viewingDiv: all task elements are in here
+        const viewingDiv = document.querySelector(".viewing-div")
         const barCssVars =  {
             barWidthName: "--progress-bar-width",
             barColorInUseName: "--bg-progress-bar-color",
@@ -34,11 +35,11 @@ export default class DomCtrl {
         const userProjectsContainer = document.querySelector(".user-projects")
         // addNewProjectCheckBox: uncheck add project to collapse project name field
         const addNewProjectCheckBox = document.querySelector('.add-project > input[type="checkbox"]')
-        const projectNamePara = document.querySelector("project-name-div")
+        const projectNamePara = document.querySelector(".project-name-div > p")
 
         return {
-            root, body, allTasksElem, barCssVars, dateInputs, tasksOptionsPopover, newTaskdialogBox, 
-            newSubtaskDivsContainer, userProjectsContainer, addNewProjectCheckBox
+            root, body, viewingDiv, barCssVars, dateInputs, tasksOptionsPopover, newTaskdialogBox, 
+            newSubtaskDivsContainer, userProjectsContainer, addNewProjectCheckBox, projectNamePara
         }
     }
 
@@ -97,7 +98,7 @@ export default class DomCtrl {
     static completeBtnOnOff(taskId, allow) {
         // console.log(` > changeCompleteBtn()`)
         const taskElem = this.myTaskElements.get(taskId) 
-        const confirmBtn = taskElem.querySelector("#primary-task > button")
+        const confirmBtn = taskElem.querySelector(".primary-task > button")
         // confirmBtn.classList.remove("disable")
         // confirmBtn.classList.add("finalize")
         if (allow) {
@@ -161,6 +162,7 @@ export default class DomCtrl {
         elemToShow.classList.remove("hidden-div")
         // keep track of last shown div
     }    
+
     static anchorTasksOptions(tasksOptionsBtnEl) {
         // console.log(tasksOptionsBtnEl)
         if (this.tasksOptionsPrev) {
@@ -299,11 +301,24 @@ export default class DomCtrl {
         this.cache.projectNamePara.textContent = projectName
     }
     
-    static displayProjectTasks(projectName, tasksMap) {
+    static displayProjectTasks(projectName, tasksMap) {        
         for (const task of tasksMap.values()) {
-            let taskElem = html.getTaskElem(task)
-            this.cache.projectNameDiv.append(taskElem)
+            let taskElem = HtmlMaker.getTaskElem(task)
+            // this.cache.viewingDiv.append(taskElem)
+            DomCtrl.cache.viewingDiv.insertAdjacentHTML(
+                "beforeend",
+                taskElem
+            )            
         }
+        this.displayProjectName(projectName)
     }   
-        
+
+    static getPopulatedTaskElements(){
+        return document.querySelectorAll(".viewing-div > div:not(.project-name-div)")
+    }
+
+    static updateSubTask(taskId, finishedSubtasks, totalSubtasks) {
+        const subTaskStatusElem = this.myTaskElements.get(taskId).querySelector(".subtask-status > p")
+        subTaskStatusElem.textContent = `Subtasks: ${finishedSubtasks}/${totalSubtasks}`
+    }  
 }

@@ -3,14 +3,20 @@ import "./style.css";
 import Task from "./modules/Task.js";
 import taskDomCtrl from "./modules/taskDomCtrl.js";
 import DomCtrl from "./modules/DomCtrl.js";
+import TaskLoader from "./modules/TaskLoader.js";
 
-let myTasks = new Map() // Task  
+let myViewingDivTasks = null // Task  
 let projectMap = new Map()
+let viewingProject = "All Tasks"
 
 // Task method
 //TODO
 function addTask(myFormData) {
     //TODO
+}
+
+function setViewingDivTasksMap(setToProject) {
+    myViewingDivTasks = projectMap.get(setToProject)
 }
 
 // DomCtrl & app method
@@ -57,22 +63,13 @@ function delegate(event) {
         // 2. updateProgress(checkboxElState, taskId)
         const checkBoxElem = event.target
         const subtaskKey = checkBoxElem.value
-
-        // taskId = getTaskIdFromElement(checkBoxElem) // DomCtrl
         taskId = DomCtrl.getTaskIdFromElement(checkBoxElem) 
-
-        // Task.updateProgress(checkBoxElem.checked, taskId) // Task 
-        const task = myTasks.get(taskId)
+        const task = myViewingDivTasks.get(taskId)
         task.updateProgress(subtaskKey, checkBoxElem.checked)
-
-        // let pct = myTasks.get(taskId).currentPercent // Task 
         let pct = task.taskProgress 
-
-        // let [label, color] = getBarLabelColor(pct) / // DomCtrl
         let [label, color] = DomCtrl.getBarLabelColor(pct) 
-
-        // renderProgressBar(label, color, `${pct}%`, taskId) // DomCtrl
         DomCtrl.renderProgressBar(label, color, `${pct}%`, taskId)
+        DomCtrl.updateSubTask(taskId, task.finishedSubtasks, task.getSubtaskTitles().length)
 
         // console.log(myTasks.get(taskId).isFinished)
         // completeBtnOnOff(taskId, myTasks.get(taskId).isFinished) // DomCtrl
@@ -91,7 +88,7 @@ function delegate(event) {
         DomCtrl.disAllowDiv(taskId)
         DomCtrl.collapseHiddenDiv(taskId)
         let color = DomCtrl.cache.barCssVars.barColorGreenName
-        let pct = myTasks.get(taskId).taskProgress
+        let pct = myViewingDivTasks.get(taskId).taskProgress
         let label = "Complete!"
         DomCtrl.renderProgressBar(label, color, `${pct}%`, taskId)
         DomCtrl.closeEditor(confirmBtn)
@@ -110,7 +107,7 @@ function delegate(event) {
     }
     if (taskOptionsPopupMenu) {
         const taskId = event.target.closest("#tasks-options-popover").dataset.anchoredToTaskId
-        const task = myTasks.get(taskId)        
+        const task = myViewingDivTasks.get(taskId)        
         const btnClicked = event.target
         const editBtn = btnClicked.classList.contains("popover-edit") 
         const resetBtn = btnClicked.classList.contains("popover-reset")
@@ -157,7 +154,7 @@ function delegate(event) {
 // TODO: seperate this 
 function setTaskElementsMap() {
     console.log(` > getTasks()`)
-    for (const taskEl of DomCtrl.cache.allTasksElem) {
+    for (const taskEl of DomCtrl.getPopulatedTaskElements()) {
         let id = taskEl.id
         // myTasks.set(id, new Task())
         // myTasks.set(id, task)
@@ -166,15 +163,6 @@ function setTaskElementsMap() {
     }
     // console.log(myTasks.get("1a"))
 }
-    // function mapProjectToTasks() {
-    //     let task = new Task() // task-a, id=1a, // task-b, id=1b // task-c, id=1c
-    //     task.projectName = "new-project"
-    //     let projectName = task.projectName // now // later // now
-    //     if (!projectMap.has(projectName)) {
-    //         projectMap.set(projectName, new Map()) // {now: new Map(), later: new Map()}
-    //     }
-    //     projectMap.set(projectName, projectMap.get(projectName).set(id, task)) // {now: { {id: task} }}
-    // }
 
 // function extractProjectName(formData) {
 //     let existingProj = formData.get("existingProject")
@@ -201,7 +189,7 @@ function loadTaskToProjectMap(taskList) {
             if (!projectMap.has(projName)) {
                 projectMap.set(projName, new Map()) // {now: new Map(), later: new Map()}
             }
-            projectMap.set(projName, projectMap.get(projName).set(task.getShortId(), task)) // {now: { {id: task} }}
+            projectMap.set(projName, projectMap.get(projName).set(task.id, task)) // {now: { {id: task} }}
         }
     }
 }
@@ -209,23 +197,26 @@ function loadTaskToProjectMap(taskList) {
 // app
 function init() {
     console.log(` > init()`)
+    DomCtrl.cache = DomCtrl.getDomElements()
     let tasksList = TaskLoader.testLoadTasks(3)
     loadTaskToProjectMap(tasksList)
-    // TODO: make DomCtrl.displayTasks(projectMap)  
-    // to load tasks from projectsMap and make taskElement obects
+    DomCtrl.displayProjectTasks(viewingProject, projectMap.get(viewingProject))
+    setViewingDivTasksMap(viewingProject)
+    // DomCtrl.displayProjectTasks(viewingProject, projectMap.get(viewingProject))  
+    // TODO: make DomCtrl.displayProjectTasks(projectName, tasksMap) 
+    // to load tasks from the map for the given projName and make taskElement obects
     // keep a viewingProject var to easily switch to it using:  
-    //      DomCtrl.displayTasks(projectMap.get(viewingProject), htmlMaker.getTaskElTemplate()))  
+    //      DomCtrl.displayProjectTasks(viewingProject, projectMap.get(viewingProject))  
 
-    DomCtrl.cache = DomCtrl.getDomElements()
     setTaskElementsMap()
-    setMinDate()
+    // setMinDate()
     DomCtrl.setTheme("dark")
 
     DomCtrl.cache.body.addEventListener("click", (event) => {
         delegate(event)
     })
 
-        DomCtrl.cache.body.addEventListener("submit", (event) => {
+    DomCtrl.cache.body.addEventListener("submit", (event) => {
         event.preventDefault()
         const myData = new FormData(event.target)
             // console.log(Object.fromEntries(myData))

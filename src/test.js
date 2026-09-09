@@ -33,5 +33,5 @@ function test() {
     console.log(`get project named "${getProjName}": ${JSON.stringify(resProjObj, null, 2)}`)
 }
 
-test()
+// test()
 

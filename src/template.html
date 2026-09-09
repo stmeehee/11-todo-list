@@ -134,293 +134,144 @@
         <div class="viewing-div">
             <div class="project-name-div">
                 <p>All tasks</p>
-
-<!-- example --> <!-- ----------------- -->
-                 <div class="full-task-div" id="1a">
-
-                    <div class="progress-bar-btn-div">
-                        <div class="task-progress-bar" 
-                            data-label="0%" 
-                            style="--progress-bar-width: 0%;"
-                        ></div>
-                        <button popovertarget="tasks-options-popover" class="tasks-options">
-                            <div>...</div>
-                        </button>
-                    </div>
-
-                    <!-- the parent task div has the main task and sub tasks,  -->
-                    <div class="task-parent-div">
-                        <!-- the main task div with task complete-btn, title,desc., priority and due date listed -->
-                        <div id="primary-task">
-                            <button class="disable" data-class_show="task-details">complete</button>
-                            <div class="task-details ">
-                                <p>Title: do this</p>
-                                <p>Description: do this and that</p>
-                                <!-- DUE DATE -->
-                                 <p>Due date: 1/9/2026</p>
-                                <div class="tags">
-                                    <span>Tags: </span>
-                                    <!-- can have classes:low, medium, high  -->
-                                    <div class="tag high-priority">
-                                        <span>High </span>
-                                    </div>
-                                    <div class="tag">
-                                        <span>birthday</span>
-                                    </div>
-                                    <div class="tag medium-priority">
-                                        <span>medium</span>
-                                    </div>
-                                    <div class="tag low-priority">
-                                        <span>low</span>
-                                    </div>                                                                        
-                                </div>
-                            </div>
-                            <div class="task-details-edit hidden-div">
-                                <div class="edit-field-selectors">
-                                    <input type="radio" id="edit-title-radio-1a" name="edit-field-1a" value="edit-title-div" class="toggle-input-edit">
-                                    <label for="edit-title-radio-1a" class="toggle-label">Title</label>
-
-                                    <input type="radio" id="edit-date-radio-1a" name="edit-field-1a" value="edit-date-div" class="toggle-input-edit">
-                                    <label for="edit-date-radio-1a" class="toggle-label">Date</label>
-
-                                    <input type="radio" id="edit-desc-radio-1a" name="edit-field-1a" value="edit-desc-div" class="toggle-input-edit">
-                                    <label for="edit-desc-radio-1a" class="toggle-label">Desc.</label>
-
-                                    <input type="radio" id="edit-time-radio-1a" name="edit-field-1a" value="edit-time-div" class="toggle-input-edit">
-                                    <label for="edit-time-radio-1a" class="toggle-label">Time</label>
-
-                                    <input type="radio" id="edit-tags-radio-1a" name="edit-field-1a" value="edit-tags-div" class="toggle-input-edit">
-                                    <label for="edit-tags-radio-1a" class="toggle-label">Tags</label>
-
-                                    <input type="radio" id="edit-note-radio-1a" name="edit-field-1a" value="edit-note-div" class="toggle-input-edit">
-                                    <label for="edit-note-radio-1a" class="toggle-label">Note</label>
-                                </div>
-                                <hr>
-                                <form class="edit-form" data-form-name="editForm">
-                                    <fieldset>
-                                        <div class="hidden-div edit-title-div">                                            
-                                            <label for="edit-title"></label>
-                                            <input type="text" id="edit-title" placeholder="Title" name="title">
-                                        </div>
-                                        <div class="hidden-div edit-date-div">
-                                            <label for="edit-date">Date: </label>
-                                            <input type="date" id="edit-date" name="date">
-                                        </div>                                 
-                                        <div class="hidden-div edit-desc-div">
-                                            <label for="edit-desc"></label>
-                                            <input type="text" id="edit-desc" placeholder="Description" name="desc">
-                                        </div>  
-                                        <div class="hidden-div edit-time-div">
-                                            <label for="edit-time" >Time: </label>
-                                            <input type="time" id="edit-time" name="time">
-                                        </div>     
-                                        <div class="hidden-div edit-tags-div"> 
-                                            <label for="edit-tags"></label>
-                                            <input type="text" id="edit-tags" placeholder="Tags" name="tags">
-                                        </div>  
-                                        <div class="hidden-div edit-note-div"> 
-                                            <label for="edit-note"></label>
-                                            <textarea id="edit-note" placeholder="Note" name="note"></textarea>
-                                        </div>                                        
-                                    </fieldset>
-                                    <!-- <hr> -->
-                                    <div class="edit-form-buttons">
-                                        <button 
-                                            type="submit" 
-                                            class="confirm-edit" 
-                                            data-class_show="task-details"
-                                            data-class_hide="task-details-edit">✓
-                                        </button>
-                                        <button 
-                                            type="button" 
-                                            class="cancel-edit"
-                                            data-class_show="task-details"
-                                            data-class_hide="task-details-edit">X
-                                        </button>                                      
-                                    </div>
-                                </form>
-                            </div>
-                        </div>
-                        <div class="expand-adjacent">
-                            <label class="show-children">
-                                <input type="checkbox" class="expand">
-                                <span class="arrow">></span>
-                            </label>
-                            <div class="subtask-status">
-                                <p>Subtasks: 4/4</p>
-                            </div>
-                        </div>
-                        <div class="hidden-div shift-left">
-                        <!-- can remain empty if no subtasks here -->
-                            <hr>
-                            <div class="subtask-1-div">
-                                <input type="checkbox" id="subtask-checkbox-2-1" value="subtaskTitle1">
-                                <label for="subtask-checkbox-2-1">title: Do task 1</label>
-                            </div>
-                            <hr>
-                            <div class="subtask-2-div">
-                                <input type="checkbox" id="subtask-checkbox-2-2" value="subtaskTitle2">
-                                <label for="subtask-checkbox-2-2">title: Do task 2 </label>
-                            </div>
-                            <hr>
-                            <div class="subtask-3-div">
-                                <input type="checkbox" id="subtask-checkbox-2-3" value="subtaskTitle3">
-                                <label for="subtask-checkbox-2-3">title: Do task 3 </label>
-                            </div>
-                            <hr>
-                            <div class="subtask-4-div">
-                                <input type="checkbox" id="subtask-checkbox-2-4" value="subtaskTitle4">
-                                <label for="subtask-checkbox-2-4">title: Do task 4</label>
-                            </div>                                                        
-                        </div>
-                    </div>    
-                 
-<!-- example --> <!-- ----------------- -->
-                  
-<!-- example2 --> <!-- ----------------- -->
-                <div class="full-task-div" id="1b">
-
-                    <div class="progress-bar-btn-div">
-                        <div class="task-progress-bar" 
-                            data-label="0%" 
-                            style="--progress-bar-width: 0%;"
-                        ></div>
-                        <button popovertarget="tasks-options-popover" class="tasks-options">
-                            <div>...</div>
-                        </button>
-                    </div>
-
-                    <!-- the parent task div has the main task and sub tasks,  -->
-                    <div class="task-parent-div">
-                        <!-- the main task div with task complete-btn, title,desc., priority and due date listed -->
-                        <div id="primary-task">
-                            <button class="disable" data-class_show="task-details">complete</button>
-                            <div class="task-details">
-                                <p>Title: do this</p>
-                                <p>Description: do this and that</p>
-                                <div class="tags">
-                                    <span>Tags: </span>
-                                    <!-- can have classes:low, medium, high  -->
-                                    <div class="tag high-priority">
-                                        <span>High </span>
-                                    </div>
-                                    <div class="tag">
-                                        <span>birthday</span>
-                                    </div>
-                                    <div class="tag medium-priority">
-                                        <span>medium</span>
-                                    </div>
-                                    <div class="tag low-priority">
-                                        <span>low</span>
-                                    </div>                                                                        
-                                </div>
-                            </div>
-                            <div class="task-details-edit hidden-div">
-                                <div class="edit-field-selectors">
-                                    <input type="radio" id="edit-title-radio-1b" name="edit-field-1b" value="edit-title-div" class="toggle-input-edit">
-                                    <label for="edit-title-radio-1b" class="toggle-label">Title</label>
-
-                                    <input type="radio" id="edit-date-radio-1b" name="edit-field-1b" value="edit-date-div" class="toggle-input-edit">
-                                    <label for="edit-date-radio-1b" class="toggle-label">Date</label>
-
-                                    <input type="radio" id="edit-desc-radio-1b" name="edit-field-1b" value="edit-desc-div" class="toggle-input-edit">
-                                    <label for="edit-desc-radio-1b" class="toggle-label">Desc.</label>
-
-                                    <input type="radio" id="edit-time-radio-1b" name="edit-field-1b" value="edit-time-div" class="toggle-input-edit">
-                                    <label for="edit-time-radio-1b" class="toggle-label">Time</label>
-
-                                    <input type="radio" id="edit-tags-radio-1b" name="edit-field-1b" value="edit-tags-div" class="toggle-input-edit">
-                                    <label for="edit-tags-radio-1b" class="toggle-label">Tags</label>
-
-                                    <input type="radio" id="edit-note-radio-1b" name="edit-field-1b" value="edit-note-div" class="toggle-input-edit">
-                                    <label for="edit-note-radio-1b" class="toggle-label">Note</label>
-                                </div>
-                                <hr>
-                                <form class="edit-form" data-form-name="editForm">
-                                    <fieldset>
-                                        <div class="hidden-div edit-title-div">                                            
-                                            <label for="edit-title"></label>
-                                            <input type="text" id="edit-title" placeholder="Title" name="title">
-                                        </div>
-                                        <div class="hidden-div edit-date-div">
-                                            <label for="edit-date">Date: </label>
-                                            <input type="date" id="edit-date" name="date">
-                                        </div>                                 
-                                        <div class="hidden-div edit-desc-div">
-                                            <label for="edit-desc"></label>
-                                            <input type="text" id="edit-desc" placeholder="Description" name="desc">
-                                        </div>  
-                                        <div class="hidden-div edit-time-div">
-                                            <label for="edit-time" >Time: </label>
-                                            <input type="time" id="edit-time" name="time">
-                                        </div>     
-                                        <div class="hidden-div edit-tags-div"> 
-                                            <label for="edit-tags"></label>
-                                            <input type="text" id="edit-tags" placeholder="Tags" name="tags">
-                                        </div>  
-                                        <div class="hidden-div edit-note-div"> 
-                                            <label for="edit-note"></label>
-                                            <textarea id="edit-note" placeholder="Note" name="note"></textarea>
-                                        </div>                                        
-                                    </fieldset>
-                                    <!-- <hr> -->
-                                    <div class="edit-form-buttons">
-                                        <button 
-                                            type="submit" 
-                                            class="confirm-edit" 
-                                            data-class_show="task-details"
-                                            data-class_hide="task-details-edit">✓
-                                        </button>
-                                        <button 
-                                            type="button" 
-                                            class="cancel-edit"
-                                            data-class_show="task-details"
-                                            data-class_hide="task-details-edit">X
-                                        </button>                                        
-                                    </div>
-                                </form>
-                            </div>                            
-                        </div>
-                        <div class="expand-adjacent">
-                            <label class="show-children">
-                                <input type="checkbox" class="expand">
-                                <span class="arrow">></span>
-                            </label>   
-                            <div class="subtask-status">
-                                <p>Subtasks: 4/4</p>
-                            </div>
-                        </div>
-                        <div class="hidden-div shift-left">
-                        <!-- can remain empty if no subtasks here -->
-                            <!-- <p>e.g: child 1</p> -->
-                            <!-- <p>e.g: child 2</p> -->
-                            <!-- <p>e.g: child 3</p> -->
-                            <hr>
-                            <div class="subtask-1-div">
-                                <input type="checkbox" id="subtask-checkbox-1">
-                                <label for="subtask-checkbox-1">title: Do task 1</label>
-                            </div>
-                            <hr>
-                            <div class="subtask-2-div">
-                                <input type="checkbox" id="subtask-checkbox-2">
-                                <label for="subtask-checkbox-2">title: Do task 2 </label>
-                            </div>
-                            <hr>
-                            <div class="subtask-3-div">
-                                <input type="checkbox" id="subtask-checkbox-3">
-                                <label for="subtask-checkbox-3">title: Do task 3 </label>
-                            </div>
-                            <hr>
-                            <div class="subtask-4-div">
-                                <input type="checkbox" id="subtask-checkbox-4">
-                                <label for="subtask-checkbox-4">title: Do task 4</label>
-                            </div>                                                        
-                        </div>
-                    </div>    
-                 </div>
-<!-- example 2 --> <!-- ----------------- -->
-
             </div>
+
+            <!-- <div class="full-task-div" id="1a">
+
+                <div class="progress-bar-btn-div">
+                    <div class="task-progress-bar" 
+                        data-label="0%" 
+                        style="--progress-bar-width: 0%;"
+                    ></div>
+                    <button popovertarget="tasks-options-popover" class="tasks-options">
+                        <div>...</div>
+                    </button>
+                </div>
+
+                <div class="task-parent-div">
+                    <div class="primary-task">
+                        <button class="disable" data-class_show="task-details">complete</button>
+                        <div class="task-details ">
+                            <p>Title: do this</p>
+                            <p>Description: do this and that</p>
+                                <p>Due date: 1/9/2026</p>
+                            <div class="tags">
+                                <span>Tags: </span>
+                                <div class="tag high-priority">
+                                    <span>High </span>
+                                </div>
+                                <div class="tag">
+                                    <span>birthday</span>
+                                </div>
+                                <div class="tag medium-priority">
+                                    <span>medium</span>
+                                </div>
+                                <div class="tag low-priority">
+                                    <span>low</span>
+                                </div>                                                                        
+                            </div>
+                        </div>
+                        <div class="task-details-edit hidden-div">
+                            <div class="edit-field-selectors">
+                                <input type="radio" id="edit-title-radio-1a" name="edit-field-1a" value="edit-title-div" class="toggle-input-edit">
+                                <label for="edit-title-radio-1a" class="toggle-label">Title</label>
+
+                                <input type="radio" id="edit-date-radio-1a" name="edit-field-1a" value="edit-date-div" class="toggle-input-edit">
+                                <label for="edit-date-radio-1a" class="toggle-label">Date</label>
+
+                                <input type="radio" id="edit-desc-radio-1a" name="edit-field-1a" value="edit-desc-div" class="toggle-input-edit">
+                                <label for="edit-desc-radio-1a" class="toggle-label">Desc.</label>
+
+                                <input type="radio" id="edit-time-radio-1a" name="edit-field-1a" value="edit-time-div" class="toggle-input-edit">
+                                <label for="edit-time-radio-1a" class="toggle-label">Time</label>
+
+                                <input type="radio" id="edit-tags-radio-1a" name="edit-field-1a" value="edit-tags-div" class="toggle-input-edit">
+                                <label for="edit-tags-radio-1a" class="toggle-label">Tags</label>
+
+                                <input type="radio" id="edit-note-radio-1a" name="edit-field-1a" value="edit-note-div" class="toggle-input-edit">
+                                <label for="edit-note-radio-1a" class="toggle-label">Note</label>
+                            </div>
+                            <hr>
+                            <form class="edit-form" data-form-name="editForm">
+                                <fieldset>
+                                    <div class="hidden-div edit-title-div">                                            
+                                        <label for="edit-title"></label>
+                                        <input type="text" id="edit-title" placeholder="Title" name="title">
+                                    </div>
+                                    <div class="hidden-div edit-date-div">
+                                        <label for="edit-date">Date: </label>
+                                        <input type="date" id="edit-date" name="date">
+                                    </div>                                 
+                                    <div class="hidden-div edit-desc-div">
+                                        <label for="edit-desc"></label>
+                                        <input type="text" id="edit-desc" placeholder="Description" name="desc">
+                                    </div>  
+                                    <div class="hidden-div edit-time-div">
+                                        <label for="edit-time" >Time: </label>
+                                        <input type="time" id="edit-time" name="time">
+                                    </div>     
+                                    <div class="hidden-div edit-tags-div"> 
+                                        <label for="edit-tags"></label>
+                                        <input type="text" id="edit-tags" placeholder="Tags" name="tags">
+                                    </div>  
+                                    <div class="hidden-div edit-note-div"> 
+                                        <label for="edit-note"></label>
+                                        <textarea id="edit-note" placeholder="Note" name="note"></textarea>
+                                    </div>                                        
+                                </fieldset>
+                                <div class="edit-form-buttons">
+                                    <button 
+                                        type="submit" 
+                                        class="confirm-edit" 
+                                        data-class_show="task-details"
+                                        data-class_hide="task-details-edit">✓
+                                    </button>
+                                    <button 
+                                        type="button" 
+                                        class="cancel-edit"
+                                        data-class_show="task-details"
+                                        data-class_hide="task-details-edit">X
+                                    </button>                                      
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                    <div class="expand-adjacent">
+                        <label class="show-children">
+                            <input type="checkbox" class="expand">
+                            <span class="arrow">></span>
+                        </label>
+                        <div class="subtask-status">
+                            <p>Subtasks: 4/4</p>
+                        </div>
+                    </div>
+                    <div class="hidden-div shift-left">
+                        <hr>
+                        <div class="subtask-1-div">
+                            <input type="checkbox" id="subtask-checkbox-2-1" value="subtaskTitle1">
+                            <label for="subtask-checkbox-2-1">title: Do task 1</label>
+                        </div>
+                        <hr>
+                        <div class="subtask-2-div">
+                            <input type="checkbox" id="subtask-checkbox-2-2" value="subtaskTitle2">
+                            <label for="subtask-checkbox-2-2">title: Do task 2 </label>
+                        </div>
+                        <hr>
+                        <div class="subtask-3-div">
+                            <input type="checkbox" id="subtask-checkbox-2-3" value="subtaskTitle3">
+                            <label for="subtask-checkbox-2-3">title: Do task 3 </label>
+                        </div>
+                        <hr>
+                        <div class="subtask-4-div">
+                            <input type="checkbox" id="subtask-checkbox-2-4" value="subtaskTitle4">
+                            <label for="subtask-checkbox-2-4">title: Do task 4</label>
+                        </div>                                                        
+                    </div>
+                </div>    
+            </div> -->
+        <hr>
+<!-- example --> <!-- ----------------- -->
+
         </div>
 
     </main>
