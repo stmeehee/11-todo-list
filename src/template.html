@@ -324,14 +324,15 @@
                  <fieldset>
                     <div>
                         <label for="now">this time</label>
-                        <input type="radio" id="now" name="now-or-pick-time" value="now" checked>
+                        <input type="radio" id="now" name="pickTime" value="now" checked>
                     </div>
                     <div class="pick-time" >
                         <div>
                             <label for="time-picker">Pick a time</label>
-                            <input type="radio" id="time-picker" name="now-or-pick-time" value="pick-time">
+                            <input type="radio" id="time-picker" name="pickTime" value="notNow"> <!-- value=""> -->
                         </div>
-                        <input type="time" name="pick-time" value="00:00">
+                        <input type="time" name="customTime" value="00:00">
+                        <!-- name="timeNow", name="timePick" -->
                     </div>
                 </fieldset>
             </div>

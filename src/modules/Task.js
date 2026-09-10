@@ -2,6 +2,7 @@ import Subtask from "./Subtask.js"
 
 
 export default class Task {
+    static defaultProjectName = null
     #id = null
     #title= null
     #description = null
@@ -9,7 +10,7 @@ export default class Task {
     #time = null
     #priority = null
     #note = null
-    #projectNames = ["All Tasks"]
+    #projectNames = new Set().add(Task.defaultProjectName)
     #subtasks = []
     #finishedSubtasks = 0
     #unFinishedSubtasks = 0
@@ -26,12 +27,16 @@ export default class Task {
 
     setFields(formData, addProjectName, forceAddProjectName) {
         let newProjName = null
+        let time = null
+        this.#id = Task.getNewId()
         this.#title = formData.get("title")
         this.#description = formData.get("desc")
         this.#date = formData.get("date")
-        this.#time = formData.get("pickTime")
         this.#priority = formData.get("priority")
         this.#note = formData.get("note")
+        time = (formData.get("pickTime") === "now")? (this.getCurrTime()) : formData.get("customTime")
+        // console.log(`picked time: ${time}`)
+        this.#time = time 
         if (addProjectName) {
             if (forceAddProjectName) {
                 newProjName = forceAddProjectName
@@ -39,12 +44,22 @@ export default class Task {
             else {
                 newProjName = (formData.get("existingProject") !== "") 
                                     ? formData.get("existingProject")
-                                    : (formData.get("newProject"))
+                                    : (formData.get("newProject") || Task.defaultProjectName)
             }
-            this.#projectNames.push(newProjName)
+            this.#projectNames.add(newProjName)
         }
         this.addSubtasks(formData)
         this.#unFinishedSubtasks = this.#subtasks.length 
+    }
+
+    getCurrTime() {
+        return new Date().toLocaleTimeString([], { hour12: false , hour: "2-digit", minute: "2-digit" })
+    }
+
+    static getNewId() {
+        if (typeof crypto !== 'undefined' && crypto.randomUUID) {
+            return crypto.randomUUID();
+        }
     }
     
     addSubtasks(formData) {
@@ -121,7 +136,6 @@ export default class Task {
         formObject.append("subtaskTitle7", "test - sleep")
         formObject.append("subtaskTitle8", "test - sleep")
         formObject.append("existingProject", "")
-        
         return formObject
     }
 
@@ -155,6 +169,9 @@ export default class Task {
     }
 
     get taskProgress() {
+        if (this.#subtasks.length === 0) {
+            return 100
+        }
         return (this.#finishedSubtasks / this.#subtasks.length) * 100
     }
 
@@ -204,7 +221,7 @@ export default class Task {
     }
 
     get projectNames() {
-        return this.#projectNames
+        return Array.from(this.#projectNames)
     }
 
     getInfo() {

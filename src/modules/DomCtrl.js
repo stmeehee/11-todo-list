@@ -57,12 +57,15 @@ export default class DomCtrl {
         return descendentElem.closest(".full-task-div").id
     }
 
-    static getBarLabelColor(percentVal) {
+    static getBarLabelColor(percentVal, taskDone) {
         let label = null, color = null
         const red = DomCtrl.cache.barCssVars.barColorRedName
         const yellow = DomCtrl.cache.barCssVars.barColorYellowName
         const teal = DomCtrl.cache.barCssVars.barColorTealName
         const green = DomCtrl.cache.barCssVars.barColorGreenName
+        if (taskDone) {
+            return ["Complete!", green]
+        }        
         if (percentVal === 0)
             [label, color] = [`${percentVal} %`, red]
         else if (percentVal > 0 && percentVal < 100) {
@@ -73,9 +76,9 @@ export default class DomCtrl {
             if (percentVal === 100) {
                 [label, color] = ["In limbo...", teal]
             }
-            else {
-                [label, color] = ["Complete!", green]
-            }
+            // else {
+            //     [label, color] = ["Complete!", green]
+            // }
         }
         return [label, color]
     }
@@ -128,10 +131,10 @@ export default class DomCtrl {
     }
 
     static collapseHiddenDiv(taskId, collapseThisCheckbox) {
-        if (collapseThisCheckbox) {
-            collapseThisCheckbox.checked = false
-            return
-        }
+        // if (collapseThisCheckbox) {
+        //     collapseThisCheckbox.checked = false
+        //     return
+        // }
         const collapseCheckbox = this.myTaskElements.get(taskId).querySelector('input.expand[type="checkbox"]')
         collapseCheckbox.checked = false
     }
@@ -217,14 +220,17 @@ export default class DomCtrl {
         })
     }    
 
-    static resetTaskElement(taskId) {
+    static resetTaskElement(taskId, subtasksExist) {
         this.myTaskElements.get(taskId).classList.remove("done")
         // app/task duty
         this.unCheckSubtasks(taskId)
         let pct = 0
         let [label, color] = this.getBarLabelColor(pct)
         this.renderProgressBar(label, color, `${pct}%`, taskId)
-        this.completeBtnOnOff(taskId, false)
+        if (subtasksExist)  {
+            this.completeBtnOnOff(taskId, false)
+        }
+        this.updateSubTask(taskId, 0)
     }    
 
     static allowDiv(taskId) {
@@ -300,15 +306,19 @@ export default class DomCtrl {
     static displayProjectName(projectName) {
         this.cache.projectNamePara.textContent = projectName
     }
+
+    static displayTask(task) {
+        let taskElem = HtmlMaker.getTaskElem(task)
+        // this.cache.viewingDiv.append(taskElem)
+        DomCtrl.cache.viewingDiv.insertAdjacentHTML(
+            "beforeend",
+            taskElem
+        ) 
+    }
     
-    static displayProjectTasks(projectName, tasksMap) {        
-        for (const task of tasksMap.values()) {
-            let taskElem = HtmlMaker.getTaskElem(task)
-            // this.cache.viewingDiv.append(taskElem)
-            DomCtrl.cache.viewingDiv.insertAdjacentHTML(
-                "beforeend",
-                taskElem
-            )            
+    static displayProjectTasks(projectName, projectTasksMap) {        
+        for (const task of projectTasksMap.values()) {
+            this.displayTask(task)
         }
         this.displayProjectName(projectName)
     }   
@@ -317,8 +327,8 @@ export default class DomCtrl {
         return document.querySelectorAll(".viewing-div > div:not(.project-name-div)")
     }
 
-    static updateSubTask(taskId, finishedSubtasks, totalSubtasks) {
-        const subTaskStatusElem = this.myTaskElements.get(taskId).querySelector(".subtask-status > p")
-        subTaskStatusElem.textContent = `Subtasks: ${finishedSubtasks}/${totalSubtasks}`
+    static updateSubTask(taskId, finishedSubtasks) {
+        const finishedSubTaskStatusElem = this.myTaskElements.get(taskId).querySelector(".subtask-status > p > span")
+        finishedSubTaskStatusElem.textContent = finishedSubtasks
     }  
 }

@@ -12,17 +12,17 @@ export default class TaskLoader {
         for (let i = 0; i < loadHowMany; i += 1) {
             projName = this.testProjectNames[i%this.testProjectNames.length]
             const task = new Task(null, projName)
-            task.id = this.#testGenerateId()
+            // task.id = Task.getNewId()
             tasksList.push(task)
         }
         return tasksList
     }
 
-    static #testGenerateId() {
-        if (typeof crypto !== 'undefined' && crypto.randomUUID) {
-            return crypto.randomUUID();
-    }
-}   
+    // static #testGenerateId() {
+    //     if (typeof crypto !== 'undefined' && crypto.randomUUID) {
+    //         return crypto.randomUUID();
+    //     }
+    // }   
 }
 
 function testPrintTasks() {

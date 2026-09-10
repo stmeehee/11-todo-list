@@ -1,4 +1,5 @@
 import Task from "./Task.js"
+import DomCtrl from "./DomCtrl.js"
 
 export default class HtmlMaker {
 
@@ -72,12 +73,14 @@ export default class HtmlMaker {
 
     static getProgBarBtnDiv() {
         // progress-bar-btn-div
+        const pct = 0
+        const [label, color] = DomCtrl.getBarLabelColor(pct)
         const elem = 
         `
         <div class="progress-bar-btn-div">
             <div class="task-progress-bar" 
-                data-label="0%" 
-                style="--progress-bar-width: 0%;">
+                data-label="${label}" 
+                style="--progress-bar-width: ${pct}%;">
             </div>
             <button popovertarget="tasks-options-popover" class="tasks-options">
                 <div>...</div>
@@ -95,7 +98,7 @@ export default class HtmlMaker {
         `
         <div class="task-parent-div">
         ${this.getPrimaryTaskDiv(task)} 
-        ${this.getSubtaskCheckBoxDiv(task.finishedSubtasks, task.unFinishedSubtasks)} 
+        ${this.getSubtaskCheckBoxDiv(task.unFinishedSubtasks)} 
         ${this.getHiddenSubTaskDiv(task)}
         </div>
         `
@@ -103,7 +106,9 @@ export default class HtmlMaker {
     }
 
         static getPrimaryTaskDiv(task) {
-            const confirmBtn = `<button class="disable" data-class_show="task-details">complete</button>`
+            const confirmBtnState = (task.getSubtaskTitles().length === 0) ? "finalize" : "disable"
+            console.log({confirmBtnState})
+            const confirmBtn = `<button class="${confirmBtnState}" data-class_show="task-details">complete</button>`
             const primaryTaskDiv = 
             `
             <div class="primary-task">
@@ -240,7 +245,10 @@ export default class HtmlMaker {
                     return editformDiv
                 }
 
-        static getSubtaskCheckBoxDiv(finishedSubtasks, unFinishedSubtasks) {
+        static getSubtaskCheckBoxDiv(unFinishedSubtasks) {
+            if (unFinishedSubtasks === 0) {
+                return ""
+            }
             const div = 
             `
             <div class="expand-adjacent">
@@ -249,7 +257,7 @@ export default class HtmlMaker {
                     <span class="arrow">></span>
                 </label>
                 <div class="subtask-status">
-                    <p>Subtasks: ${finishedSubtasks}/${unFinishedSubtasks}</p>
+                    <p>Subtasks: <span>0</span>/${unFinishedSubtasks}</p>
                 </div>
         </div>
             `
@@ -257,6 +265,9 @@ export default class HtmlMaker {
         }
 
         static getHiddenSubTaskDiv(task) {
+            if (task.getSubtaskTitles().length === 0) {
+                return ""
+            }
             let hiddenSubtaskDiv = `<div class="hidden-div shift-left">`
             const subtaskTitles = task.getSubtaskTitles()
             let childSubtaskDivs = ""
@@ -269,31 +280,6 @@ export default class HtmlMaker {
             }
             hiddenSubtaskDiv += childSubtaskDivs + `</div>`
             return hiddenSubtaskDiv
-            const div = 
-            `
-            <div class="hidden-div shift-left">
-                <hr>
-                <div class="subtask-1-div">
-                    <input type="checkbox" id="subtask-checkbox-2-1" value="subtaskTitle1">
-                    <label for="subtask-checkbox-2-1">title: Do task 1</label>
-                </div>
-                <hr>
-                <div class="subtask-2-div">
-                    <input type="checkbox" id="subtask-checkbox-2-2" value="subtaskTitle2">
-                    <label for="subtask-checkbox-2-2">title: Do task 2 </label>
-                </div>
-                <hr>
-                <div class="subtask-3-div">
-                    <input type="checkbox" id="subtask-checkbox-2-3" value="subtaskTitle3">
-                    <label for="subtask-checkbox-2-3">title: Do task 3 </label>
-                </div>
-                <hr>
-                <div class="subtask-4-div">
-                    <input type="checkbox" id="subtask-checkbox-2-4" value="subtaskTitle4">
-                    <label for="subtask-checkbox-2-4">title: Do task 4</label>
-                </div>                                                        
-            </div>
-            `
         }
 
             static getSubTaskChildDiv(title, subtaskNo, shortId) {

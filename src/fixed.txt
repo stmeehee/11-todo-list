@@ -1,0 +1,6 @@
+fixes: subtask status, no subtasks btn, new task time
+
+fixed: subtask checkbox status won't decrement when checkbox unticked
+fixed: complete btn for task with no subtasks is greyed out
+fixed: selecting "now" time assigns "now" instead of the current time to task due date
+xtra fix: wrong progress bar reading for task with no subtask(s)

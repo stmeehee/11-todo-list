@@ -5,9 +5,11 @@ import taskDomCtrl from "./modules/taskDomCtrl.js";
 import DomCtrl from "./modules/DomCtrl.js";
 import TaskLoader from "./modules/TaskLoader.js";
 
+// myViewingDivTasks: the tasks that are currently being viewed; chosen according to the viewingProject var
 let myViewingDivTasks = null // Task  
 let projectMap = new Map()
-let viewingProject = "All Tasks"
+const defaultProjectName = "All tasks"
+let viewingProject = null
 
 // Task method
 //TODO
@@ -15,7 +17,39 @@ function addTask(myFormData) {
     //TODO
 }
 
-function setViewingDivTasksMap(setToProject) {
+function setTaskDefaultProjectName() {
+    Task.defaultProjectName = defaultProjectName
+    viewingProject = Task.defaultProjectName
+}
+
+function newTask(formData) {
+    const task = new Task(formData)
+    addToProjectMap(task)
+    // DomCtrl.addToMap
+    // TODO: 
+    // saveTaskToStorage(projectMap) 
+    displayTask(task)
+    setTaskElementsMap()
+}
+
+function displayTask(thisTask) {
+    const ifViewingThisTaskProject = thisTask.projectNames.includes(viewingProject)
+    if (ifViewingThisTaskProject) {
+        DomCtrl.displayTask(thisTask)
+    }
+}
+
+function addToProjectMap(task) {
+    for (const projName of task.projectNames) {
+        const newProject = (projName !== "" && !projectMap.has(projName))
+        if (newProject) {
+            projectMap.set(projName, new Map()) // {now: new Map(), later: new Map()}
+        }     
+        projectMap.set(projName, projectMap.get(projName).set(task.id, task)) // {now: { {id: task} }}
+    }
+}   
+
+function setViewingDivTasksMapToProject(setToProject) {
     myViewingDivTasks = projectMap.get(setToProject)
 }
 
@@ -69,7 +103,7 @@ function delegate(event) {
         let pct = task.taskProgress 
         let [label, color] = DomCtrl.getBarLabelColor(pct) 
         DomCtrl.renderProgressBar(label, color, `${pct}%`, taskId)
-        DomCtrl.updateSubTask(taskId, task.finishedSubtasks, task.getSubtaskTitles().length)
+        DomCtrl.updateSubTask(taskId, task.finishedSubtasks)
 
         // console.log(myTasks.get(taskId).isFinished)
         // completeBtnOnOff(taskId, myTasks.get(taskId).isFinished) // DomCtrl
@@ -86,10 +120,15 @@ function delegate(event) {
         taskId = DomCtrl.getTaskIdFromElement(confirmBtn)
         DomCtrl.markTaskComplete(taskId)
         DomCtrl.disAllowDiv(taskId)
-        DomCtrl.collapseHiddenDiv(taskId)
-        let color = DomCtrl.cache.barCssVars.barColorGreenName
-        let pct = myViewingDivTasks.get(taskId).taskProgress
-        let label = "Complete!"
+        const subtasksExist = (projectMap.get(viewingProject).get(taskId).getSubtaskTitles().length !== 0)
+        if (subtasksExist) {
+            DomCtrl.collapseHiddenDiv(taskId)
+        }
+        const pct = 100
+        let [label, color] = DomCtrl.getBarLabelColor(null, true) 
+        // let color = DomCtrl.cache.barCssVars.barColorGreenName
+        // let label = "Complete!"
+
         DomCtrl.renderProgressBar(label, color, `${pct}%`, taskId)
         DomCtrl.closeEditor(confirmBtn)
     }
@@ -112,17 +151,12 @@ function delegate(event) {
         const editBtn = btnClicked.classList.contains("popover-edit") 
         const resetBtn = btnClicked.classList.contains("popover-reset")
         if (editBtn) {
-            // const divToShow = myTaskElements.get(taskId).querySelector(".task-details-edit")
-            // const divToHide = myTaskElements.get(taskId).querySelector(".task-details")
-            // console.log({divToShow}, {divToHide})
-            // toggleElemVisibility(divToShow, divToHide)
-            // myTaskDomCtrlMap.get(taskId).taskDetailsDivInView = divToShow
-            // console.log(myTaskDomCtrlMap.get(taskId).taskDetailsDivInView)
             DomCtrl.openEditor()
         }
         if (resetBtn) {
             task.resetProgress()
-            DomCtrl.resetTaskElement(taskId)
+            const subtasksExist = task.getSubtaskTitles().length
+            DomCtrl.resetTaskElement(taskId, subtasksExist)
             DomCtrl.allowDiv(taskId)
         }
     }
@@ -175,14 +209,7 @@ function setTaskElementsMap() {
 
 // ProjectMap {projectName: {taskId: taskObj}}
 
-function newTask(formData) {
-    // const task = new Task(formData)
-    // projectName = extractProjectName(formData)
-    // projectMap.set(projectName, task)
-    // console.log(task)
-}
-
-function loadTaskToProjectMap(taskList) {
+function loadTasksToProjectMap(taskList) {
     for (const task of taskList) {
         let taskProjectNames = task.projectNames
         for (const projName of taskProjectNames) {
@@ -197,11 +224,12 @@ function loadTaskToProjectMap(taskList) {
 // app
 function init() {
     console.log(` > init()`)
+    setTaskDefaultProjectName()
     DomCtrl.cache = DomCtrl.getDomElements()
-    let tasksList = TaskLoader.testLoadTasks(3)
-    loadTaskToProjectMap(tasksList)
+    let tasksList = TaskLoader.testLoadTasks(1)
+    loadTasksToProjectMap(tasksList)
     DomCtrl.displayProjectTasks(viewingProject, projectMap.get(viewingProject))
-    setViewingDivTasksMap(viewingProject)
+    setViewingDivTasksMapToProject(viewingProject)
     // DomCtrl.displayProjectTasks(viewingProject, projectMap.get(viewingProject))  
     // TODO: make DomCtrl.displayProjectTasks(projectName, tasksMap) 
     // to load tasks from the map for the given projName and make taskElement obects
@@ -209,7 +237,7 @@ function init() {
     //      DomCtrl.displayProjectTasks(viewingProject, projectMap.get(viewingProject))  
 
     setTaskElementsMap()
-    // setMinDate()
+    setMinDate()
     DomCtrl.setTheme("dark")
 
     DomCtrl.cache.body.addEventListener("click", (event) => {
@@ -221,8 +249,8 @@ function init() {
         const myData = new FormData(event.target)
             // console.log(Object.fromEntries(myData))
         if (event.target.dataset.formName === "newForm") {
-            // console.log("newForm")
-            // console.log(Object.fromEntries(myData))
+            console.log("newForm")
+            console.log(Object.fromEntries(myData))
             newTask(myData)
             DomCtrl.cache.newTaskdialogBox.close()
         }
