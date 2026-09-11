@@ -1,6 +1,14 @@
-fixes: subtask status, no subtasks btn, new task time
+fixes:  we can see existing project options in add new task form dialog,
+        progress bar increments in "All tasks" on page load, but doesnt when selecting a project 
+            and clicking a checkbox (fixed; iter over the existing task elems instead  of making new ones),
+        new task w/ new project would get added to "All tasks" only, not to new project 
 
-fixed: subtask checkbox status won't decrement when checkbox unticked
-fixed: complete btn for task with no subtasks is greyed out
-fixed: selecting "now" time assigns "now" instead of the current time to task due date
-xtra fix: wrong progress bar reading for task with no subtask(s)
+added: ability to switch to diff. projects,
+        ability to delete individual task and project
+
+working on: sidebar-main-div btns 
+            1: All tasks btn
+            2: deleted tasks btn
+            3,4,5:upcoming, overdue, Completed tasks
+
+bugfix TODO:    

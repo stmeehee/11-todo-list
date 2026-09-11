@@ -2,7 +2,7 @@ import Subtask from "./Subtask.js"
 
 
 export default class Task {
-    static defaultProjectName = null
+    static defaultTaskProjectName = null
     #id = null
     #title= null
     #description = null
@@ -10,7 +10,7 @@ export default class Task {
     #time = null
     #priority = null
     #note = null
-    #projectNames = new Set().add(Task.defaultProjectName)
+    #projectNames = new Set().add(Task.defaultTaskProjectName)
     #subtasks = []
     #finishedSubtasks = 0
     #unFinishedSubtasks = 0
@@ -42,9 +42,9 @@ export default class Task {
                 newProjName = forceAddProjectName
             }
             else {
-                newProjName = (formData.get("existingProject") !== "") 
-                                    ? formData.get("existingProject")
-                                    : (formData.get("newProject") || Task.defaultProjectName)
+                newProjName =   (formData.get("newProject")  !== "") 
+                                ? formData.get("newProject")
+                                : (formData.get("existingProject") || Task.defaultTaskProjectName ) 
             }
             this.#projectNames.add(newProjName)
         }
@@ -70,28 +70,9 @@ export default class Task {
         }
     }
 
-    // set subtasks(subtaskObj) {
-    //     if (!subtaskObj instanceof Subtask) {
-    //         throw new Error("Can only assign a subtask of type Subtask")            
-    //     }
-    //     this._subtask = subtaskObj 
-    // }
-
     edit(formData) {
         this.setFields(formData)
     }
-
-    // updateProgress(isChecked) {
-    //     const Task = myTasks.get(taskId)
-    //     // console.log(` > updateProgress()`)
-    //     // console.log(`task id clicked: ${Task._id}`)    
-    //     if (isChecked) {
-    //         this.current += 1
-    //     }
-    //     else {
-    //         this.current -= 1
-    //     }
-    // }
 
     updateProgress(subtaskKey, isChecked) {
         let ticked = 0
@@ -107,16 +88,6 @@ export default class Task {
         this.#unFinishedSubtasks = this.#subtasks.length - this.#finishedSubtasks
         this.#checkIsFinished()
     }
-
-    // creates every task object with testFormData for testing
-    // will later load task data from local storage
-    // testGetTaskMap(howMany) {
-    //     let map = new Map()
-    //     for (let i = 0; i < howMany; i += 1) {
-    //         map.set(id, new Task())
-    //     }
-    //     return map
-    // }
 
     testGetFormObj() {
         const formObject = new FormData()
@@ -140,7 +111,8 @@ export default class Task {
     }
 
     toJSON() {
-            return {
+            const info = 
+            {
                 id: this.getShortId(),
                 title: this.#title,
                 description: this.#description,
@@ -153,7 +125,8 @@ export default class Task {
                 finishedSubtasks: this.#finishedSubtasks,
                 unFinishedSubtasks: this.#unFinishedSubtasks,
                 _isFinished: this._isFinished
-            };
+            }
+            return info
         }
     
     set id(value) {
@@ -221,7 +194,8 @@ export default class Task {
     }
 
     get projectNames() {
-        return Array.from(this.#projectNames)
+        // return Array.from(this.#projectNames)
+        return this.#projectNames
     }
 
     getInfo() {
@@ -235,6 +209,15 @@ export default class Task {
     getTags() {
         console.log("tags dont exist yet!")
         // TODO: add tags list private field and return return that list 
+    }
+
+    // removeProject(removeThisProject) {
+    //     this.#projectNames.delete(removeThisProject)
+    // }
+
+    markAsDeleted() {
+        this.#projectNames.clear()
+        this.#projectNames.add("deleted tasks")
     }
 
     // set projectNames(name) {

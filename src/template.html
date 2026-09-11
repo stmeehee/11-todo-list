@@ -68,15 +68,15 @@
             <hr>      
             <div class="user-projects shift-left">
                 <!--  btn's here added by JS -->
-                  <div class="user-project">
-                    <button value="project1">
+                  <!-- <div class="user-project">
+                    <button data-project-name="My Project">
                         <div>
                             <span>1 - </span>
                             <span>My Project</span>           
                         </div>       
                     </button>
                     <button type="button" class="remove-project small-delete-btn">X</button>             
-                </div>
+                </div> -->
             </div>
         </div>          
     </div>
@@ -132,9 +132,6 @@
         </div>
 
         <div class="viewing-div">
-            <div class="project-name-div">
-                <p>All tasks</p>
-            </div>
 
             <!-- <div class="full-task-div" id="1a">
 
@@ -350,8 +347,7 @@
                 <div class="existing-project">
                     <label for="project-select">Add to existing project:</label>
                     <select id="project-select" name="existingProject" >  
-                        <option></option>              
-                        <!-- TODO: add projects available by user -->
+                        <option value="All tasks">All tasks</option>              
                     </select>
                 </div>
                 <div class="new-project">

@@ -15,18 +15,35 @@ export default class HtmlMaker {
         return newSubtaskDivHtml
     }
 
-    static getProjectDiv(projNum, projectName) {
+    static getNewProjectDiv(projNum, projectName) {
             const userProjectDiv = `<div class="user-project">
-                                    <button value="${projectName}">
-                                        <div>
-                                            <span>${projNum} - </span>
-                                            <span>${projectName}</span>
-                                        </div>            
-                                    </button>
+                                        <button data-project-name="${projectName}" class="select-project">
+                                            <div>
+                                                <span>${projNum} - </span>
+                                                <span>${projectName}</span>
+                                            </div>            
+                                        </button>
                                     <button type="button" class="remove-project small-delete-btn">X</button>
-                                </div>
-                                `      
+                                </div>                       `      
             return userProjectDiv
+    }
+
+    static getProjectSelectOption(existingProjectName) {
+        const optionElem = 
+        `
+        <option value="${existingProjectName}">${existingProjectName}</option>
+        `
+        return optionElem
+    }
+
+    static getProjectNameDiv(projectName) {
+        const div = 
+        `
+        <div class="project-name-div">
+            <p>${projectName}</p>
+        </div>
+        `
+        return div
     }
 
     static getTaskElem(task) {
@@ -107,7 +124,7 @@ export default class HtmlMaker {
 
         static getPrimaryTaskDiv(task) {
             const confirmBtnState = (task.getSubtaskTitles().length === 0) ? "finalize" : "disable"
-            console.log({confirmBtnState})
+            // console.log({confirmBtnState})
             const confirmBtn = `<button class="${confirmBtnState}" data-class_show="task-details">complete</button>`
             const primaryTaskDiv = 
             `

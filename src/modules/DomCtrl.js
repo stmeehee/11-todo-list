@@ -1,5 +1,5 @@
 import taskDomCtrl from "./taskDomCtrl.js";
-import HtmlMaker from "./htmlMaker.js";
+import HtmlMaker from "./HtmlMaker.js";
 // import { html } from "webpack";
 
 export default class DomCtrl {
@@ -36,10 +36,13 @@ export default class DomCtrl {
         // addNewProjectCheckBox: uncheck add project to collapse project name field
         const addNewProjectCheckBox = document.querySelector('.add-project > input[type="checkbox"]')
         const projectNamePara = document.querySelector(".project-name-div > p")
+        // projectSelectContainer: existing projects are added here
+        const existingProjectsSelection = document.querySelector(".existing-project > #project-select")
 
         return {
             root, body, viewingDiv, barCssVars, dateInputs, tasksOptionsPopover, newTaskdialogBox, 
-            newSubtaskDivsContainer, userProjectsContainer, addNewProjectCheckBox, projectNamePara
+            newSubtaskDivsContainer, userProjectsContainer, addNewProjectCheckBox, projectNamePara,
+            existingProjectsSelection
         }
     }
 
@@ -131,10 +134,10 @@ export default class DomCtrl {
     }
 
     static collapseHiddenDiv(taskId, collapseThisCheckbox) {
-        // if (collapseThisCheckbox) {
-        //     collapseThisCheckbox.checked = false
-        //     return
-        // }
+        if (collapseThisCheckbox) {
+            collapseThisCheckbox.checked = false
+            return
+        }
         const collapseCheckbox = this.myTaskElements.get(taskId).querySelector('input.expand[type="checkbox"]')
         collapseCheckbox.checked = false
     }
@@ -292,22 +295,25 @@ export default class DomCtrl {
         divToRemove.remove()
     }    
 
-    static addProjectToSideBar(formElem) {
+    static addProjectToSideBar(projectName) {
         // DomCtrl.cache.userProjectsContainer
-        const projectName = formElem.get("newProject")
         const projNum = this.cache.userProjectsContainer.children.length + 1
-        const userProjectDiv = HtmlMaker.getProjectDiv(projNum, projectName)
+        const userProjectDiv = HtmlMaker.getNewProjectDiv(projNum, projectName)
         DomCtrl.cache.userProjectsContainer.insertAdjacentHTML(
             "beforeend",
             userProjectDiv
         )
     }   
 
-    static displayProjectName(projectName) {
-        this.cache.projectNamePara.textContent = projectName
+    static makeProjectNameDiv(projectName) {
+        const dislayProjectNameDiv = HtmlMaker.getProjectNameDiv(projectName)
+        DomCtrl.cache.viewingDiv.insertAdjacentHTML(
+            "beforeend",
+            dislayProjectNameDiv
+        )         
     }
 
-    static displayTask(task) {
+    static addNewTaskElemToDom(task) {
         let taskElem = HtmlMaker.getTaskElem(task)
         // this.cache.viewingDiv.append(taskElem)
         DomCtrl.cache.viewingDiv.insertAdjacentHTML(
@@ -315,12 +321,17 @@ export default class DomCtrl {
             taskElem
         ) 
     }
+
+    static clearViewingDiv() {
+        DomCtrl.cache.viewingDiv.replaceChildren()
+    }
     
-    static displayProjectTasks(projectName, projectTasksMap) {        
+    static buildProjectTasksElements(projectName, projectTasksMap) { 
+        this.clearViewingDiv()
+        this.makeProjectNameDiv(projectName)
         for (const task of projectTasksMap.values()) {
-            this.displayTask(task)
+            this.addNewTaskElemToDom(task)
         }
-        this.displayProjectName(projectName)
     }   
 
     static getPopulatedTaskElements(){
@@ -331,4 +342,52 @@ export default class DomCtrl {
         const finishedSubTaskStatusElem = this.myTaskElements.get(taskId).querySelector(".subtask-status > p > span")
         finishedSubTaskStatusElem.textContent = finishedSubtasks
     }  
+
+    static addToViewingDiv(taskElem) {
+        DomCtrl.cache.viewingDiv.append(taskElem)
+    }
+
+    static showTasks(viewingProjectName, viewingProjectTaskIdSet) {
+        // loop over each takEl in taskElementsMap
+        // if taskElId exists in taskIdList, add it to dom
+        this.clearViewingDiv()
+        this.makeProjectNameDiv(viewingProjectName)
+        for (const [taskElemId, taskElem] of this.myTaskElements) {
+            if (viewingProjectTaskIdSet.has(taskElemId)) {
+                this.addToViewingDiv(taskElem)
+            }
+        }
+    }
+
+    static init(viewingProject, viewingProjectTasksMap) {
+    }
+
+    // saves Tasks, task html elements & tracks editor open/close + other state for each task html element
+    // TODO: seperate this 
+    static setTaskElementsMap() {
+        // console.log(` > getTasks()`)
+        for (const taskEl of DomCtrl.getPopulatedTaskElements()) {
+            let id = taskEl.id
+            this.myTaskElements.set(id, taskEl)
+            taskDomCtrl.add(id)
+        }
+        // console.log(myTasks.get("1a"))
+    }
+
+    static setMinDate(date) {
+        DomCtrl.cache.dateInputs.forEach((dateEl) => {
+        dateEl.setAttribute("min", date)
+        dateEl.setAttribute("value", date)
+        })  
+    }
+
+    static setExistingProjects(projectList) {
+        for (const projName of projectList) {
+            const existingProjOptionElem = HtmlMaker.getProjectSelectOption(projName)
+            DomCtrl.cache.existingProjectsSelection.insertAdjacentHTML(
+                "beforeend",
+                existingProjOptionElem
+            ) 
+        }
+    }
 }

@@ -1,7 +1,7 @@
 import Task from "./Task.js";
 
 export default class TaskLoader {
-    static testProjectNames = ["now","later", "now"]
+    static testProjectNames = ["has 2","has 1", "has 2"]
     // simu;late loading tasks from this class
     static testLoadTasks(loadHowMany) {
         if (!loadHowMany) {

@@ -6,40 +6,90 @@ import DomCtrl from "./modules/DomCtrl.js";
 import TaskLoader from "./modules/TaskLoader.js";
 
 // myViewingDivTasks: the tasks that are currently being viewed; chosen according to the viewingProject var
-let myViewingDivTasks = null // Task  
 let projectMap = new Map()
-const defaultProjectName = "All tasks"
+const DEAFULT_PROJECT_NAME = "All tasks"
 let viewingProject = null
 
-// Task method
-//TODO
-function addTask(myFormData) {
-    //TODO
+function setViewingProject(setToProjectName) {
+    viewingProject = setToProjectName
 }
 
-function setTaskDefaultProjectName() {
-    Task.defaultProjectName = defaultProjectName
-    viewingProject = Task.defaultProjectName
+function getExistingProjects() {
+    const lst = [...projectMap.keys()].filter( (projectName) => {
+       return (projectName !== DEAFULT_PROJECT_NAME)
+    })
+    return lst
+}
+
+function refreshDomTasks() {
+    const viewingProjectTaskIdSet = new Set(projectMap.get(viewingProject).keys())
+    DomCtrl.showTasks(viewingProject, viewingProjectTaskIdSet)
+}
+
+// set the task itself to replace its prev projects with "deleted tasks" project
+// then add that task to deleted project map
+function addTaskToDelete(task, deletedTasksMap) {
+    task.markAsDeleted()
+    deletedTasksMap.set(task.id, task)
+}
+
+// deletes an individual task
+// by makign it forget about all projects and add "deleted tasks" to its projectNames set (addTaskToDelete())
+// then removing that task from the project in projectMap  
+function deleteAndRmTaskFromProjectMap(task) {
+    for (const projectName of task.projectNames) {
+        projectMap.get(projectName).delete(task.id)
+    }
+    addTaskToDelete(task, projectMap.get("deleted tasks"))
+}
+
+// del an entire project 
+// by looping over that projects task and deleting them using (addTaskToDelete())
+// then removing the project tiiself from project Map
+function moveProjectTasksToDel(projNameToRm, projectMap) {
+    for (const task of projectMap.get(DEAFULT_PROJECT_NAME).values()) {
+        if (task.projectNames.has(projNameToRm)) {
+            addTaskToDelete(task, projectMap.get("deleted tasks"))
+            projectMap.get(DEAFULT_PROJECT_NAME).delete(task.id)
+        }
+        // also del the task from "all tasks" map
+    }
+    projectMap.delete(projNameToRm)
+    // TODO: delete the projNameToRm tasks from "all tasks" project!
+}
+
+function addNewProjectToProjectMap(projectName) {
+    projectMap.set(projectName, new Map())
+}
+
+function addProject(newProjName) {
+    DomCtrl.addProjectToSideBar(newProjName)
+    addNewProjectToProjectMap(newProjName)
+    DomCtrl.collapseHiddenDiv(null, DomCtrl.cache.addNewProjectCheckBox)
+}
+
+function projectExists(newProjectName, existingProjects) {
+    return new Set(existingProjects).has(newProjectName)
 }
 
 function newTask(formData) {
     const task = new Task(formData)
-    addToProjectMap(task)
-    // DomCtrl.addToMap
+    addTaskToProjectMap(task)
     // TODO: 
     // saveTaskToStorage(projectMap) 
     displayTask(task)
-    setTaskElementsMap()
+    // TODO: add project to sidebar
+    DomCtrl.setTaskElementsMap()
 }
 
-function displayTask(thisTask) {
-    const ifViewingThisTaskProject = thisTask.projectNames.includes(viewingProject)
-    if (ifViewingThisTaskProject) {
-        DomCtrl.displayTask(thisTask)
+function displayTask(task) {
+    const ifViewingTaskProject = task.projectNames.has(viewingProject)
+    if (ifViewingTaskProject) {
+        DomCtrl.addNewTaskElemToDom(task)
     }
 }
 
-function addToProjectMap(task) {
+function addTaskToProjectMap(task) {
     for (const projName of task.projectNames) {
         const newProject = (projName !== "" && !projectMap.has(projName))
         if (newProject) {
@@ -49,10 +99,6 @@ function addToProjectMap(task) {
     }
 }   
 
-function setViewingDivTasksMapToProject(setToProject) {
-    myViewingDivTasks = projectMap.get(setToProject)
-}
-
 // DomCtrl & app method
 // TODO: break this apart!
 function setMinDate() {
@@ -61,12 +107,9 @@ function setMinDate() {
     const month = String(presentDate.getMonth() + 1).padStart(2,"0")
     const day = String(presentDate.getDate()).padStart(2,"0")
     const minDate = `${year}-${month}-${day}`
+    DomCtrl.setMinDate(minDate)
     // DomCtrl.cache.date.setAttribute("min", minDate)
     // DomCtrl.cache.date.setAttribute("value", minDate)
-    DomCtrl.cache.dateInputs.forEach((date) => {
-        date.setAttribute("min", minDate)
-        date.setAttribute("value", minDate)
-    })
 }
 
 // app; main driver & orchestrator
@@ -87,6 +130,7 @@ function delegate(event) {
     const taskOptionsPopupMenu = event.target.closest("#tasks-options-popover")
     const addDialogSubtask = event.target.closest(".add-subtask-option")
     const deleteProject = event.target.closest(".remove-project")
+    const selectProject = event.target.closest(".select-project")
     if (changeTheme) {
         DomCtrl.setTheme()
     }
@@ -98,7 +142,7 @@ function delegate(event) {
         const checkBoxElem = event.target
         const subtaskKey = checkBoxElem.value
         taskId = DomCtrl.getTaskIdFromElement(checkBoxElem) 
-        const task = myViewingDivTasks.get(taskId)
+        const task = projectMap.get(viewingProject).get(taskId)
         task.updateProgress(subtaskKey, checkBoxElem.checked)
         let pct = task.taskProgress 
         let [label, color] = DomCtrl.getBarLabelColor(pct) 
@@ -146,10 +190,11 @@ function delegate(event) {
     }
     if (taskOptionsPopupMenu) {
         const taskId = event.target.closest("#tasks-options-popover").dataset.anchoredToTaskId
-        const task = myViewingDivTasks.get(taskId)        
+        const task = projectMap.get(viewingProject).get(taskId)        
         const btnClicked = event.target
         const editBtn = btnClicked.classList.contains("popover-edit") 
         const resetBtn = btnClicked.classList.contains("popover-reset")
+        const delBtn = btnClicked.classList.contains("popover-delete")
         if (editBtn) {
             DomCtrl.openEditor()
         }
@@ -158,6 +203,12 @@ function delegate(event) {
             const subtasksExist = task.getSubtaskTitles().length
             DomCtrl.resetTaskElement(taskId, subtasksExist)
             DomCtrl.allowDiv(taskId)
+        }
+        if (delBtn) {
+            deleteAndRmTaskFromProjectMap(task)
+            // rm task from viewingProject dom by refreshing the dom
+            // DomCtrl.buildProjectTasksElements(viewingProject, projectMap.get(viewingProject))
+            refreshDomTasks()
         }
     }
     if (addDialogSubtask) {
@@ -178,66 +229,59 @@ function delegate(event) {
     }
     if (deleteProject) {
         const userProjectDiv = event.target.closest(".user-project")
-        // TODO: manage the project data
+        const userProjectName = userProjectDiv.querySelector("button[data-project-name]").dataset.projectName
+        // rm project name from each task
+        moveProjectTasksToDel(userProjectName, projectMap)
+        // rm projName key from projectMap
+        projectMap.delete(userProjectName)
         DomCtrl.removeDiv(userProjectDiv)
+        if (viewingProject === userProjectName) {
+            setViewingProject(DEAFULT_PROJECT_NAME)
+            DomCtrl.buildProjectTasksElements(viewingProject, projectMap.get(viewingProject))
+        }
         // removeProject()
+        // expected: there are 2 now's and 1 later project, rming now == 1 project left
+        // add rmed project to delete project
+    }
+    if (selectProject) {
+        const projectSelected = event.target.closest(".select-project")
+        // console.log(projectSelected.dataset.projectName)
+        setViewingProject(projectSelected.dataset.projectName)
+        refreshDomTasks()
     }
 }
 
-// saves Tasks, task html elements & tracks editor open/close + other state for each task html element
-// TODO: seperate this 
-function setTaskElementsMap() {
-    console.log(` > getTasks()`)
-    for (const taskEl of DomCtrl.getPopulatedTaskElements()) {
-        let id = taskEl.id
-        // myTasks.set(id, new Task())
-        // myTasks.set(id, task)
-        DomCtrl.myTaskElements.set(id, taskEl)
-        taskDomCtrl.myTaskDomCtrlMap.set(id, new taskDomCtrl())
-    }
-    // console.log(myTasks.get("1a"))
-}
-
-// function extractProjectName(formData) {
-//     let existingProj = formData.get("existingProject")
-//     let newProject = formData.get("newProject")
-//     if (newProject) {
-//         return newProject
-//     } 
-//     return existingProj
-// }
-
-// ProjectMap {projectName: {taskId: taskObj}}
-
-function loadTasksToProjectMap(taskList) {
-    for (const task of taskList) {
+function makeProjectMap(taskListToLoad) {
+    for (const task of taskListToLoad) {
         let taskProjectNames = task.projectNames
         for (const projName of taskProjectNames) {
             if (!projectMap.has(projName)) {
                 projectMap.set(projName, new Map()) // {now: new Map(), later: new Map()}
+                if (projName !== DEAFULT_PROJECT_NAME ) {
+                    addProject(projName)                            
+                }
             }
             projectMap.set(projName, projectMap.get(projName).set(task.id, task)) // {now: { {id: task} }}
         }
+    }
+    if (!projectMap.has("deleted tasks")) {
+        projectMap.set("deleted tasks", new Map())
     }
 }
 
 // app
 function init() {
     console.log(` > init()`)
-    setTaskDefaultProjectName()
+    Task.defaultTaskProjectName = DEAFULT_PROJECT_NAME
+    setViewingProject(DEAFULT_PROJECT_NAME)
     DomCtrl.cache = DomCtrl.getDomElements()
-    let tasksList = TaskLoader.testLoadTasks(1)
-    loadTasksToProjectMap(tasksList)
-    DomCtrl.displayProjectTasks(viewingProject, projectMap.get(viewingProject))
-    setViewingDivTasksMapToProject(viewingProject)
-    // DomCtrl.displayProjectTasks(viewingProject, projectMap.get(viewingProject))  
-    // TODO: make DomCtrl.displayProjectTasks(projectName, tasksMap) 
-    // to load tasks from the map for the given projName and make taskElement obects
-    // keep a viewingProject var to easily switch to it using:  
-    //      DomCtrl.displayProjectTasks(viewingProject, projectMap.get(viewingProject))  
-
-    setTaskElementsMap()
+    let tasksList = TaskLoader.testLoadTasks(3)
+    makeProjectMap(tasksList)
+    
+    DomCtrl.buildProjectTasksElements(viewingProject, projectMap.get(viewingProject))
+    DomCtrl.setTaskElementsMap()
     setMinDate()
+    DomCtrl.setExistingProjects(getExistingProjects())
     DomCtrl.setTheme("dark")
 
     DomCtrl.cache.body.addEventListener("click", (event) => {
@@ -251,8 +295,14 @@ function init() {
         if (event.target.dataset.formName === "newForm") {
             console.log("newForm")
             console.log(Object.fromEntries(myData))
-            newTask(myData)
             DomCtrl.cache.newTaskdialogBox.close()
+            const newProjectName = myData.get("newProject")
+            if (newProjectName !== "" && !projectExists(newProjectName, projectMap.keys())) {
+                addProject(newProjectName)
+            }            
+            newTask(myData)
+            // TODO: if a newproj is added via new task form, means that it gets added to projectMap and thus exists
+            //      but it still wouldnt exist in the dom, figure out a way to add this proj to dom  
         }
         if (event.target.dataset.formName === "editForm") {
             console.log("editForm")
@@ -265,8 +315,11 @@ function init() {
         if (event.target.dataset.formName === ("newProject")) {
             // console.log("newProject")
             // console.log(Object.fromEntries(myData)) 
-            DomCtrl.addProjectToSideBar(myData)
-            DomCtrl.collapseHiddenDiv(null, DomCtrl.cache.addNewProjectCheckBox)
+            const projName = myData.get("newProject")
+            const projectsExists = projectExists(projName, projectMap.keys()) 
+            if (!projectsExists) {
+                addProject(projName)
+            }
         }
     })
 }
