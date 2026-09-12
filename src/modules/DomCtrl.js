@@ -124,13 +124,19 @@ export default class DomCtrl {
         // myTaskElements.get(taskId).isFinished = true
     }
 
-    static disAllowDiv(taskId) {
-        // console.log(` > disAllowTaskDiv()`)
+    static disAllowElement(element) {
+        element.classList.add("disAllow")
+    }
+
+    static getTaskParentDiv(taskId) {
         const taskElem = this.myTaskElements.get(taskId)
         const parentDiv = taskElem.querySelector(".task-parent-div")
-        parentDiv.classList.add("disAllow")
-        // toggle allow
-        // console.log(myTaskElements.get(taskId))
+        return parentDiv
+    }
+
+    static disAllowTaskParentDiv(taskId) {
+        const div = this.getTaskParentDiv(taskId)
+        this.disAllowElement(div)
     }
 
     static collapseHiddenDiv(taskId, collapseThisCheckbox) {
@@ -142,11 +148,11 @@ export default class DomCtrl {
         collapseCheckbox.checked = false
     }
 
-    static closeEditor(btnElem) {
+    static closeEditor(btnElemToFindTaskId, optionalTaskId) {
         // useful if the btnElem has the info for which to open 
         // otherwise use toggleElemVisibility() instead
         // const divToShowClass = `.${btnElem.dataset.class_show}`
-        const taskId = this.getTaskIdFromElement(btnElem)
+        const taskId = (optionalTaskId)? optionalTaskId : this.getTaskIdFromElement(btnElemToFindTaskId) 
         // console.log(`divClassToShow: ${divClassToShow}, divClassToHide: ${divClassToHide}`)
         // const divToShow = getElemFromTaskElemAndChildClassId(btnElem, divToShowClass)
         const divToShow = this.myTaskElements.get(taskId).querySelector(".task-details")
@@ -359,11 +365,7 @@ export default class DomCtrl {
         }
     }
 
-    static init(viewingProject, viewingProjectTasksMap) {
-    }
-
     // saves Tasks, task html elements & tracks editor open/close + other state for each task html element
-    // TODO: seperate this 
     static setTaskElementsMap() {
         // console.log(` > getTasks()`)
         for (const taskEl of DomCtrl.getPopulatedTaskElements()) {
@@ -372,6 +374,11 @@ export default class DomCtrl {
             taskDomCtrl.add(id)
         }
         // console.log(myTasks.get("1a"))
+    }
+
+    static markElementAsDeleted(taskId) {
+        const taskToMark = this.myTaskElements.get(taskId)
+        taskToMark.querySelector(".full-task-div"),classList.add("disAllow")
     }
 
     static setMinDate(date) {
@@ -389,5 +396,10 @@ export default class DomCtrl {
                 existingProjOptionElem
             ) 
         }
+    }
+
+    static disAllowFullTaskDiv(taskId) {
+        const div = this.myTaskElements.get(taskId)
+        this.disAllowElement(div)
     }
 }

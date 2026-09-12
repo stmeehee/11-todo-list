@@ -15,6 +15,7 @@ export default class Task {
     #finishedSubtasks = 0
     #unFinishedSubtasks = 0
     _isFinished = false
+    #isDeleted = false
 
     constructor(formData, testAddProjectName) {
         if (!formData) { // temp condition
@@ -218,6 +219,7 @@ export default class Task {
     markAsDeleted() {
         this.#projectNames.clear()
         this.#projectNames.add("deleted tasks")
+        this.#isDeleted = true
     }
 
     // set projectNames(name) {

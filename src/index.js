@@ -31,6 +31,9 @@ function refreshDomTasks() {
 function addTaskToDelete(task, deletedTasksMap) {
     task.markAsDeleted()
     deletedTasksMap.set(task.id, task)
+    DomCtrl.collapseHiddenDiv(task.id)
+    DomCtrl.closeEditor(null, task.id)
+    DomCtrl.disAllowFullTaskDiv(task.id)
 }
 
 // deletes an individual task
@@ -131,6 +134,7 @@ function delegate(event) {
     const addDialogSubtask = event.target.closest(".add-subtask-option")
     const deleteProject = event.target.closest(".remove-project")
     const selectProject = event.target.closest(".select-project")
+    const sidebarMenu = event.target.closest(".sidebar-main-div")
     if (changeTheme) {
         DomCtrl.setTheme()
     }
@@ -163,7 +167,7 @@ function delegate(event) {
         // console.log(confirmBtn)
         taskId = DomCtrl.getTaskIdFromElement(confirmBtn)
         DomCtrl.markTaskComplete(taskId)
-        DomCtrl.disAllowDiv(taskId)
+        DomCtrl.disAllowTaskParentDiv(taskId)
         const subtasksExist = (projectMap.get(viewingProject).get(taskId).getSubtaskTitles().length !== 0)
         if (subtasksExist) {
             DomCtrl.collapseHiddenDiv(taskId)
@@ -235,10 +239,7 @@ function delegate(event) {
         // rm projName key from projectMap
         projectMap.delete(userProjectName)
         DomCtrl.removeDiv(userProjectDiv)
-        if (viewingProject === userProjectName) {
-            setViewingProject(DEAFULT_PROJECT_NAME)
-            DomCtrl.buildProjectTasksElements(viewingProject, projectMap.get(viewingProject))
-        }
+        refreshDomTasks()
         // removeProject()
         // expected: there are 2 now's and 1 later project, rming now == 1 project left
         // add rmed project to delete project
@@ -248,6 +249,21 @@ function delegate(event) {
         // console.log(projectSelected.dataset.projectName)
         setViewingProject(projectSelected.dataset.projectName)
         refreshDomTasks()
+    }
+    if (sidebarMenu) {
+        const allTasksBtn = event.target.closest("button[value='allTasks']")
+        const upcomingtasksBtn = null
+        const overdueTasksBtn = null
+        const completedTasksBtn = null
+        const deletedTasksBtn = event.target.closest("button[value='deletedTasks']")
+        if (allTasksBtn) {
+            setViewingProject(DEAFULT_PROJECT_NAME)
+            refreshDomTasks()
+        }
+        if (deletedTasksBtn) {
+            setViewingProject("deleted tasks")
+            refreshDomTasks()
+        }
     }
 }
 
