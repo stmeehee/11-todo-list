@@ -232,14 +232,14 @@ export default class DomCtrl {
     static resetTaskElement(taskId, subtasksExist) {
         this.myTaskElements.get(taskId).classList.remove("done")
         // app/task duty
-        this.unCheckSubtasks(taskId)
         let pct = 0
         let [label, color] = this.getBarLabelColor(pct)
         this.renderProgressBar(label, color, `${pct}%`, taskId)
         if (subtasksExist)  {
+            this.unCheckSubtasks(taskId)
             this.completeBtnOnOff(taskId, false)
+            this.updateSubTask(taskId, 0)
         }
-        this.updateSubTask(taskId, 0)
     }    
 
     static allowDiv(taskId) {
@@ -388,7 +388,7 @@ export default class DomCtrl {
         })  
     }
 
-    static setExistingProjects(projectList) {
+    static setExistingProjectsInNewTaskDialog(projectList) {
         for (const projName of projectList) {
             const existingProjOptionElem = HtmlMaker.getProjectSelectOption(projName)
             DomCtrl.cache.existingProjectsSelection.insertAdjacentHTML(

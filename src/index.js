@@ -16,13 +16,14 @@ function setViewingProject(setToProjectName) {
 
 function getExistingProjects() {
     const lst = [...projectMap.keys()].filter( (projectName) => {
-       return (projectName !== DEAFULT_PROJECT_NAME)
+       return (projectName !== "deleted tasks")
     })
     return lst
 }
 
 function refreshDomTasks() {
-    const viewingProjectTaskIdSet = new Set(projectMap.get(viewingProject).keys())
+    const projects = projectMap.get(viewingProject).keys()
+    const viewingProjectTaskIdSet = new Set(projects)
     DomCtrl.showTasks(viewingProject, viewingProjectTaskIdSet)
 }
 
@@ -31,7 +32,9 @@ function refreshDomTasks() {
 function addTaskToDelete(task, deletedTasksMap) {
     task.markAsDeleted()
     deletedTasksMap.set(task.id, task)
-    DomCtrl.collapseHiddenDiv(task.id)
+    if (task.getSubtaskTitles().length > 0) {
+        DomCtrl.collapseHiddenDiv(task.id)
+    }
     DomCtrl.closeEditor(null, task.id)
     DomCtrl.disAllowFullTaskDiv(task.id)
 }
@@ -57,7 +60,8 @@ function moveProjectTasksToDel(projNameToRm, projectMap) {
         }
         // also del the task from "all tasks" map
     }
-    projectMap.delete(projNameToRm)
+    const boolDeleted = projectMap.delete(projNameToRm)
+    return [boolDeleted, projNameToRm]
     // TODO: delete the projNameToRm tasks from "all tasks" project!
 }
 
@@ -204,7 +208,7 @@ function delegate(event) {
         }
         if (resetBtn) {
             task.resetProgress()
-            const subtasksExist = task.getSubtaskTitles().length
+            const subtasksExist = (task.getSubtaskTitles().length !== 0)
             DomCtrl.resetTaskElement(taskId, subtasksExist)
             DomCtrl.allowDiv(taskId)
         }
@@ -235,11 +239,14 @@ function delegate(event) {
         const userProjectDiv = event.target.closest(".user-project")
         const userProjectName = userProjectDiv.querySelector("button[data-project-name]").dataset.projectName
         // rm project name from each task
-        moveProjectTasksToDel(userProjectName, projectMap)
+        const [deleted, delProjectName] = moveProjectTasksToDel(userProjectName, projectMap)
         // rm projName key from projectMap
         projectMap.delete(userProjectName)
         DomCtrl.removeDiv(userProjectDiv)
-        refreshDomTasks()
+        if (deleted && delProjectName === viewingProject) {
+            setViewingProject(DEAFULT_PROJECT_NAME)
+        }
+        refreshDomTasks()   
         // removeProject()
         // expected: there are 2 now's and 1 later project, rming now == 1 project left
         // add rmed project to delete project
@@ -297,7 +304,7 @@ function init() {
     DomCtrl.buildProjectTasksElements(viewingProject, projectMap.get(viewingProject))
     DomCtrl.setTaskElementsMap()
     setMinDate()
-    DomCtrl.setExistingProjects(getExistingProjects())
+    DomCtrl.setExistingProjectsInNewTaskDialog(getExistingProjects())
     DomCtrl.setTheme("dark")
 
     DomCtrl.cache.body.addEventListener("click", (event) => {

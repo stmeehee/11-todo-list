@@ -79,234 +79,225 @@ export default class HtmlMaker {
         return taskElem
     }
 
-    // static getEmptyFullTaskDiv(taskId) {
-    //     const elem = 
-    //     `
-         
-    //     `
-    //     return elem
-    //     // full-task-div
-    // }
-
-    static getProgBarBtnDiv() {
-        // progress-bar-btn-div
-        const pct = 0
-        const [label, color] = DomCtrl.getBarLabelColor(pct)
-        const elem = 
-        `
-        <div class="progress-bar-btn-div">
-            <div class="task-progress-bar" 
-                data-label="${label}" 
-                style="--progress-bar-width: ${pct}%;">
-            </div>
-            <button popovertarget="tasks-options-popover" class="tasks-options">
-                <div>...</div>
-            </button>
-        </div>
-        `
-        return elem
-    }
-
-    static getTaskParentDiv(task) {
-        // getPrimaryTaskDiv(): returns confrmBtn,task-details div(containing tagsDiv) &task-details-edit div  
-        // getSubtaskCheckBoxDiv(): returns expand-adjacent div
-        // hiddenSubTaskDiv(): return hidden-div shift-left w/ subtask checkbox & titles
-        const taskParentDiv =
-        `
-        <div class="task-parent-div">
-        ${this.getPrimaryTaskDiv(task)} 
-        ${this.getSubtaskCheckBoxDiv(task.unFinishedSubtasks)} 
-        ${this.getHiddenSubTaskDiv(task)}
-        </div>
-        `
-        return taskParentDiv
-    }
-
-        static getPrimaryTaskDiv(task) {
-            const confirmBtnState = (task.getSubtaskTitles().length === 0) ? "finalize" : "disable"
-            // console.log({confirmBtnState})
-            const confirmBtn = `<button class="${confirmBtnState}" data-class_show="task-details">complete</button>`
-            const primaryTaskDiv = 
+        static getProgBarBtnDiv() {
+            // progress-bar-btn-div
+            const pct = 0
+            const [label, color] = DomCtrl.getBarLabelColor(pct)
+            const elem = 
             `
-            <div class="primary-task">
-            ${confirmBtn}
-            ${this.getTaskDetailsDiv(task)} 
-            ${this.getTaskDetailsEditDiv(task)} 
+            <div class="progress-bar-btn-div">
+                <div class="task-progress-bar" 
+                    data-label="${label}" 
+                    style="--progress-bar-width: ${pct}%;">
+                </div>
+                <button popovertarget="tasks-options-popover" class="tasks-options">
+                    <div>...</div>
+                </button>
             </div>
             `
-            return primaryTaskDiv
+            return elem
         }
 
-            static getTaskDetailsDiv(task) {
-                const taskDetailsDiv =
+        static getTaskParentDiv(task) {
+            // getPrimaryTaskDiv(): returns confrmBtn,task-details div(containing tagsDiv) &task-details-edit div  
+            // getSubtaskCheckBoxDiv(): returns expand-adjacent div
+            // hiddenSubTaskDiv(): return hidden-div shift-left w/ subtask checkbox & titles
+            const taskParentDiv =
+            `
+            <div class="task-parent-div">
+            ${this.getPrimaryTaskDiv(task)} 
+            ${this.getSubtaskCheckBoxDiv(task.unFinishedSubtasks)} 
+            ${this.getHiddenSubTaskDiv(task)}
+            </div>
+            `
+            return taskParentDiv
+        }
+
+            static getPrimaryTaskDiv(task) {
+                const confirmBtnState = (task.getSubtaskTitles().length === 0) ? "finalize" : "disable"
+                // console.log({confirmBtnState})
+                const confirmBtn = `<button class="${confirmBtnState}" data-class_show="task-details">complete</button>`
+                const primaryTaskDiv = 
                 `
-                <div class="task-details ">
-                    <p>Title: ${task.getInfo().title}</p>
-                    <p>Description: ${task.getInfo().description}</p>
-                    <p>Due date: ${task.getInfo().dueDate}</p>
-                    ${this.getTagsDiv(task)} 
+                <div class="primary-task">
+                ${confirmBtn}
+                ${this.getTaskDetailsDiv(task)} 
+                ${this.getTaskDetailsEditDiv(task)} 
                 </div>
                 `
-                return taskDetailsDiv
+                return primaryTaskDiv
             }
 
-                // TODO: implemented tags! 
-                static getTagsDiv(task) {
-                    // TODO: figure how to add insividual tag div from tags.getTagsList()
-                    const tagsDiv = 
+                static getTaskDetailsDiv(task) {
+                    const taskDetailsDiv =
                     `
-                    <div class="tags">
-                        <span>Tags: </span>
-                        <div class="tag high-priority">
-                            <span>High </span>
-                        </div>
-                        <div class="tag">
-                            <span>birthday</span>
-                        </div>
-                        <div class="tag medium-priority">
-                            <span>medium</span>
-                        </div>
-                        <div class="tag low-priority">
-                            <span>low</span>
-                        </div>                                                                        
+                    <div class="task-details ">
+                        <p>Title: ${task.getInfo().title}</p>
+                        <p>Description: ${task.getInfo().description}</p>
+                        <p>Due date: ${task.getInfo().dueDate}</p>
+                        ${this.getTagsDiv(task)} 
                     </div>
                     `
-                    return tagsDiv
+                    return taskDetailsDiv
                 }
 
-            static getTaskDetailsEditDiv(task) {
-                const editorDiv = 
-                `
-                <div class="task-details-edit hidden-div">
-                    ${this.getEditSelectorDiv(task)}
-                    <hr>
-                    ${this.getEditFormDiv()}
-                </div>
-                `
-                return editorDiv
-            }
-
-                static getEditSelectorDiv(task) {
-                    const editSelectorDiv = 
-                    `
-                    <div class="edit-field-selectors">
-                        <input type="radio" id="edit-title-radio-${task.id}" name="edit-field${task.id}" value="edit-title-div" class="toggle-input-edit">
-                        <label for="edit-title-radio-${task.id}" class="toggle-label">Title</label>
-
-                        <input type="radio" id="edit-date-radio-${task.id}" name="edit-field${task.id}" value="edit-date-div" class="toggle-input-edit">
-                        <label for="edit-date-radio-${task.id}" class="toggle-label">Date</label>
-
-                        <input type="radio" id="edit-desc-radio-${task.id}" name="edit-field-${task.id}" value="edit-desc-div" class="toggle-input-edit">
-                        <label for="edit-desc-radio-${task.id}" class="toggle-label">Desc.</label>
-
-                        <input type="radio" id="edit-time-radio-${task.id}" name="edit-field-${task.id}" value="edit-time-div" class="toggle-input-edit">
-                        <label for="edit-time-radio-${task.id}" class="toggle-label">Time</label>
-
-                        <input type="radio" id="edit-tags-radio-${task.id}" name="edit-field-${task.id}" value="edit-tags-div" class="toggle-input-edit">
-                        <label for="edit-tags-radio-${task.id}" class="toggle-label">Tags</label>
-
-                        <input type="radio" id="edit-note-radio-${task.id}" name="edit-field-${task.id}" value="edit-note-div" class="toggle-input-edit">
-                        <label for="edit-note-radio-${task.id}" class="toggle-label">Note</label>
-                    </div>
-                    `
-                    return editSelectorDiv
-                }    
-
-                static getEditFormDiv() {
-                    const editformDiv = 
-                    `
-                    <form class="edit-form" data-form-name="editForm">
-                        <fieldset>
-                            <div class="hidden-div edit-title-div">                                            
-                                <label for="edit-title"></label>
-                                <input type="text" id="edit-title" placeholder="Title" name="title">
+                    // TODO: implemented tags! 
+                    static getTagsDiv(task) {
+                        // TODO: figure how to add insividual tag div from tags.getTagsList()
+                        const tagsDiv = 
+                        `
+                        <div class="tags">
+                            <span>Tags: </span>
+                            <div class="tag high-priority">
+                                <span>High </span>
                             </div>
-                            <div class="hidden-div edit-date-div">
-                                <label for="edit-date">Date: </label>
-                                <input type="date" id="edit-date" name="date">
-                            </div>                                 
-                            <div class="hidden-div edit-desc-div">
-                                <label for="edit-desc"></label>
-                                <input type="text" id="edit-desc" placeholder="Description" name="desc">
-                            </div>  
-                            <div class="hidden-div edit-time-div">
-                                <label for="edit-time" >Time: </label>
-                                <input type="time" id="edit-time" name="time">
-                            </div>     
-                            <div class="hidden-div edit-tags-div"> 
-                                <label for="edit-tags"></label>
-                                <input type="text" id="edit-tags" placeholder="Tags" name="tags">
-                            </div>  
-                            <div class="hidden-div edit-note-div"> 
-                                <label for="edit-note"></label>
-                                <textarea id="edit-note" placeholder="Note" name="note"></textarea>
-                            </div>                                        
-                        </fieldset>
-                        <!-- <hr> -->
-                        <div class="edit-form-buttons">
-                            <button 
-                                type="submit" 
-                                class="confirm-edit" 
-                                data-class_show="task-details"
-                                data-class_hide="task-details-edit">✓
-                            </button>
-                            <button 
-                                type="button" 
-                                class="cancel-edit"
-                                data-class_show="task-details"
-                                data-class_hide="task-details-edit">X
-                            </button>                                      
+                            <div class="tag">
+                                <span>birthday</span>
+                            </div>
+                            <div class="tag medium-priority">
+                                <span>medium</span>
+                            </div>
+                            <div class="tag low-priority">
+                                <span>low</span>
+                            </div>                                                                        
                         </div>
-                    </form>
+                        `
+                        return tagsDiv
+                    }
+
+                static getTaskDetailsEditDiv(task) {
+                    const editorDiv = 
                     `
-                    return editformDiv
+                    <div class="task-details-edit hidden-div">
+                        ${this.getEditSelectorDiv(task)}
+                        <hr>
+                        ${this.getEditFormDiv()}
+                    </div>
+                    `
+                    return editorDiv
                 }
 
-        static getSubtaskCheckBoxDiv(unFinishedSubtasks) {
-            if (unFinishedSubtasks === 0) {
-                return ""
-            }
-            const div = 
-            `
-            <div class="expand-adjacent">
-                <label class="show-children">
-                    <input type="checkbox" class="expand">
-                    <span class="arrow">></span>
-                </label>
-                <div class="subtask-status">
-                    <p>Subtasks: <span>0</span>/${unFinishedSubtasks}</p>
-                </div>
-        </div>
-            `
-            return div
-        }
+                    static getEditSelectorDiv(task) {
+                        const editSelectorDiv = 
+                        `
+                        <div class="edit-field-selectors">
+                            <input type="radio" id="edit-title-radio-${task.id}" name="edit-field${task.id}" value="edit-title-div" class="toggle-input-edit">
+                            <label for="edit-title-radio-${task.id}" class="toggle-label">Title</label>
 
-        static getHiddenSubTaskDiv(task) {
-            if (task.getSubtaskTitles().length === 0) {
-                return ""
-            }
-            let hiddenSubtaskDiv = `<div class="hidden-div shift-left">`
-            const subtaskTitles = task.getSubtaskTitles()
-            let childSubtaskDivs = ""
-            for (let i = 0; i < subtaskTitles.length; i += 1) {
-                childSubtaskDivs +=
-                `
-                <hr>
-                ${this.getSubTaskChildDiv(subtaskTitles[i], i+1, task.getShortId())}
-                `
-            }
-            hiddenSubtaskDiv += childSubtaskDivs + `</div>`
-            return hiddenSubtaskDiv
-        }
+                            <input type="radio" id="edit-date-radio-${task.id}" name="edit-field${task.id}" value="edit-date-div" class="toggle-input-edit">
+                            <label for="edit-date-radio-${task.id}" class="toggle-label">Date</label>
 
-            static getSubTaskChildDiv(title, subtaskNo, shortId) {
-                const subtaskChildDiv = 
+                            <input type="radio" id="edit-desc-radio-${task.id}" name="edit-field-${task.id}" value="edit-desc-div" class="toggle-input-edit">
+                            <label for="edit-desc-radio-${task.id}" class="toggle-label">Desc.</label>
+
+                            <input type="radio" id="edit-time-radio-${task.id}" name="edit-field-${task.id}" value="edit-time-div" class="toggle-input-edit">
+                            <label for="edit-time-radio-${task.id}" class="toggle-label">Time</label>
+
+                            <input type="radio" id="edit-tags-radio-${task.id}" name="edit-field-${task.id}" value="edit-tags-div" class="toggle-input-edit">
+                            <label for="edit-tags-radio-${task.id}" class="toggle-label">Tags</label>
+
+                            <input type="radio" id="edit-note-radio-${task.id}" name="edit-field-${task.id}" value="edit-note-div" class="toggle-input-edit">
+                            <label for="edit-note-radio-${task.id}" class="toggle-label">Note</label>
+                        </div>
+                        `
+                        return editSelectorDiv
+                    }    
+
+                    static getEditFormDiv() {
+                        const editformDiv = 
+                        `
+                        <form class="edit-form" data-form-name="editForm">
+                            <fieldset>
+                                <div class="hidden-div edit-title-div">                                            
+                                    <label for="edit-title"></label>
+                                    <input type="text" id="edit-title" placeholder="Title" name="title">
+                                </div>
+                                <div class="hidden-div edit-date-div">
+                                    <label for="edit-date">Date: </label>
+                                    <input type="date" id="edit-date" name="date">
+                                </div>                                 
+                                <div class="hidden-div edit-desc-div">
+                                    <label for="edit-desc"></label>
+                                    <input type="text" id="edit-desc" placeholder="Description" name="desc">
+                                </div>  
+                                <div class="hidden-div edit-time-div">
+                                    <label for="edit-time" >Time: </label>
+                                    <input type="time" id="edit-time" name="time">
+                                </div>     
+                                <div class="hidden-div edit-tags-div"> 
+                                    <label for="edit-tags"></label>
+                                    <input type="text" id="edit-tags" placeholder="Tags" name="tags">
+                                </div>  
+                                <div class="hidden-div edit-note-div"> 
+                                    <label for="edit-note"></label>
+                                    <textarea id="edit-note" placeholder="Note" name="note"></textarea>
+                                </div>                                        
+                            </fieldset>
+                            <!-- <hr> -->
+                            <div class="edit-form-buttons">
+                                <button 
+                                    type="submit" 
+                                    class="confirm-edit" 
+                                    data-class_show="task-details"
+                                    data-class_hide="task-details-edit">✓
+                                </button>
+                                <button 
+                                    type="button" 
+                                    class="cancel-edit"
+                                    data-class_show="task-details"
+                                    data-class_hide="task-details-edit">X
+                                </button>                                      
+                            </div>
+                        </form>
+                        `
+                        return editformDiv
+                    }
+
+            static getSubtaskCheckBoxDiv(unFinishedSubtasks) {
+                if (unFinishedSubtasks === 0) {
+                    return ""
+                }
+                const div = 
                 `
-                <div class="subtask-${subtaskNo}-div">
-                    <input type="checkbox" id="subtask-checkbox-${shortId}-${subtaskNo}" value="subtaskTitle${subtaskNo}">
-                    <label for="subtask-checkbox-${shortId}-${subtaskNo}">title: ${title}</label>
-                </div>
+                <div class="expand-adjacent">
+                    <label class="show-children">
+                        <input type="checkbox" class="expand">
+                        <span class="arrow">></span>
+                    </label>
+                    <div class="subtask-status">
+                        <p>Subtasks: <span>0</span>/${unFinishedSubtasks}</p>
+                    </div>
+            </div>
                 `
-                return subtaskChildDiv
+                return div
             }
+
+            static getHiddenSubTaskDiv(task) {
+                if (task.getSubtaskTitles().length === 0) {
+                    return ""
+                }
+                let hiddenSubtaskDiv = `<div class="hidden-div shift-left">`
+                const subtaskTitles = task.getSubtaskTitles()
+                let childSubtaskDivs = ""
+                for (let i = 0; i < subtaskTitles.length; i += 1) {
+                    childSubtaskDivs +=
+                    `
+                    <hr>
+                    ${this.getSubTaskChildDiv(subtaskTitles[i], i+1, task.getShortId())}
+                    `
+                }
+                hiddenSubtaskDiv += childSubtaskDivs + `</div>`
+                return hiddenSubtaskDiv
+            }
+
+                static getSubTaskChildDiv(title, subtaskNo, shortId) {
+                    const subtaskChildDiv = 
+                    `
+                    <div class="subtask-${subtaskNo}-div">
+                        <input type="checkbox" id="subtask-checkbox-${shortId}-${subtaskNo}" value="subtaskTitle${subtaskNo}">
+                        <label for="subtask-checkbox-${shortId}-${subtaskNo}">title: ${title}</label>
+                    </div>
+                    `
+                    return subtaskChildDiv
+                }
 }
