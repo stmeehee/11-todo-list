@@ -6,7 +6,7 @@ export default class Task {
     #id = null
     #title= null
     #description = null
-    #date = null
+    #dueDate = null // use dueDate.dateMade.toLocaleTimeString()
     #time = null
     #priority = null
     #note = null
@@ -16,6 +16,9 @@ export default class Task {
     #unFinishedSubtasks = 0
     _isFinished = false
     #isDeleted = false
+    #isOverdue = false
+    #creationDate = Date.now()
+
 
     constructor(formData, testAddProjectName) {
         if (!formData) { // temp condition
@@ -32,7 +35,7 @@ export default class Task {
         this.#id = Task.getNewId()
         this.#title = formData.get("title")
         this.#description = formData.get("desc")
-        this.#date = formData.get("date")
+        this.#dueDate = new Date(formData.get("date"))
         this.#priority = formData.get("priority")
         this.#note = formData.get("note")
         time = (formData.get("pickTime") === "now")? (this.getCurrTime()) : formData.get("customTime")
@@ -94,21 +97,25 @@ export default class Task {
         const formObject = new FormData()
         formObject.append("title", "testTitle")
         formObject.append("desc", "testDesc")
-        formObject.append("date", "test-2026-09-01")
+        formObject.append("date", `${new Date().toLocaleDateString}`)
         formObject.append("pickTime", "test-00:00")
         formObject.append("priority", "high")
         formObject.append("newProject", "mine")
         formObject.append("note", "testAaa")
         formObject.append("subtaskTitle1", "test - Do the dishes")
-        formObject.append("subtaskTitle2", "test - wash clothes")
-        formObject.append("subtaskTitle3", "test - pre-bedtime scream")
-        formObject.append("subtaskTitle4", "test - sleep")
-        formObject.append("subtaskTitle5", "test - sleep")
-        formObject.append("subtaskTitle6", "test - sleep")
-        formObject.append("subtaskTitle7", "test - sleep")
-        formObject.append("subtaskTitle8", "test - sleep")
+        // formObject.append("subtaskTitle2", "test - wash clothes")
+        // formObject.append("subtaskTitle3", "test - pre-bedtime scream")
+        // formObject.append("subtaskTitle4", "test - sleep")
+        // formObject.append("subtaskTitle5", "test - sleep")
+        // formObject.append("subtaskTitle6", "test - sleep")
+        // formObject.append("subtaskTitle7", "test - sleep")
+        // formObject.append("subtaskTitle8", "test - sleep")
         formObject.append("existingProject", "")
         return formObject
+    }
+
+    testSetDate(setTodDateObj) {
+        this.#dueDate = setTodDateObj
     }
 
     toJSON() {
@@ -117,7 +124,7 @@ export default class Task {
                 id: this.getShortId(),
                 title: this.#title,
                 description: this.#description,
-                date: this.#date,
+                date: this.#dueDate,
                 time: this.#time,
                 priority: this.#priority,
                 note: this.#note,
@@ -178,6 +185,7 @@ export default class Task {
         this.resetAllSubtasks()
         this.#finishedSubtasks = 0
         this._isFinished = false
+        this.#isOverdue = false
     }
 
     resetAllSubtasks() {
@@ -203,7 +211,7 @@ export default class Task {
         return {
             title: this.#title,
             description: this.#description,
-            dueDate: this.#date,
+            dueDate: this.#dueDate.toLocaleDateString(),
         }
     }
 
@@ -220,6 +228,31 @@ export default class Task {
         this.#projectNames.clear()
         this.#projectNames.add("deleted tasks")
         this.#isDeleted = true
+    }
+
+    get dueDate() {
+        return this.#dueDate
+    }
+    
+    get creationDate() {
+        return this.#creationDate
+    }
+
+    get isOverdue() {
+        return this.#isOverdue
+    }
+
+    set isOverdue(value) {
+        this.#isOverdue = value
+    }
+
+
+    getSubtasksSize() {
+        return this.#subtasks.length
+    }
+
+    set isFinished(value) {
+        this._isFinished = value
     }
 
     // set projectNames(name) {

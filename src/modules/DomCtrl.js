@@ -26,6 +26,7 @@ export default class DomCtrl {
             barColorYellowName: "--bg-progress-bar-normal",
             barColorTealName: "--bg-progress-bar-inComplete",
             barColorGreenName: "--bg-progress-bar-complete",
+            barColorOrangeName: "--bg-progress-bar-overdue",
         }
         const dateInputs = document.querySelectorAll(`input[type="date"]`)
         const tasksOptionsPopover = document.querySelector(`#tasks-options-popover`)
@@ -46,6 +47,10 @@ export default class DomCtrl {
         }
     }
 
+    static cacheStaticDomElements() {
+        this.cache = this.getDomElements()
+    }
+
     static setTheme(setThemeTo) {
         if (setThemeTo) {
             this.cache.root.className = setThemeTo;
@@ -60,15 +65,19 @@ export default class DomCtrl {
         return descendentElem.closest(".full-task-div").id
     }
 
-    static getBarLabelColor(percentVal, taskDone) {
+    static getBarLabelColor(percentVal, taskDone, taskOverdue) {
         let label = null, color = null
         const red = DomCtrl.cache.barCssVars.barColorRedName
         const yellow = DomCtrl.cache.barCssVars.barColorYellowName
         const teal = DomCtrl.cache.barCssVars.barColorTealName
         const green = DomCtrl.cache.barCssVars.barColorGreenName
+        const orange = DomCtrl.cache.barCssVars.barColorOrangeName
         if (taskDone) {
             return ["Complete!", green]
         }        
+        if (taskOverdue) {
+            return ["OVERDUE!", orange]
+        }         
         if (percentVal === 0)
             [label, color] = [`${percentVal} %`, red]
         else if (percentVal > 0 && percentVal < 100) {
@@ -87,7 +96,7 @@ export default class DomCtrl {
     }
 
     static getProgressBar(taskId) {
-        const taskElem = this.myTaskElements.get(taskId)
+        const taskElem = document.getElementById(taskId)
         const progBar = taskElem.querySelector(".task-progress-bar")
         return progBar
     }
@@ -326,14 +335,18 @@ export default class DomCtrl {
             "beforeend",
             taskElem
         ) 
+        const width = (task.isOverdue || task.isFinished)? 100 : task.taskProgress 
+        const [label, color] = this.getBarLabelColor(task.taskProgress, task.isFinished, task.isOverdue) 
+        this.renderProgressBar(label, color, `${width}%`, task.id)
     }
 
-    static clearViewingDiv() {
-        DomCtrl.cache.viewingDiv.replaceChildren()
+    static clearDiv(clearThisDiv) {
+        // DomCtrl.cache.viewingDiv.replaceChildren()
+        clearThisDiv.replaceChildren()
     }
     
-    static buildProjectTasksElements(projectName, projectTasksMap) { 
-        this.clearViewingDiv()
+    static buildAllTasksElements(projectName, projectTasksMap) { 
+        this.clearDiv(DomCtrl.cache.viewingDiv)
         this.makeProjectNameDiv(projectName)
         for (const task of projectTasksMap.values()) {
             this.addNewTaskElemToDom(task)
@@ -353,15 +366,18 @@ export default class DomCtrl {
         DomCtrl.cache.viewingDiv.append(taskElem)
     }
 
-    static showTasks(viewingProjectName, viewingProjectTaskIdSet) {
+    static showTasks(viewingProjectName, viewingProjectTasks) {
         // loop over each takEl in taskElementsMap
         // if taskElId exists in taskIdList, add it to dom
-        this.clearViewingDiv()
+        this.clearDiv(DomCtrl.cache.viewingDiv)
         this.makeProjectNameDiv(viewingProjectName)
-        for (const [taskElemId, taskElem] of this.myTaskElements) {
-            if (viewingProjectTaskIdSet.has(taskElemId)) {
-                this.addToViewingDiv(taskElem)
-            }
+        // for (const [taskElemId, taskElem] of this.myTaskElements) {
+        //     if (viewingProjectTaskIdSet.has(taskElemId)) {
+        //         this.addToViewingDiv(taskElem)
+        //     }
+        // }
+        for (const taskId of viewingProjectTasks.keys()) {
+            this.addToViewingDiv(this.myTaskElements.get(taskId))
         }
     }
 
@@ -389,6 +405,7 @@ export default class DomCtrl {
     }
 
     static setExistingProjectsInNewTaskDialog(projectList) {
+        this.clearDiv(DomCtrl.cache.existingProjectsSelection)
         for (const projName of projectList) {
             const existingProjOptionElem = HtmlMaker.getProjectSelectOption(projName)
             DomCtrl.cache.existingProjectsSelection.insertAdjacentHTML(

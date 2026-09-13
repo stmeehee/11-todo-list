@@ -68,21 +68,21 @@ export default class HtmlMaker {
             //     const subtaskCheckBox = getSubtaskCheckBoxDiv(task) // contains checkbox to collapse subtasks & subtask summary
             //     const hiddenSubTaskDiv = getHiddenSubTaskDiv(task) // last child of task-parent-div
             //         const SubTaskChildDiv = getSubTaskChildDiv(task.getSubtaskTitles())
-        
+        const done = (task.isFinished)? "done":""
         const taskElem = 
         `
-        <div class="full-task-div" id="${task.id}">
-            ${this.getProgBarBtnDiv()}
+        <div class="full-task-div ${done}" id="${task.id}">
+            ${this.getProgBarBtnDiv(task)}
             ${this.getTaskParentDiv(task)}
         </div>
         `
         return taskElem
     }
 
-        static getProgBarBtnDiv() {
+        static getProgBarBtnDiv(task) {
             // progress-bar-btn-div
             const pct = 0
-            const [label, color] = DomCtrl.getBarLabelColor(pct)
+            let [label, color] = DomCtrl.getBarLabelColor(pct)
             const elem = 
             `
             <div class="progress-bar-btn-div">
@@ -99,12 +99,11 @@ export default class HtmlMaker {
         }
 
         static getTaskParentDiv(task) {
-            // getPrimaryTaskDiv(): returns confrmBtn,task-details div(containing tagsDiv) &task-details-edit div  
-            // getSubtaskCheckBoxDiv(): returns expand-adjacent div
-            // hiddenSubTaskDiv(): return hidden-div shift-left w/ subtask checkbox & titles
+            // ${(task.overdue)?"disAllow":""}
+            const disallow = (task.isOverdue || task.isFinished)?"disAllow":""
             const taskParentDiv =
             `
-            <div class="task-parent-div">
+            <div class="task-parent-div ${disallow}">
             ${this.getPrimaryTaskDiv(task)} 
             ${this.getSubtaskCheckBoxDiv(task.unFinishedSubtasks)} 
             ${this.getHiddenSubTaskDiv(task)}
@@ -114,7 +113,7 @@ export default class HtmlMaker {
         }
 
             static getPrimaryTaskDiv(task) {
-                const confirmBtnState = (task.getSubtaskTitles().length === 0) ? "finalize" : "disable"
+                const confirmBtnState = (task.getSubtasksSize().length === 0) ? "finalize" : "disable"
                 // console.log({confirmBtnState})
                 const confirmBtn = `<button class="${confirmBtnState}" data-class_show="task-details">complete</button>`
                 const primaryTaskDiv = 

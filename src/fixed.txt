@@ -1,25 +1,21 @@
 ---------------------------------------------------------------------------------------------------
-(add a commit msg log after every TODO/bugfix TODO; erase once done so)
+(add a commit msg log below after every TODO/bugfix TODO; erase once done so):
+4 additions, 1 fix
 fixes:  
-- error when deleting a task with no subtask
-- "deleted tasks" project shows up in existing project in new task form dialog
-- deleting a project thats in view causes an error
-- resetting a completed project with no subtasks causes an error
+- existing project dropdown not updating when adding new project
 
 added: 
--
+- functional overdue tasks filter
+- functional Completed tasks filter
+- functional upcoming tasks filter
+- overdue tasks change color,label
 
 ---------------------------------------------------------------------------------------------------
 TODO:             
         1: move task to project (via (...) btn)
         2: editor actually works
 ---------------------------------------------------------------------------------------------------
-working on: sidebar-main-div btns 
-            1. all tasks            (done)
-            2: deleted tasks btn    (done)
-            3. upcoming tasks
-            4: overdue tasks
-            5: Completed tasks
+working on: 
 
 ---------------------------------------------------------------------------------------------------            
 bugfix TODO:

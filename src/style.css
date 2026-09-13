@@ -49,6 +49,7 @@ button:focus-visible {
   --bg-progress-bar-normal: yellow;
   --bg-progress-bar-inComplete:teal;
   --bg-progress-bar-complete: green;
+  --bg-progress-bar-overdue: orange;
   --bg-progress-bar-color: var(--bg-progress-bar-empty);
   --progress-bar-width: 0%;
   --bg-color-confirm-edit: green;
@@ -383,8 +384,10 @@ main {
     border-radius: 1.5em;
     height: 3em;
     background-color: var(--bg-color);
-    color: var(--text-color);
+    /* color: var(--text-color); */
+    color: white;
     /*  */
+    font-weight: bold;
 }
 
 .task-progress-bar::before {

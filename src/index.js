@@ -1,9 +1,9 @@
 import "./style.css";
 // import Task from "./task.js"; // NotUsing
 import Task from "./modules/Task.js";
-import taskDomCtrl from "./modules/taskDomCtrl.js";
 import DomCtrl from "./modules/DomCtrl.js";
 import TaskLoader from "./modules/TaskLoader.js";
+import Filter from "./modules/Filter.js";
 
 // myViewingDivTasks: the tasks that are currently being viewed; chosen according to the viewingProject var
 let projectMap = new Map()
@@ -21,10 +21,32 @@ function getExistingProjects() {
     return lst
 }
 
-function refreshDomTasks() {
-    const projects = projectMap.get(viewingProject).keys()
-    const viewingProjectTaskIdSet = new Set(projects)
-    DomCtrl.showTasks(viewingProject, viewingProjectTaskIdSet)
+function checkAndMarkOverdueTasks() {
+    const overdueTasksID = Filter.getTaskIdOfOverdue(projectMap.get(DEAFULT_PROJECT_NAME))
+    const AllTasks = projectMap.get(DEAFULT_PROJECT_NAME)
+    for (const overdueTaskId of overdueTasksID) {
+        AllTasks.get(overdueTaskId).isOverdue = true
+    }
+}
+
+/**
+ * call this after setting the viewingProject to refresh the dom tasks to the given viewingProject
+ * or pass in the 2 optional list & listName params to show tasks from a filtered list of tasks and
+ * to give it an accompanying name in the dom
+ * @param (string[]) displayTaskList - list of task UUID's to display for the assigned 
+ * viewingProject; is accompanied by forceViewingDivName
+ * @param string forceViewingDivName - set the viewing div name; this is the name for 
+ * the displayTaskList tasks
+ */
+function refreshDomTasks(displayTaskList, forceViewingDivName) {
+    if (displayTaskList && forceViewingDivName) {  
+        DomCtrl.showTasks(forceViewingDivName, new Set(displayTaskList))
+        return
+    }
+    // const projects = projectMap.get(viewingProject).keys()
+    // const viewingProjectTaskIdSet = new Set(projects)
+    const lst = projectMap.get(viewingProject)
+    DomCtrl.showTasks(viewingProject, lst)
 }
 
 // set the task itself to replace its prev projects with "deleted tasks" project
@@ -115,8 +137,6 @@ function setMinDate() {
     const day = String(presentDate.getDate()).padStart(2,"0")
     const minDate = `${year}-${month}-${day}`
     DomCtrl.setMinDate(minDate)
-    // DomCtrl.cache.date.setAttribute("min", minDate)
-    // DomCtrl.cache.date.setAttribute("value", minDate)
 }
 
 // app; main driver & orchestrator
@@ -135,6 +155,7 @@ function delegate(event) {
     const toggleEditorField = (event.target.closest(".edit-field-selectors") && event.target.type == "radio")
     const cancelEditing = event.target.closest(".cancel-edit")
     const taskOptionsPopupMenu = event.target.closest("#tasks-options-popover")
+    const addNewTaskBtn = event.target.closest(".add-todo")
     const addDialogSubtask = event.target.closest(".add-subtask-option")
     const deleteProject = event.target.closest(".remove-project")
     const selectProject = event.target.closest(".select-project")
@@ -219,22 +240,21 @@ function delegate(event) {
             refreshDomTasks()
         }
     }
+    if (addNewTaskBtn) {
+        DomCtrl.setExistingProjectsInNewTaskDialog(getExistingProjects()) 
+        setMinDate()
+    }
     if (addDialogSubtask) {
-        // add subtask div
-        // console.log(event.target)
         const addTaskDialogBtn = event.target.closest(`button.new-subtask`)
         const rmTaskDialogBtn = event.target.closest(`button.remove-subtask`)
         if (addTaskDialogBtn) {
-            // console.log(addTaskDialogBtn)
             DomCtrl.addSubtaskDialog()
         }
         if (rmTaskDialogBtn) {
-            // console.log(rmTaskDialogBtn)
             const subtaskDiv = rmTaskDialogBtn.closest(".subtask-div")
             DomCtrl.removeDiv(subtaskDiv)
         }        
-        // console.log(rmTaskDialogBtn)
-    }
+    }    
     if (deleteProject) {
         const userProjectDiv = event.target.closest(".user-project")
         const userProjectName = userProjectDiv.querySelector("button[data-project-name]").dataset.projectName
@@ -258,14 +278,28 @@ function delegate(event) {
         refreshDomTasks()
     }
     if (sidebarMenu) {
+        console.log(sidebarMenu)
         const allTasksBtn = event.target.closest("button[value='allTasks']")
-        const upcomingtasksBtn = null
-        const overdueTasksBtn = null
-        const completedTasksBtn = null
+        const upcomingTasksBtn = event.target.closest("button[value='upcomingTasks']")
+        const overdueTasksBtn = event.target.closest("button[value='overdueTasks']")
+        const completedTasksBtn = event.target.closest("button[value='completedTasks']")
         const deletedTasksBtn = event.target.closest("button[value='deletedTasks']")
         if (allTasksBtn) {
             setViewingProject(DEAFULT_PROJECT_NAME)
             refreshDomTasks()
+        }
+        if (upcomingTasksBtn) {
+            console.log(upcomingTasksBtn)
+            const upcoming = Filter.getTasksIdOfUpcoming(projectMap.get(DEAFULT_PROJECT_NAME)) // [a,b,c]
+            refreshDomTasks(upcoming, "Upcoming")
+        }
+        if (overdueTasksBtn) {
+            const overdue = Filter.getTaskIdOfOverdue(projectMap.get(DEAFULT_PROJECT_NAME))
+            refreshDomTasks(overdue, "Overdue")
+        }
+        if (completedTasksBtn) {
+            const completed = Filter.getTaskIdOfCompleted(projectMap.get(DEAFULT_PROJECT_NAME))
+            refreshDomTasks(completed, "Completed")
         }
         if (deletedTasksBtn) {
             setViewingProject("deleted tasks")
@@ -280,6 +314,7 @@ function makeProjectMap(taskListToLoad) {
         for (const projName of taskProjectNames) {
             if (!projectMap.has(projName)) {
                 projectMap.set(projName, new Map()) // {now: new Map(), later: new Map()}
+                // condition below is to not add "All tasks" as a project div
                 if (projName !== DEAFULT_PROJECT_NAME ) {
                     addProject(projName)                            
                 }
@@ -297,14 +332,13 @@ function init() {
     console.log(` > init()`)
     Task.defaultTaskProjectName = DEAFULT_PROJECT_NAME
     setViewingProject(DEAFULT_PROJECT_NAME)
-    DomCtrl.cache = DomCtrl.getDomElements()
+    DomCtrl.cacheStaticDomElements()
     let tasksList = TaskLoader.testLoadTasks(3)
     makeProjectMap(tasksList)
+    checkAndMarkOverdueTasks()
     
-    DomCtrl.buildProjectTasksElements(viewingProject, projectMap.get(viewingProject))
+    DomCtrl.buildAllTasksElements(viewingProject, projectMap.get(viewingProject))
     DomCtrl.setTaskElementsMap()
-    setMinDate()
-    DomCtrl.setExistingProjectsInNewTaskDialog(getExistingProjects())
     DomCtrl.setTheme("dark")
 
     DomCtrl.cache.body.addEventListener("click", (event) => {
