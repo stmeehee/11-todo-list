@@ -274,14 +274,15 @@
     </main>
 
     <!-- task options popover box -->
-     <dialog id="tasks-options-popover" data-anchored-to-task-id="" popover >
+     <dialog id="tasks-options-popover" class="popup-menu" data-anchored-to-task-id="" popover >
         <button
             type="button"
             commandfor="tasks-options-popover"
             command="hide-popover">
             <div class="popover-edit" data-class_show="task-details-edit">Edit</div>
         </button>
-        <button>
+        <button 
+        popovertarget="existing-projects-popover">
             <div class="popover-move">Move to different project</div>
         </button>
         <button
@@ -298,6 +299,16 @@
         </button>               
         <!-- <button value="move">Move to different project</button> -->
         <!-- <button value="delete">Delete</button> -->
+    </dialog>
+
+    <dialog id="existing-projects-popover" class="popup-menu" data-anchored-to-task-id="" popover >
+        <button 
+        data-project-name="All tasks"
+        type="button"
+        commandfor="existing-projects-popover"
+        command="hide-popover">
+            <div>All tasks</div>
+        </button>
     </dialog>
     
     <!-- Add new task dialogue box -->

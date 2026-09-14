@@ -39,11 +39,12 @@ export default class DomCtrl {
         const projectNamePara = document.querySelector(".project-name-div > p")
         // projectSelectContainer: existing projects are added here
         const existingProjectsSelection = document.querySelector(".existing-project > #project-select")
+        const projectsPopup = document.querySelector("dialog[id='existing-projects-popover']")
 
         return {
             root, body, viewingDiv, barCssVars, dateInputs, tasksOptionsPopover, newTaskdialogBox, 
             newSubtaskDivsContainer, userProjectsContainer, addNewProjectCheckBox, projectNamePara,
-            existingProjectsSelection
+            existingProjectsSelection, projectsPopup
         }
     }
 
@@ -274,17 +275,21 @@ export default class DomCtrl {
     
     static focusInputTextarea(focusInthisElem) {
         const inputElem = focusInthisElem.querySelector("input")
-        if (inputElem !== null ) {
+        const textareaElem = focusInthisElem.querySelector("textarea")
+        const selectElem = focusInthisElem.querySelector("select")
+        if (inputElem) {
             inputElem.focus()
         }
-        else {
-            const textareaElem = focusInthisElem.querySelector("textarea")
+        if (textareaElem) {
             textareaElem.focus()
+        }
+        if (selectElem) {
+            selectElem.focus()
         }
     }
 
     static switchEditorField(clickedToggleBtn) {
-        const targetDivClass = `.${event.target.value}`
+        const targetDivClass = `.${clickedToggleBtn.value}`
         const taskId = DomCtrl.getTaskIdFromElement(clickedToggleBtn)
         const divToShow = this.getElemFromTaskElemAndChildClassId(clickedToggleBtn, targetDivClass)
         const divToHide = taskDomCtrl.myTaskDomCtrlMap.get(taskId).editFieldDivInView
@@ -371,11 +376,6 @@ export default class DomCtrl {
         // if taskElId exists in taskIdList, add it to dom
         this.clearDiv(DomCtrl.cache.viewingDiv)
         this.makeProjectNameDiv(viewingProjectName)
-        // for (const [taskElemId, taskElem] of this.myTaskElements) {
-        //     if (viewingProjectTaskIdSet.has(taskElemId)) {
-        //         this.addToViewingDiv(taskElem)
-        //     }
-        // }
         for (const taskId of viewingProjectTasks.keys()) {
             this.addToViewingDiv(this.myTaskElements.get(taskId))
         }
@@ -418,5 +418,43 @@ export default class DomCtrl {
     static disAllowFullTaskDiv(taskId) {
         const div = this.myTaskElements.get(taskId)
         this.disAllowElement(div)
+    }
+
+    static populateExistingProjectsPopover(projectNames) {
+        this.clearDiv(DomCtrl.cache.projectsPopup)
+        for (const projectName of projectNames) {
+            const projBtn = HtmlMaker.getProjectButton(projectName)
+            DomCtrl.cache.projectsPopup.insertAdjacentHTML(
+                "beforeend",
+                projBtn
+            ) 
+        }
+    }
+
+    static getTaskOptionsPopupTaskId() {
+        return DomCtrl.cache.tasksOptionsPopover.dataset.anchoredToTaskId
+    }
+
+    static addCurrentTaskInfoToEditor(taskId, taskInfo) {
+        const taskEl = this.myTaskElements.get(taskId)
+        taskEl.querySelector("#edit-title").value = taskInfo.title
+        // console.log(`add to editors date inp: ${taskInfo.date}`)
+        taskEl.querySelector("#edit-date").value = taskInfo.date
+        taskEl.querySelector("#edit-desc").value = taskInfo.description
+        taskEl.querySelector("#edit-time").value = taskInfo.time
+        taskEl.querySelector("#edit-priority").value = taskInfo.priority
+        taskEl.querySelector("#edit-note").value = taskInfo.note
+    }
+
+    static updateTaskDetailsDiv(task) {
+        const taskEl  = this.myTaskElements.get(task.id)
+        const taskDetailsDiv = taskEl.querySelector(".task-details")
+        const updatedTaskDetails = HtmlMaker.getTaskDetailsDiv(task)
+        this.clearDiv(taskDetailsDiv)
+        taskDetailsDiv.insertAdjacentHTML(
+            "beforeend",
+            updatedTaskDetails
+        )         
+
     }
 }

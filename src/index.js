@@ -14,6 +14,46 @@ function setViewingProject(setToProjectName) {
     viewingProject = setToProjectName
 }
 
+function prepareEditor(task) {
+    const taskInfo = task.getInfo()
+    const taskCurrentInfo =  {
+        title: taskInfo.title,
+        date: formatToLocalDate(task.dueDate),
+        description: taskInfo.description,
+        time: taskInfo.time,
+        priority: taskInfo.priority,
+        note: taskInfo.note
+    }
+    DomCtrl.addCurrentTaskInfoToEditor(task.id, taskCurrentInfo)
+}
+
+function formatToLocalDate(dateObj) {
+    const year = dateObj.getFullYear()
+    const month = String(dateObj.getMonth() + 1).padStart(2,"0")
+    const day = String(dateObj.getDate()).padStart(2,"0")
+    return `${year}-${month}-${day}`
+}
+
+function editTask(taskId, formData) {
+    // console.log(taskId, formData.get("title"))
+    const task = projectMap.get(DEAFULT_PROJECT_NAME).get(taskId)
+    task.edit(formData)
+    DomCtrl.updateTaskDetailsDiv(task)
+}
+
+function moveProject(taskId, moveToProject) {
+    const task = projectMap.get(DEAFULT_PROJECT_NAME).get(taskId)
+    const currProjectSet = task.getCurrentProject()
+    if (currProjectSet.has(moveToProject)) {
+        return false
+    }
+    task.changeProject(moveToProject)
+    const projectToRmTask = [...currProjectSet].join("")
+    projectMap.get(projectToRmTask).delete(task.id)
+    projectMap.get(moveToProject).set(task.id, task)
+    return true
+}
+
 function getExistingProjects() {
     const lst = [...projectMap.keys()].filter( (projectName) => {
        return (projectName !== "deleted tasks")
@@ -109,6 +149,8 @@ function newTask(formData) {
     displayTask(task)
     // TODO: add project to sidebar
     DomCtrl.setTaskElementsMap()
+    checkAndMarkOverdueTasks()
+    console.log(`added task: ${task.getShortId()} | isOverdue? = ${task.isOverdue}`)
 }
 
 function displayTask(task) {
@@ -132,10 +174,7 @@ function addTaskToProjectMap(task) {
 // TODO: break this apart!
 function setMinDate() {
     const presentDate = new Date()
-    const year = presentDate.getFullYear()
-    const month = String(presentDate.getMonth() + 1).padStart(2,"0")
-    const day = String(presentDate.getDate()).padStart(2,"0")
-    const minDate = `${year}-${month}-${day}`
+    const minDate = formatToLocalDate(presentDate)
     DomCtrl.setMinDate(minDate)
 }
 
@@ -160,6 +199,7 @@ function delegate(event) {
     const deleteProject = event.target.closest(".remove-project")
     const selectProject = event.target.closest(".select-project")
     const sidebarMenu = event.target.closest(".sidebar-main-div")
+    const moveProjectBtn = event.target.closest("#existing-projects-popover > button[data-project-name]") // inside popup 
     if (changeTheme) {
         DomCtrl.setTheme()
     }
@@ -207,9 +247,8 @@ function delegate(event) {
     }
     if (toggleEditorField) {
         // show edit divs 
-        // console.log(event.target.type )
-        // console.log(event.target.value)
         const clickedToggleBtn = event.target
+        // TODO: add task fields to editor inputs
         DomCtrl.switchEditorField(clickedToggleBtn)
     }
     if (cancelEditing) {
@@ -218,13 +257,15 @@ function delegate(event) {
         DomCtrl.closeEditor(closeBtnElem)
     }
     if (taskOptionsPopupMenu) {
-        const taskId = event.target.closest("#tasks-options-popover").dataset.anchoredToTaskId
+        const taskId = DomCtrl.getTaskOptionsPopupTaskId()
         const task = projectMap.get(viewingProject).get(taskId)        
         const btnClicked = event.target
         const editBtn = btnClicked.classList.contains("popover-edit") 
         const resetBtn = btnClicked.classList.contains("popover-reset")
         const delBtn = btnClicked.classList.contains("popover-delete")
+        const moveProjectBtn = btnClicked.classList.contains("popover-move")
         if (editBtn) {
+            prepareEditor(task)
             DomCtrl.openEditor()
         }
         if (resetBtn) {
@@ -238,6 +279,11 @@ function delegate(event) {
             // rm task from viewingProject dom by refreshing the dom
             // DomCtrl.buildProjectTasksElements(viewingProject, projectMap.get(viewingProject))
             refreshDomTasks()
+        }
+        if (moveProjectBtn) {
+            const userMadeProjects = getExistingProjects().filter(project => project !== DEAFULT_PROJECT_NAME)
+            DomCtrl.populateExistingProjectsPopover(userMadeProjects)
+            // check event.target from the #existing-projects-popover menu now
         }
     }
     if (addNewTaskBtn) {
@@ -306,7 +352,19 @@ function delegate(event) {
             refreshDomTasks()
         }
     }
+    if (moveProjectBtn) {
+        // get the id from tasks-options-popover to get task to move
+        const taskId = DomCtrl.getTaskOptionsPopupTaskId()
+        const moveToProject = moveProjectBtn.closest("button[data-project-name]").dataset.projectName
+        const moveSuccessful = moveProject(taskId, moveToProject)
+        if (moveSuccessful) {
+            refreshDomTasks()
+            DomCtrl.cache.tasksOptionsPopover.hidePopover()
+        }
+        // console.log(moveToProject)
+    }
 }
+
 
 function makeProjectMap(taskListToLoad) {
     for (const task of taskListToLoad) {
@@ -327,6 +385,13 @@ function makeProjectMap(taskListToLoad) {
     }
 }
 
+function printOverdueTasks() {
+    for (const task of projectMap.get(DEAFULT_PROJECT_NAME).values()) {
+        // const b = task
+        console.log(`time for task ${task.getShortId()}: ${task.time} | overdue? ${task.isOverdue}`)
+    }
+}
+
 // app
 function init() {
     console.log(` > init()`)
@@ -336,6 +401,7 @@ function init() {
     let tasksList = TaskLoader.testLoadTasks(3)
     makeProjectMap(tasksList)
     checkAndMarkOverdueTasks()
+    // printOverdueTasks()
     
     DomCtrl.buildAllTasksElements(viewingProject, projectMap.get(viewingProject))
     DomCtrl.setTaskElementsMap()
@@ -364,7 +430,8 @@ function init() {
         if (event.target.dataset.formName === "editForm") {
             console.log("editForm")
             console.log(Object.fromEntries(myData))
-            // editTask()
+            const taskId = DomCtrl.getTaskIdFromElement(event.target)
+            editTask(taskId, myData)
             const submitBtn = event.submitter
             // console.log(submitBtn)
             DomCtrl.closeEditor(submitBtn)
@@ -386,4 +453,3 @@ function main() {
 }
 
 main()
-

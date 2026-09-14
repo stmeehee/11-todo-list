@@ -27,7 +27,7 @@ export default class Filter {
             // console.log(`task due on: ${task.getInfo().dueDate}`)
             // console.log(`today      : ${new Date().toLocaleDateString()}`)
             const present = Date.now()
-            return ( task.dueDate.getTime() <= present  )
+            return ( task.dueDate.getTime() < present  )
         }).map(task => task.id)
     }
 

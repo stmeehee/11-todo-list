@@ -46,6 +46,20 @@ export default class HtmlMaker {
         return div
     }
 
+    static getProjectButton(projectName) {
+        const button =
+        `
+        <button 
+        data-project-name="${projectName}"
+        type="button"
+        commandfor="existing-projects-popover"
+        command="hide-popover">
+            <div>${projectName}</div>
+        </button>
+        `
+        return button
+    }
+
     static getTaskElem(task) {
         // 1. full-task-div
         // 2. progress-bar-btn-div
@@ -113,7 +127,7 @@ export default class HtmlMaker {
         }
 
             static getPrimaryTaskDiv(task) {
-                const confirmBtnState = (task.getSubtasksSize().length === 0) ? "finalize" : "disable"
+                const confirmBtnState = (task.getSubtasksSize() === 0) ? "finalize" : "disable"
                 // console.log({confirmBtnState})
                 const confirmBtn = `<button class="${confirmBtnState}" data-class_show="task-details">complete</button>`
                 const primaryTaskDiv = 
@@ -130,39 +144,48 @@ export default class HtmlMaker {
                 static getTaskDetailsDiv(task) {
                     const taskDetailsDiv =
                     `
-                    <div class="task-details ">
-                        <p>Title: ${task.getInfo().title}</p>
-                        <p>Description: ${task.getInfo().description}</p>
-                        <p>Due date: ${task.getInfo().dueDate}</p>
+                    <div class="task-details">
+                        <p class="task-details-title">Title: ${task.getInfo().title}</p>
+                        <p class="task-details-desc">Description: ${task.getInfo().description}</p>
+                        <p class="task-details-due-date">Due date: ${task.getInfo().dueDate}</p>
                         ${this.getTagsDiv(task)} 
                     </div>
                     `
                     return taskDetailsDiv
                 }
 
-                    // TODO: implemented tags! 
+                    // only supports priority
                     static getTagsDiv(task) {
-                        // TODO: figure how to add insividual tag div from tags.getTagsList()
                         const tagsDiv = 
                         `
                         <div class="tags">
-                            <span>Tags: </span>
-                            <div class="tag high-priority">
-                                <span>High </span>
-                            </div>
-                            <div class="tag">
-                                <span>birthday</span>
-                            </div>
-                            <div class="tag medium-priority">
-                                <span>medium</span>
-                            </div>
-                            <div class="tag low-priority">
-                                <span>low</span>
-                            </div>                                                                        
+                            <span>Priority: </span>   
+                            ${this.getPriorityDiv(task.getInfo().priority)}                                                                    
                         </div>
                         `
                         return tagsDiv
+                            // <div class="tag high-priority">
+                            //     <span>High </span>
+                            // </div>
+                            // <div class="tag">
+                            //     <span>birthday</span>
+                            // </div>
+                            // <div class="tag medium-priority">
+                            //     <span>medium</span>
+                            // </div>
+                            // <div class="tag low-priority">
+                            //     <span>low</span>
+                            // </div>                         
                     }
+                        static getPriorityDiv(priority) {
+                            const div = 
+                            `
+                            <div class="tag ${priority}-priority">
+                                <span>${priority}</span>
+                            </div>     
+                            `
+                            return div
+                        }
 
                 static getTaskDetailsEditDiv(task) {
                     const editorDiv = 
@@ -170,7 +193,7 @@ export default class HtmlMaker {
                     <div class="task-details-edit hidden-div">
                         ${this.getEditSelectorDiv(task)}
                         <hr>
-                        ${this.getEditFormDiv()}
+                        ${this.getEditFormDiv(task)}
                     </div>
                     `
                     return editorDiv
@@ -192,44 +215,80 @@ export default class HtmlMaker {
                             <input type="radio" id="edit-time-radio-${task.id}" name="edit-field-${task.id}" value="edit-time-div" class="toggle-input-edit">
                             <label for="edit-time-radio-${task.id}" class="toggle-label">Time</label>
 
-                            <input type="radio" id="edit-tags-radio-${task.id}" name="edit-field-${task.id}" value="edit-tags-div" class="toggle-input-edit">
-                            <label for="edit-tags-radio-${task.id}" class="toggle-label">Tags</label>
-
+                            <input type="radio" id="edit-priority-radio-${task.id}" name="edit-field-${task.id}" value="edit-priority-div" class="toggle-input-edit">
+                            <label for="edit-priority-radio-${task.id}" class="toggle-label">Priority</label>
+                                      
                             <input type="radio" id="edit-note-radio-${task.id}" name="edit-field-${task.id}" value="edit-note-div" class="toggle-input-edit">
                             <label for="edit-note-radio-${task.id}" class="toggle-label">Note</label>
                         </div>
                         `
+                        // removed tags option
+                        // <input type="radio" id="edit-tags-radio-${task.id}" name="edit-field-${task.id}" value="edit-tags-div" class="toggle-input-edit">
+                        // <label for="edit-tags-radio-${task.id}" class="toggle-label">Tags</label>
                         return editSelectorDiv
                     }    
 
-                    static getEditFormDiv() {
+                    static getEditFormDiv(task) {
+                        // console.log(` > getEditFormDiv(task)`)
+                        // console.log(`task.date: ${task.date}`)
+                        // console.log(`task.time: ${task.getInfo().time}`)
                         const editformDiv = 
                         `
                         <form class="edit-form" data-form-name="editForm">
                             <fieldset>
                                 <div class="hidden-div edit-title-div">                                            
                                     <label for="edit-title"></label>
-                                    <input type="text" id="edit-title" placeholder="Title" name="title">
+                                    <input 
+                                    type="text" 
+                                    id="edit-title"
+                                    placeholder="Title" 
+                                    name="title"
+                                    value="">
                                 </div>
                                 <div class="hidden-div edit-date-div">
                                     <label for="edit-date">Date: </label>
-                                    <input type="date" id="edit-date" name="date">
+                                    <input 
+                                    type="date" 
+                                    id="edit-date" 
+                                    name="date"
+                                    value="">
                                 </div>                                 
                                 <div class="hidden-div edit-desc-div">
                                     <label for="edit-desc"></label>
-                                    <input type="text" id="edit-desc" placeholder="Description" name="desc">
+                                    <input 
+                                    type="text" 
+                                    id="edit-desc" 
+                                    placeholder="Description" 
+                                    name="desc"
+                                    value="">
                                 </div>  
                                 <div class="hidden-div edit-time-div">
                                     <label for="edit-time" >Time: </label>
-                                    <input type="time" id="edit-time" name="time">
+                                    <input 
+                                    type="time" 
+                                    id="edit-time" 
+                                    name="time"
+                                    value="">
                                 </div>     
-                                <div class="hidden-div edit-tags-div"> 
-                                    <label for="edit-tags"></label>
-                                    <input type="text" id="edit-tags" placeholder="Tags" name="tags">
+                                <div class="hidden-div edit-priority-div"> 
+                                    <label for="edit-priority">Priority: </label>
+                                    <select 
+                                    id="edit-priority"
+                                    name="priority"
+                                    value="">
+                                        <option value="high">High</option>       
+                                        <option value="medium">Medium</option> 
+                                        <option value="low">Low</option>  
+                                    </select>
                                 </div>  
                                 <div class="hidden-div edit-note-div"> 
                                     <label for="edit-note"></label>
-                                    <textarea id="edit-note" placeholder="Note" name="note"></textarea>
+                                    <textarea 
+                                    id="edit-note" 
+                                    placeholder="Note" 
+                                    name="note"
+                                    value="">
+                                    </textarea>
                                 </div>                                        
                             </fieldset>
                             <!-- <hr> -->
@@ -250,6 +309,21 @@ export default class HtmlMaker {
                         </form>
                         `
                         return editformDiv
+                        // removed tags div 
+                        // <div class="hidden-div edit-tags-div"> 
+                        //     <label for="edit-tags"></label>
+                        //     <input 
+                        //     type="text" 
+                        //     id="edit-tags" 
+                        //     placeholder="Tags" 
+                        //     name="tags"
+                        //     value="??">
+                        //     <select id="priority" name="priority">    
+                        //         <option value="high">High</option>       
+                        //         <option value="medium">Medium</option> 
+                        //         <option value="low">Low</option>  
+                        //     </select>
+                        // </div> 
                     }
 
             static getSubtaskCheckBoxDiv(unFinishedSubtasks) {

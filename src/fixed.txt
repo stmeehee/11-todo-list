@@ -1,23 +1,24 @@
 ---------------------------------------------------------------------------------------------------
 (add a commit msg log below after every TODO/bugfix TODO; erase once done so):
-4 additions, 1 fix
+
+moveProject Btn works in taskOptions 
 fixes:  
-- existing project dropdown not updating when adding new project
+- 
 
 added: 
-- functional overdue tasks filter
-- functional Completed tasks filter
-- functional upcoming tasks filter
-- overdue tasks change color,label
+- existing projects dialog popup
+- moveProject functionality
+- replaced tags option with priority in editor  
+- working editor
 
 ---------------------------------------------------------------------------------------------------
 TODO:             
-        1: move task to project (via (...) btn)
-        2: editor actually works
+-
 ---------------------------------------------------------------------------------------------------
 working on: 
-
+-
 ---------------------------------------------------------------------------------------------------            
 bugfix TODO:
-- 
+- a task thats due today gets comes up as overdue! (semi;fixed; check if it still happens)
+- current time doesnt show up in editor; selecting time & submitting causes split error
 ---------------------------------------------------------------------------------------------------
