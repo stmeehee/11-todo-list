@@ -43,13 +43,14 @@ function editTask(taskId, formData) {
 
 function moveProject(taskId, moveToProject) {
     const task = projectMap.get(DEAFULT_PROJECT_NAME).get(taskId)
-    const currProjectSet = task.getCurrentProject()
-    if (currProjectSet.has(moveToProject)) {
+    const currProjectName = task.getCurrentProject()
+    if (currProjectName === moveToProject) {
         return false
     }
     task.changeProject(moveToProject)
-    const projectToRmTask = [...currProjectSet].join("")
-    projectMap.get(projectToRmTask).delete(task.id)
+    if (currProjectName) {
+        projectMap.get(currProjectName).delete(task.id) 
+    }
     projectMap.get(moveToProject).set(task.id, task)
     return true
 }
@@ -131,7 +132,10 @@ function addNewProjectToProjectMap(projectName) {
     projectMap.set(projectName, new Map())
 }
 
-function addProject(newProjName) {
+function addProject(newProjName, addProjectManually = false) {
+    if (addProjectManually) {
+        projectMap.set(newProjName, new Map())
+    }
     DomCtrl.addProjectToSideBar(newProjName)
     addNewProjectToProjectMap(newProjName)
     DomCtrl.collapseHiddenDiv(null, DomCtrl.cache.addNewProjectCheckBox)
@@ -145,19 +149,19 @@ function newTask(formData) {
     const task = new Task(formData)
     addTaskToProjectMap(task)
     // TODO: 
-    // saveTaskToStorage(projectMap) 
-    displayTask(task)
-    // TODO: add project to sidebar
-    DomCtrl.setTaskElementsMap()
     checkAndMarkOverdueTasks()
-    console.log(`added task: ${task.getShortId()} | isOverdue? = ${task.isOverdue}`)
+    addTaskToDom(task)
+    DomCtrl.setTaskElementsMap()
+    // saveTaskToStorage(projectMap) 
+    // console.log(`added task: ${task.getShortId()} | isOverdue? = ${task.isOverdue}`)
 }
 
-function displayTask(task) {
-    const ifViewingTaskProject = task.projectNames.has(viewingProject)
-    if (ifViewingTaskProject) {
-        DomCtrl.addNewTaskElemToDom(task)
-    }
+function addTaskToDom(task) {
+    // const ifViewingTaskProject = task.projectNames.has(viewingProject)
+    // if (ifViewingTaskProject) {
+    //     DomCtrl.addNewTaskElemToDom(task)
+    // }
+    DomCtrl.addNewTaskElemToDom(task)
 }
 
 function addTaskToProjectMap(task) {
@@ -231,9 +235,10 @@ function delegate(event) {
         const confirmBtn = event.target
         // console.log(confirmBtn)
         taskId = DomCtrl.getTaskIdFromElement(confirmBtn)
+        projectMap.get(viewingProject).get(taskId).updateProgress(null, null)
         DomCtrl.markTaskComplete(taskId)
         DomCtrl.disAllowTaskParentDiv(taskId)
-        const subtasksExist = (projectMap.get(viewingProject).get(taskId).getSubtaskTitles().length !== 0)
+        const subtasksExist = (projectMap.get(viewingProject).get(taskId).getSubtasksSize() !== 0)
         if (subtasksExist) {
             DomCtrl.collapseHiddenDiv(taskId)
         }
@@ -269,10 +274,9 @@ function delegate(event) {
             DomCtrl.openEditor()
         }
         if (resetBtn) {
-            task.resetProgress()
             const subtasksExist = (task.getSubtaskTitles().length !== 0)
-            DomCtrl.resetTaskElement(taskId, subtasksExist)
-            DomCtrl.allowDiv(taskId)
+            DomCtrl.resetTaskElement(taskId, subtasksExist, task.isOverdue)
+            task.resetProgress()
         }
         if (delBtn) {
             deleteAndRmTaskFromProjectMap(task)
@@ -324,7 +328,7 @@ function delegate(event) {
         refreshDomTasks()
     }
     if (sidebarMenu) {
-        console.log(sidebarMenu)
+        // console.log(sidebarMenu)
         const allTasksBtn = event.target.closest("button[value='allTasks']")
         const upcomingTasksBtn = event.target.closest("button[value='upcomingTasks']")
         const overdueTasksBtn = event.target.closest("button[value='overdueTasks']")
@@ -335,7 +339,7 @@ function delegate(event) {
             refreshDomTasks()
         }
         if (upcomingTasksBtn) {
-            console.log(upcomingTasksBtn)
+            // console.log(upcomingTasksBtn)
             const upcoming = Filter.getTasksIdOfUpcoming(projectMap.get(DEAFULT_PROJECT_NAME)) // [a,b,c]
             refreshDomTasks(upcoming, "Upcoming")
         }
@@ -365,13 +369,12 @@ function delegate(event) {
     }
 }
 
-
-function makeProjectMap(taskListToLoad) {
+function makeProjectAndProjectMap(taskListToLoad) {
     for (const task of taskListToLoad) {
         let taskProjectNames = task.projectNames
         for (const projName of taskProjectNames) {
             if (!projectMap.has(projName)) {
-                projectMap.set(projName, new Map()) // {now: new Map(), later: new Map()}
+                addNewProjectToProjectMap(projName) // {now: new Map(), later: new Map()}
                 // condition below is to not add "All tasks" as a project div
                 if (projName !== DEAFULT_PROJECT_NAME ) {
                     addProject(projName)                            
@@ -398,8 +401,11 @@ function init() {
     Task.defaultTaskProjectName = DEAFULT_PROJECT_NAME
     setViewingProject(DEAFULT_PROJECT_NAME)
     DomCtrl.cacheStaticDomElements()
-    let tasksList = TaskLoader.testLoadTasks(3)
-    makeProjectMap(tasksList)
+    let tasksList = TaskLoader.testLoadTasks(1)
+    makeProjectAndProjectMap(tasksList)
+
+    addProject("test", true)
+
     checkAndMarkOverdueTasks()
     // printOverdueTasks()
     
@@ -416,8 +422,8 @@ function init() {
         const myData = new FormData(event.target)
             // console.log(Object.fromEntries(myData))
         if (event.target.dataset.formName === "newForm") {
-            console.log("newForm")
-            console.log(Object.fromEntries(myData))
+            // console.log("newForm")
+            // console.log(Object.fromEntries(myData))
             DomCtrl.cache.newTaskdialogBox.close()
             const newProjectName = myData.get("newProject")
             if (newProjectName !== "" && !projectExists(newProjectName, projectMap.keys())) {

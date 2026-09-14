@@ -1,24 +1,32 @@
 ---------------------------------------------------------------------------------------------------
 (add a commit msg log below after every TODO/bugfix TODO; erase once done so):
 
-moveProject Btn works in taskOptions 
+7 fixes, 1 remove
+
 fixes:  
-- 
+- current time doesnt show up in editor;
+- setting the time frome editor assigns null to task.#time 
+- a task thats due today but in the future comes up as overdue!
+- adding a new task with todays date and now time isnt being marked as overdue
+- adding new task w/ subtask and moving it causes error
+- new tasks shows up in viewing-div as undefined  in addTaskToDom() function 
+- completed task with no subtasks doesnt show up in completed tasks sidebar
+
+removed: 
+- sorting/search options in main div
 
 added: 
-- existing projects dialog popup
-- moveProject functionality
-- replaced tags option with priority in editor  
-- working editor
+- 
 
 ---------------------------------------------------------------------------------------------------
 TODO:             
--
+- layout touch ups
 ---------------------------------------------------------------------------------------------------
 working on: 
--
+- add local storage
 ---------------------------------------------------------------------------------------------------            
 bugfix TODO:
-- a task thats due today gets comes up as overdue! (semi;fixed; check if it still happens)
-- current time doesnt show up in editor; selecting time & submitting causes split error
+- 
 ---------------------------------------------------------------------------------------------------
+note
+- a task's time can edited to be set in the past, which will count as overdue but isnt being marked so in the dom!

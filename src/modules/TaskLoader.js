@@ -2,7 +2,7 @@ import Task from "./Task.js";
 
 export default class TaskLoader {
     static testProjectNames = ["has 2","has 1", "has 2"]
-    static testDates = [new Date(2026, 8, 14),new Date(2026, 8, 14), new Date(2026, 8, 11)]
+    static testDates = [new Date(2026, 8, 15 ),new Date(2026, 8, 14), new Date(2026, 8, 11)]
     static testTitles = ["a", "b", "c"]
     // simu;late loading tasks from this class
     static testLoadTasks(loadHowMany) {
@@ -18,10 +18,10 @@ export default class TaskLoader {
             testDate = this.testDates[i%this.testDates.length]
             testTitle = this.testTitles[i%this.testTitles.length]
             // console.log(testDate.toLocaleDateString())
-            const task = new Task(null, projName)
+            const task = new Task(null)
             task.testSetDate(testDate)
             task.testSetTitle(testTitle)
-            task.testSetTime(8, 35)
+            task.testSetTime("05:00")
             // console.log(task.dueDate)
             // task.isFinished = true
             // task.id = Task.getNewId()

@@ -41,8 +41,8 @@ export default class Task {
         this.#priority = formData.get("priority")
         this.#note = formData.get("note")
         time = (formData.get("pickTime") === "now")? (this.getCurrTime()) : formData.get("customTime")
-        // console.log(`picked time: ${time}`)
         this.#time = time 
+        // console.log(`picked time: ${time}`)
         this.#dueDate = new Date(formData.get("date"))
         this.addTimeToDate()
         // console.log(`time in setFields: ${time}`)
@@ -51,9 +51,9 @@ export default class Task {
                 newProjName = forceAddProjectName
             }
             else {
-                newProjName =   (formData.get("newProject")  !== "") 
-                                ? formData.get("newProject")
-                                : (formData.get("existingProject") || Task.defaultTaskProjectName ) 
+                newProjName =  newProjName = formData.get("newProject") 
+                                || formData.get("existingProject") 
+                                || Task.defaultTaskProjectName;
             }
             this.#projectNames.add(newProjName)
         }
@@ -91,6 +91,10 @@ export default class Task {
     }
 
     updateProgress(subtaskKey, isChecked) {
+        if (!subtaskKey && !isChecked && this.getSubtasksSize() === 0) {
+            this._isFinished = true
+            return
+        }
         let ticked = 0
         for (const subtask of this.#subtasks) {
             if (subtask.key === subtaskKey) {
@@ -113,7 +117,7 @@ export default class Task {
         formObject.append("pickTime", "noTnow")
         formObject.append("customTime", "07:10")
         formObject.append("priority", "high")
-        formObject.append("newProject", "mine")
+        formObject.append("newProject", "")
         formObject.append("note", "testAaa")
         // formObject.append("subtaskTitle1", "test - Do the dishes")
         // formObject.append("subtaskTitle2", "test - wash clothes")
@@ -131,7 +135,8 @@ export default class Task {
         this.#dueDate = setTodDateObj
     }
 
-    testSetTime(hours, minutes) {
+    testSetTime(hoursMins) {
+        const [hours, minutes] = hoursMins.split(":")
         this.#time = `${hours}:${minutes}`
         this.#dueDate.setHours(hours, minutes)
     }
@@ -292,13 +297,20 @@ export default class Task {
     }
 
     getCurrentProject() {
-        const res = [...this.#projectNames]
-        .filter(projectName => (projectName !== Task.defaultTaskProjectName && projectName !== "deleted tasks"))
-        return new Set(res)
+        let currentProject = [...this.#projectNames]
+        .find(projectName => (projectName !== Task.defaultTaskProjectName) && (projectName !== "deleted tasks"))
+        const res = (currentProject)? currentProject : null
+        return res
     }
 
     get time() {
         return this.#time
+    }
+
+    formatToMilitaryTime(date) {
+    const hours = String(date.getHours()).padStart(2,"0")
+    const minutes = String(date.getDate()).padStart(2,"0")
+    return `${hours}:${minutes}`
     }
 
     

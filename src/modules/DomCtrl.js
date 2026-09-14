@@ -203,12 +203,15 @@ export default class DomCtrl {
         const editBtnDiv = DomCtrl.cache.tasksOptionsPopover.querySelector('.popover-edit')
         // console.log(resetBtnDiv)
         const completedTask = this.myTaskElements.get(taskId).classList.contains("done")
-        if (completedTask) {
+        const overdueTask = this.myTaskElements.get(taskId).classList.contains("overdue")
+        if (completedTask || overdueTask) {
             // console.log("SHOWING RESET BTN")
+            // if reset is hidden
             if (resetBtnDiv.classList.contains("hidden")) {
-                // show the reset btn and hide edit btn
+                // show the reset btn 
                 resetBtnDiv.classList.remove("hidden")
             }
+            // hide editbtn
             editBtnDiv.classList.add("hidden")
         }
         // hide reset and show edit
@@ -239,8 +242,9 @@ export default class DomCtrl {
         })
     }    
 
-    static resetTaskElement(taskId, subtasksExist) {
-        this.myTaskElements.get(taskId).classList.remove("done")
+    static resetTaskElement(taskId, subtasksExist, taskOverdue) {
+        const taskElem = this.myTaskElements.get(taskId)
+        taskElem.classList.remove("done")
         // app/task duty
         let pct = 0
         let [label, color] = this.getBarLabelColor(pct)
@@ -250,13 +254,27 @@ export default class DomCtrl {
             this.completeBtnOnOff(taskId, false)
             this.updateSubTask(taskId, 0)
         }
+        else {
+            this.completeBtnOnOff(taskId, true)
+        }
+        if (taskOverdue) {
+            this.myTaskElements.get(taskId).classList.remove("overdue")
+        }
+        this.allowDiv(taskElem)
+        this.allowSubtasksDiv(taskElem)
     }    
 
-    static allowDiv(taskId) {
-        const taskElem = this.myTaskElements.get(taskId)
+    static allowDiv(taskElem) {
         const parentDiv = taskElem.querySelector(".task-parent-div")
         parentDiv.classList.remove("disAllow")
     }    
+
+    static allowSubtasksDiv(taskElem) {
+        const subtaskParentDiv = taskElem.querySelector("div.hidden-div.shift-left.disAllow")
+        if (subtaskParentDiv) {
+            subtaskParentDiv.classList.remove("disAllow")
+        }
+    }
 
     // find and return maintask element from child element 
     static getFullTaskDivElemFromChildElem(childElem) {

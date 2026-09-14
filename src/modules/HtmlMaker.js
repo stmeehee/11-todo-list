@@ -83,9 +83,10 @@ export default class HtmlMaker {
             //     const hiddenSubTaskDiv = getHiddenSubTaskDiv(task) // last child of task-parent-div
             //         const SubTaskChildDiv = getSubTaskChildDiv(task.getSubtaskTitles())
         const done = (task.isFinished)? "done":""
+        const overdue = (task.isOverdue)? "overdue":""
         const taskElem = 
         `
-        <div class="full-task-div ${done}" id="${task.id}">
+        <div class="full-task-div ${done} ${overdue}" id="${task.id}">
             ${this.getProgBarBtnDiv(task)}
             ${this.getTaskParentDiv(task)}
         </div>
@@ -114,7 +115,7 @@ export default class HtmlMaker {
 
         static getTaskParentDiv(task) {
             // ${(task.overdue)?"disAllow":""}
-            const disallow = (task.isOverdue || task.isFinished)?"disAllow":""
+            const disallow = (task.isFinished)?"disAllow":""
             const taskParentDiv =
             `
             <div class="task-parent-div ${disallow}">
@@ -127,7 +128,7 @@ export default class HtmlMaker {
         }
 
             static getPrimaryTaskDiv(task) {
-                const confirmBtnState = (task.getSubtasksSize() === 0) ? "finalize" : "disable"
+                const confirmBtnState = (task.getSubtasksSize() === 0 && !task.isOverdue) ? "finalize" : "disable"
                 // console.log({confirmBtnState})
                 const confirmBtn = `<button class="${confirmBtnState}" data-class_show="task-details">complete</button>`
                 const primaryTaskDiv = 
@@ -140,6 +141,7 @@ export default class HtmlMaker {
                 `
                 return primaryTaskDiv
             }
+            // (no subtasks) AND (task not overdue)
 
                 static getTaskDetailsDiv(task) {
                     const taskDetailsDiv =
@@ -267,7 +269,7 @@ export default class HtmlMaker {
                                     <input 
                                     type="time" 
                                     id="edit-time" 
-                                    name="time"
+                                    name="customTime"
                                     value="">
                                 </div>     
                                 <div class="hidden-div edit-priority-div"> 
@@ -349,7 +351,8 @@ export default class HtmlMaker {
                 if (task.getSubtaskTitles().length === 0) {
                     return ""
                 }
-                let hiddenSubtaskDiv = `<div class="hidden-div shift-left">`
+                const disAllow = (task.isOverdue)? "disAllow" : ""
+                let hiddenSubtaskDiv = `<div class="hidden-div shift-left ${disAllow}">`
                 const subtaskTitles = task.getSubtaskTitles()
                 let childSubtaskDivs = ""
                 for (let i = 0; i < subtaskTitles.length; i += 1) {
