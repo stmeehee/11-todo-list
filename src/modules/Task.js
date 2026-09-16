@@ -63,7 +63,9 @@ export default class Task {
             if (existingProjects.includes("deleted tasks")) {
                 this.#projectNames = new Set().add("deleted tasks")
             }
-            existingProjects.forEach(projName => this.#projectNames.add(projName))
+            else {
+                existingProjects.forEach(projName => this.#projectNames.add(projName))
+            }
             const parsedSubtasks = JSON.parse(formData.get("subtasks"))
             this.addExistingSubtasks(parsedSubtasks)
             this.#unFinishedSubtasks = this.#subtasks.length     
@@ -142,11 +144,6 @@ export default class Task {
         formObject.append("subtaskTitle1", "test - Do the dishes")
         // formObject.append("subtaskTitle2", "test - wash clothes")
         // formObject.append("subtaskTitle3", "test - pre-bedtime scream")
-        // formObject.append("subtaskTitle4", "test - sleep")
-        // formObject.append("subtaskTitle5", "test - sleep")
-        // formObject.append("subtaskTitle6", "test - sleep")
-        // formObject.append("subtaskTitle7", "test - sleep")
-        // formObject.append("subtaskTitle8", "test - sleep")
         formObject.append("existingProject", "")
         return formObject
     }
@@ -179,14 +176,7 @@ export default class Task {
                 isDeleted: this.#isDeleted,
                 isOverdue: this.#isOverdue,
             }
-            return info
-            // this.#id = formData.get("id")
-            // this.#projectNames.add(formData.get("existingProject"))            
-            // this.addSubtasks(formData)
-            // this.#unFinishedSubtasks = this.#subtasks.length     
-            // this._isFinished = formData.get("isFInished")        
-            // this.#isDeleted = formData.get("isDeleted")
-            // this.#isOverdue = formData.get("isOverdue")            
+            return info          
         }
     
     set id(value) {
@@ -280,10 +270,6 @@ export default class Task {
         // TODO: add tags list private field and return return that list 
     }
 
-    // removeProject(removeThisProject) {
-    //     this.#projectNames.delete(removeThisProject)
-    // }
-
     markAsDeleted() {
         this.#projectNames.clear()
         this.#projectNames.add("deleted tasks")
@@ -294,7 +280,6 @@ export default class Task {
         return this.#dueDate
     }
 
-
     get isOverdue() {
         return this.#isOverdue
     }
@@ -302,7 +287,6 @@ export default class Task {
     set isOverdue(value) {
         this.#isOverdue = value
     }
-
 
     getSubtasksSize() {
         return this.#subtasks.length
@@ -344,11 +328,6 @@ export default class Task {
     get finishedSubtasks() {
         return this.#finishedSubtasks
     }
-
-    // set projectNames(name) {
-    //     this.#projectNames = name
-    // }
-
 
 }
 

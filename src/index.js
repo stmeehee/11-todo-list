@@ -1,12 +1,11 @@
 import "./style.css";
-// import Task from "./task.js"; // NotUsing
 import Task from "./modules/Task.js";
 import DomCtrl from "./modules/DomCtrl.js";
 import Persistence from "./modules/Persistence.js";
 import Filter from "./modules/Filter.js";
 import Utils from "./modules/Utils.js"
 
-// myViewingDivTasks: the tasks that are currently being viewed; chosen according to the viewingProject var
+// projectMap.get(viewingProject): the tasks that are currently being viewed; chosen according to the viewingProject var
 let projectMap = new Map()
 const DEAFULT_PROJECT_NAME = "All tasks"
 let viewingProject = null
@@ -85,8 +84,6 @@ function refreshDomTasks(displayTaskList, forceViewingDivName) {
         DomCtrl.showTasks(forceViewingDivName, new Set(displayTaskList))
         return
     }
-    // const projects = projectMap.get(viewingProject).keys()
-    // const viewingProjectTaskIdSet = new Set(projects)
     const lst = projectMap.get(viewingProject)
     DomCtrl.showTasks(viewingProject, lst)
 }
@@ -126,7 +123,6 @@ function moveProjectTasksToDel(projNameToRm, projectMap) {
     }
     const boolDeleted = projectMap.delete(projNameToRm)
     return [boolDeleted, projNameToRm]
-    // TODO: delete the projNameToRm tasks from "all tasks" project!
 }
 
 function addNewProjectToProjectMap(projectName) {
@@ -134,9 +130,6 @@ function addNewProjectToProjectMap(projectName) {
 }
 
 function addProject(newProjName, addProjectManually = false) {
-    // if (addProjectManually) {
-    //     projectMap.set(newProjName, new Map())
-    // }
     DomCtrl.addProjectToSideBar(newProjName)
     addNewProjectToProjectMap(newProjName)
     DomCtrl.collapseHiddenDiv(null, DomCtrl.cache.addNewProjectCheckBox)
@@ -149,11 +142,9 @@ function projectExists(newProjectName, existingProjects) {
 function newTask(formData) {
     const task = new Task(formData)
     addTaskToProjectMap(task)
-    // TODO: 
     checkAndMarkOverdueTasks()
     DomCtrl.addNewTaskElemToDom(task)
     DomCtrl.setTaskElementsMap()
-    // saveTaskToStorage(projectMap) 
     // console.log(`added task: ${task.getShortId()} | isOverdue? = ${task.isOverdue}`)
 }
 
@@ -161,14 +152,13 @@ function addTaskToProjectMap(task) {
     for (const projName of task.projectNames) {
         const newProject = (projName !== "" && !projectMap.has(projName))
         if (newProject) {
-            projectMap.set(projName, new Map()) // {now: new Map(), later: new Map()}
+            projectMap.set(projName, new Map()) 
         }     
-        projectMap.set(projName, projectMap.get(projName).set(task.id, task)) // {now: { {id: task} }}
+        projectMap.set(projName, projectMap.get(projName).set(task.id, task)) 
     }
 }   
 
 // DomCtrl & app method
-// TODO: break this apart!
 function setMinDate() {
     const presentDate = new Date()
     const minDate = Utils.formatToLocalDate(presentDate)
@@ -179,10 +169,6 @@ function setMinDate() {
 function delegate(event) {
     // console.log({"event --> delegate(): elem clicked =":event.target})
     // console.log(event.target.checked)
-    // if (event.target.checked) {
-    //     console.log(event.target.value)
-    //     console.log("here!")
-    // }
     let taskId = null
     const changeTheme = event.target.closest(".theme-toggle")
     const subTaskCheckboxClick = (event.target.closest(".hidden-div") && event.target.type == "checkbox") 
@@ -203,8 +189,6 @@ function delegate(event) {
     if (subTaskCheckboxClick) {
         // console.log(`checkbox state: ${event.target.checked}, from: ${event.target.type}`)
         // console.log(event.target)
-        // 1. get tashId from checkBox
-        // 2. updateProgress(checkboxElState, taskId)
         const checkBoxElem = event.target
         const subtaskKey = checkBoxElem.value
         taskId = DomCtrl.getTaskIdFromElement(checkBoxElem) 
@@ -216,7 +200,6 @@ function delegate(event) {
         DomCtrl.updateSubTask(taskId, task.finishedSubtasks)
 
         // console.log(myTasks.get(taskId).isFinished)
-        // completeBtnOnOff(taskId, myTasks.get(taskId).isFinished) // DomCtrl
         DomCtrl.completeBtnOnOff(taskId, task.isFinished) 
     }
     if (TaskOptionsPopupBtn) {
@@ -237,15 +220,12 @@ function delegate(event) {
         }
         const pct = 100
         let [label, color] = DomCtrl.getBarLabelColor(null, true) 
-        // let color = DomCtrl.cache.barCssVars.barColorGreenName
-        // let label = "Complete!"
         DomCtrl.renderProgressBar(label, color, `${pct}%`, taskId)
         DomCtrl.closeEditor(confirmBtn)
     }
     if (toggleEditorField) {
         // show edit divs 
         const clickedToggleBtn = event.target
-        // TODO: add task fields to editor inputs
         DomCtrl.switchEditorField(clickedToggleBtn)
     }
     if (cancelEditing) {
@@ -273,13 +253,11 @@ function delegate(event) {
         if (delBtn) {
             deleteAndRmTaskFromProjectMap(task)
             // rm task from viewingProject dom by refreshing the dom
-            // DomCtrl.buildProjectTasksElements(viewingProject, projectMap.get(viewingProject))
             refreshDomTasks()
         }
         if (moveProjectBtn) {
             const userMadeProjects = getExistingProjects().filter(project => project !== DEAFULT_PROJECT_NAME)
             DomCtrl.populateExistingProjectsPopover(userMadeProjects)
-            // check event.target from the #existing-projects-popover menu now
         }
     }
     if (addNewTaskBtn) {
@@ -378,7 +356,6 @@ function makeProjectAndProjectMap(taskListToLoad) {
 
 function printOverdueTasks() {
     for (const task of projectMap.get(DEAFULT_PROJECT_NAME).values()) {
-        // const b = task
         console.log(`time for task ${task.getShortId()}: ${task.time} | overdue? ${task.isOverdue}`)
     }
 }
@@ -389,15 +366,12 @@ function init() {
     Task.defaultTaskProjectName = DEAFULT_PROJECT_NAME
     setViewingProject(DEAFULT_PROJECT_NAME)
 
-    // Persistence.load()
     DomCtrl.cacheStaticDomElements()
     DomCtrl.setTheme("dark")
-    // let tasksList = Persistence.testLoadTasks(1)
     const tasksList = Persistence.load()
     makeProjectAndProjectMap(tasksList)
     checkAndMarkOverdueTasks()
     // printOverdueTasks()
-    // const mergedTasks = [...projectMap.get(DEAFULT_PROJECT_NAME).values()].concat(projectMap.get("deleted tasks").values())
     DomCtrl.buildAllTasksElements(DEAFULT_PROJECT_NAME, tasksList)
     DomCtrl.setTaskElementsMap()
     refreshDomTasks()

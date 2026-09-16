@@ -39,7 +39,7 @@ export default class Persistence {
         if (!taskList) {
             throw new Error("tasksList is null!")
         }        
-        if (typeof(Storage) === undefined) {
+        if (typeof(Storage) === "undefined") {
             // console.log("could not save")        
             return
         }        
@@ -59,7 +59,7 @@ export default class Persistence {
         const loadedTasksList = []
         let loadedTaskRawStr = null
         if (!testRawStrTask) {
-            if (typeof(Storage) === undefined) {
+            if (typeof(Storage) === "undefined") {
                 // console.log("could not load!")        
                 return
             }           
@@ -99,12 +99,6 @@ export default class Persistence {
         formObject.append("isOverdue", plainTaskObj.isOverdue)
         return formObject       
     }
-
-    // static addSubtaskToFormData(subtaskList, formDataObj) {
-    //     for (const subtask of subtaskList) {
-    //         formDataObj.append()
-    //     }
-    // }
 }
 
 function testPrintTasks() {

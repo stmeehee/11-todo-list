@@ -1,6 +1,8 @@
 ---------------------------------------------------------------------------------------------------
 (add a commit msg log below after every TODO/bugfix TODO; erase once done so):
 
+fix: broken Storage api handling & fallback 
+
 fixes:  
 -
 

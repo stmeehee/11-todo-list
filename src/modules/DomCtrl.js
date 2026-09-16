@@ -3,12 +3,12 @@ import HtmlMaker from "./HtmlMaker.js";
 // import { html } from "webpack";
 
 export default class DomCtrl {
-    // some frequently used static  elements
-    cache = null // DomCtrl
-    static myTaskElements = new Map() // DomCtrl
+    // cache: some frequently used static  elements
+    cache = null 
+    static myTaskElements = new Map() 
     // tasksOptionsPrev: is the last cicked .tasksOptions btn, we keep it to remove the anchor-active id from it 
     // when a new btn is clicked    
-    static tasksOptionsPrev = null // DomCtrl
+    static tasksOptionsPrev = null 
 
     static getDomElements(getElemWithId) {
         if (getElemWithId) {
@@ -112,8 +112,6 @@ export default class DomCtrl {
         // console.log(` > changeCompleteBtn()`)
         const taskElem = this.myTaskElements.get(taskId) 
         const confirmBtn = taskElem.querySelector(".primary-task > button")
-        // confirmBtn.classList.remove("disable")
-        // confirmBtn.classList.add("finalize")
         if (allow) {
             confirmBtn.classList.remove("disable")
             confirmBtn.classList.add("finalize")
