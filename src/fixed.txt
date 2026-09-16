@@ -1,10 +1,10 @@
 ---------------------------------------------------------------------------------------------------
 (add a commit msg log below after every TODO/bugfix TODO; erase once done so):
 
-fix: broken Storage api handling & fallback 
+fix: updating task in filter view
 
 fixes:  
--
+- task sometimes not updating when checking off subtask in filter view
 
 added: 
 -
@@ -19,6 +19,7 @@ TODO:
 working on: 
 ---------------------------------------------------------------------------------------------------            
 bugfix TODO:
+
 - empty projects get deleted on next load
 - task state inconsistency when a task is edited to not be overdue but still has isOverdue flag set to true
 - minDate only gets added to ne task form, not to edit form

@@ -192,7 +192,7 @@ function delegate(event) {
         const checkBoxElem = event.target
         const subtaskKey = checkBoxElem.value
         taskId = DomCtrl.getTaskIdFromElement(checkBoxElem) 
-        const task = projectMap.get(viewingProject).get(taskId)
+        const task = projectMap.get(DEAFULT_PROJECT_NAME).get(taskId)
         task.updateProgress(subtaskKey, checkBoxElem.checked)
         let pct = task.taskProgress 
         let [label, color] = DomCtrl.getBarLabelColor(pct) 
