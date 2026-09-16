@@ -37,7 +37,7 @@ export default class DomCtrl {
         // addNewProjectCheckBox: uncheck add project to collapse project name field
         const addNewProjectCheckBox = document.querySelector('.add-project > input[type="checkbox"]')
         const projectNamePara = document.querySelector(".project-name-div > p")
-        // projectSelectContainer: existing projects are added here
+        // existingProjectsSelection: existing projects are added here
         const existingProjectsSelection = document.querySelector(".existing-project > #project-select")
         const projectsPopup = document.querySelector("dialog[id='existing-projects-popover']")
 
@@ -89,9 +89,6 @@ export default class DomCtrl {
             if (percentVal === 100) {
                 [label, color] = ["In limbo...", teal]
             }
-            // else {
-            //     [label, color] = ["Complete!", green]
-            // }
         }
         return [label, color]
     }
@@ -335,7 +332,7 @@ export default class DomCtrl {
 
     static addProjectToSideBar(projectName) {
         // DomCtrl.cache.userProjectsContainer
-        const projNum = this.cache.userProjectsContainer.children.length + 1
+        const projNum = DomCtrl.cache.userProjectsContainer.children.length + 1
         const userProjectDiv = HtmlMaker.getNewProjectDiv(projNum, projectName)
         DomCtrl.cache.userProjectsContainer.insertAdjacentHTML(
             "beforeend",
@@ -368,10 +365,10 @@ export default class DomCtrl {
         clearThisDiv.replaceChildren()
     }
     
-    static buildAllTasksElements(projectName, projectTasksMap) { 
+    static buildAllTasksElements(projectName, allTasks) { 
         this.clearDiv(DomCtrl.cache.viewingDiv)
         this.makeProjectNameDiv(projectName)
-        for (const task of projectTasksMap.values()) {
+        for (const task of allTasks) {
             this.addNewTaskElemToDom(task)
         }
     }   

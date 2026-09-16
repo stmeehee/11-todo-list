@@ -34,10 +34,6 @@ TODO-1.1: user loads the site (load the saved tasks to the viewing div)
                     projName = task.projectName
                     addToAllProjMap(projName, task)
                     displaytasksForProject("allTasks", allProjMap)
-                    
-
-
-
 TODO-2: user submits newTask; Display all projects and tasks
         sol:
             newTaskForm = event.target
@@ -85,3 +81,15 @@ TODO-7: user selects one of btns in sidebar-main-div (alltasks,upcoming,overdue,
                 Filter.
 
             DomCtrl.viewingDiv(btn.value) // display the name of projectName/filterCriteria at the top
+
+TODO-LAST: save all tasks to localstorage, and load them back up 
+            1. pass projectMap to TaskLoader.save()
+            2. conv. each task to plain object using task.ToJson()
+            3. add it to savedTaskList
+            4. stringify savedTaskList & do: localStorage.set("11-todo-list", savedTaskListString)
+          load saved data back 
+            1. get saved data: localStorage.get("11-todo-list", savedTaskListString)
+            2. json.parse(savedTaskListString) to get the array of task objects
+            3. loop over the parsed list, conv. each plain obj. task to ForData
+            4. pass the formData to task constructor for all tasks & add to taskList
+            5. load taskList for todo list: makeProjectAndProjectMap(taskList)

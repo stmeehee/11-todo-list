@@ -1,32 +1,32 @@
 ---------------------------------------------------------------------------------------------------
 (add a commit msg log below after every TODO/bugfix TODO; erase once done so):
 
-7 fixes, 1 remove
-
 fixes:  
-- current time doesnt show up in editor;
-- setting the time frome editor assigns null to task.#time 
-- a task thats due today but in the future comes up as overdue!
-- adding a new task with todays date and now time isnt being marked as overdue
-- adding new task w/ subtask and moving it causes error
-- new tasks shows up in viewing-div as undefined  in addTaskToDom() function 
-- completed task with no subtasks doesnt show up in completed tasks sidebar
-
-removed: 
-- sorting/search options in main div
+- eror when: make task "a in X" in "My Project X", make task "b in Y" in "My Project Y", click Upcoming,
+    click "My Project X", click complete on "b in Y"
+- error when: make overdue task "a in X" in "My Project X", make overdue task "b in Y" in "My Project Y", 
+    click "My Project X", click Overdue, click reset on "b in Y" 
+- error when submitting edited form on a loaded task
+- deleted task causes the default object to appear 
+- task subtasks checkboxes not in sync with task progress when reloading 
 
 added: 
-- 
+- task.isDelete getter
+- task persistence via Storage api
+
+removed:
+- Filter.getTaskByCreationDate()
 
 ---------------------------------------------------------------------------------------------------
 TODO:             
 - layout touch ups
 ---------------------------------------------------------------------------------------------------
 working on: 
-- add local storage
 ---------------------------------------------------------------------------------------------------            
 bugfix TODO:
-- 
+- empty projects get deleted on next load
+- task state inconsistency when a task is edited to not be overdue but still has isOverdue flag set to true
+- minDate only gets added to ne task form, not to edit form
 ---------------------------------------------------------------------------------------------------
 note
 - a task's time can edited to be set in the past, which will count as overdue but isnt being marked so in the dom!

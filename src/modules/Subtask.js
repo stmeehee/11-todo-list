@@ -5,9 +5,10 @@ export default class Subtasks {
     title = null
     _isDone = false
 
-    constructor(key, title) {
+    constructor(key, title, isDone = false) {
         this.key = key
         this.title = title
+        this._isDone = isDone
     }
 
     set isDone(boolean) {
@@ -21,5 +22,12 @@ export default class Subtasks {
         return this._isDone
     }
 
-    
+    toJSON() {
+        return {
+            isDone: this._isDone, 
+            key: this.key,
+            title: this.title,
+        }
+    }
+
 }

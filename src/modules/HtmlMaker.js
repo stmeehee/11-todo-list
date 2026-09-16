@@ -84,9 +84,10 @@ export default class HtmlMaker {
             //         const SubTaskChildDiv = getSubTaskChildDiv(task.getSubtaskTitles())
         const done = (task.isFinished)? "done":""
         const overdue = (task.isOverdue)? "overdue":""
+        const disAllow = (task.isDeleted)? "disAllow":""
         const taskElem = 
         `
-        <div class="full-task-div ${done} ${overdue}" id="${task.id}">
+        <div class="full-task-div ${done} ${overdue} ${disAllow}" id="${task.id}">
             ${this.getProgBarBtnDiv(task)}
             ${this.getTaskParentDiv(task)}
         </div>
@@ -120,7 +121,7 @@ export default class HtmlMaker {
             `
             <div class="task-parent-div ${disallow}">
             ${this.getPrimaryTaskDiv(task)} 
-            ${this.getSubtaskCheckBoxDiv(task.unFinishedSubtasks)} 
+            ${this.getSubtaskCheckBoxDiv(task.finishedSubtasks, task.unFinishedSubtasks)} 
             ${this.getHiddenSubTaskDiv(task)}
             </div>
             `
@@ -328,7 +329,7 @@ export default class HtmlMaker {
                         // </div> 
                     }
 
-            static getSubtaskCheckBoxDiv(unFinishedSubtasks) {
+            static getSubtaskCheckBoxDiv(finishedSubtasks, unFinishedSubtasks) {
                 if (unFinishedSubtasks === 0) {
                     return ""
                 }
@@ -340,7 +341,7 @@ export default class HtmlMaker {
                         <span class="arrow">></span>
                     </label>
                     <div class="subtask-status">
-                        <p>Subtasks: <span>0</span>/${unFinishedSubtasks}</p>
+                        <p>Subtasks: <span>${finishedSubtasks}</span>/${unFinishedSubtasks}</p>
                     </div>
             </div>
                 `
@@ -354,23 +355,25 @@ export default class HtmlMaker {
                 const disAllow = (task.isOverdue)? "disAllow" : ""
                 let hiddenSubtaskDiv = `<div class="hidden-div shift-left ${disAllow}">`
                 const subtaskTitles = task.getSubtaskTitles()
+                const subtasks = task.subtasks
                 let childSubtaskDivs = ""
                 for (let i = 0; i < subtaskTitles.length; i += 1) {
                     childSubtaskDivs +=
                     `
                     <hr>
-                    ${this.getSubTaskChildDiv(subtaskTitles[i], i+1, task.getShortId())}
+                    ${this.getSubTaskChildDiv(subtaskTitles[i], i+1, task.getShortId(), subtasks[i].checked)}
                     `
                 }
                 hiddenSubtaskDiv += childSubtaskDivs + `</div>`
                 return hiddenSubtaskDiv
             }
 
-                static getSubTaskChildDiv(title, subtaskNo, shortId) {
+                static getSubTaskChildDiv(title, subtaskNo, shortId, isChecked) {
+                    const checked = (isChecked)? checked: ""
                     const subtaskChildDiv = 
                     `
                     <div class="subtask-${subtaskNo}-div">
-                        <input type="checkbox" id="subtask-checkbox-${shortId}-${subtaskNo}" value="subtaskTitle${subtaskNo}">
+                        <input type="checkbox" id="subtask-checkbox-${shortId}-${subtaskNo}" value="subtaskTitle${subtaskNo}" ${checked}>
                         <label for="subtask-checkbox-${shortId}-${subtaskNo}">title: ${title}</label>
                     </div>
                     `

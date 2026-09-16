@@ -1,5 +1,5 @@
 import Task from "./Task.js"
-import TaskLoader from "./TaskLoader.js"
+import Persistence from "./Persistence.js"
 export default class Filter {
 
 
@@ -37,18 +37,6 @@ export default class Filter {
         }).map(task => task.id)
     }
 
-    // always pass in all tasks map, or it will incl. deleted tasks
-    static getTaskIdByCreationDate(allTasksMap, oldestFirst = true) {
-        return [...allTasksMap.values()].sort((taskA, taskB) => {
-            // console.log(`taskA dateMade${taskA.creationDate}`)
-            // console.log(`taskB dateMade${taskB.creationDate}`)
-            return  (
-                oldestFirst 
-                ? taskA.creationDate - taskB.creationDate 
-                : taskB.creationDate - taskA.creationDate
-            )            
-        }).map(task => task.id)
-    }
 }
 
 // const DEAFULT_PROJECT_NAME = "All tasks"

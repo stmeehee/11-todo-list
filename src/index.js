@@ -2,8 +2,9 @@ import "./style.css";
 // import Task from "./task.js"; // NotUsing
 import Task from "./modules/Task.js";
 import DomCtrl from "./modules/DomCtrl.js";
-import TaskLoader from "./modules/TaskLoader.js";
+import Persistence from "./modules/Persistence.js";
 import Filter from "./modules/Filter.js";
+import Utils from "./modules/Utils.js"
 
 // myViewingDivTasks: the tasks that are currently being viewed; chosen according to the viewingProject var
 let projectMap = new Map()
@@ -14,24 +15,24 @@ function setViewingProject(setToProjectName) {
     viewingProject = setToProjectName
 }
 
+function saveTasks() {
+    const allTasks = [...projectMap.get(DEAFULT_PROJECT_NAME).values()]
+    const deleted = [...projectMap.get("deleted tasks").values()]
+    const mergedList = allTasks.concat(deleted)
+    Persistence.save(mergedList)
+}
+
 function prepareEditor(task) {
     const taskInfo = task.getInfo()
     const taskCurrentInfo =  {
         title: taskInfo.title,
-        date: formatToLocalDate(task.dueDate),
+        date: Utils.formatToLocalDate(task.dueDate),
         description: taskInfo.description,
         time: taskInfo.time,
         priority: taskInfo.priority,
         note: taskInfo.note
     }
     DomCtrl.addCurrentTaskInfoToEditor(task.id, taskCurrentInfo)
-}
-
-function formatToLocalDate(dateObj) {
-    const year = dateObj.getFullYear()
-    const month = String(dateObj.getMonth() + 1).padStart(2,"0")
-    const day = String(dateObj.getDate()).padStart(2,"0")
-    return `${year}-${month}-${day}`
 }
 
 function editTask(taskId, formData) {
@@ -62,7 +63,7 @@ function getExistingProjects() {
     return lst
 }
 
-function checkAndMarkOverdueTasks() {
+function  checkAndMarkOverdueTasks() {
     const overdueTasksID = Filter.getTaskIdOfOverdue(projectMap.get(DEAFULT_PROJECT_NAME))
     const AllTasks = projectMap.get(DEAFULT_PROJECT_NAME)
     for (const overdueTaskId of overdueTasksID) {
@@ -133,9 +134,9 @@ function addNewProjectToProjectMap(projectName) {
 }
 
 function addProject(newProjName, addProjectManually = false) {
-    if (addProjectManually) {
-        projectMap.set(newProjName, new Map())
-    }
+    // if (addProjectManually) {
+    //     projectMap.set(newProjName, new Map())
+    // }
     DomCtrl.addProjectToSideBar(newProjName)
     addNewProjectToProjectMap(newProjName)
     DomCtrl.collapseHiddenDiv(null, DomCtrl.cache.addNewProjectCheckBox)
@@ -150,18 +151,10 @@ function newTask(formData) {
     addTaskToProjectMap(task)
     // TODO: 
     checkAndMarkOverdueTasks()
-    addTaskToDom(task)
+    DomCtrl.addNewTaskElemToDom(task)
     DomCtrl.setTaskElementsMap()
     // saveTaskToStorage(projectMap) 
     // console.log(`added task: ${task.getShortId()} | isOverdue? = ${task.isOverdue}`)
-}
-
-function addTaskToDom(task) {
-    // const ifViewingTaskProject = task.projectNames.has(viewingProject)
-    // if (ifViewingTaskProject) {
-    //     DomCtrl.addNewTaskElemToDom(task)
-    // }
-    DomCtrl.addNewTaskElemToDom(task)
 }
 
 function addTaskToProjectMap(task) {
@@ -178,7 +171,7 @@ function addTaskToProjectMap(task) {
 // TODO: break this apart!
 function setMinDate() {
     const presentDate = new Date()
-    const minDate = formatToLocalDate(presentDate)
+    const minDate = Utils.formatToLocalDate(presentDate)
     DomCtrl.setMinDate(minDate)
 }
 
@@ -235,10 +228,10 @@ function delegate(event) {
         const confirmBtn = event.target
         // console.log(confirmBtn)
         taskId = DomCtrl.getTaskIdFromElement(confirmBtn)
-        projectMap.get(viewingProject).get(taskId).updateProgress(null, null)
+        projectMap.get(DEAFULT_PROJECT_NAME).get(taskId).updateProgress(null, null)
         DomCtrl.markTaskComplete(taskId)
         DomCtrl.disAllowTaskParentDiv(taskId)
-        const subtasksExist = (projectMap.get(viewingProject).get(taskId).getSubtasksSize() !== 0)
+        const subtasksExist = (projectMap.get(DEAFULT_PROJECT_NAME).get(taskId).getSubtasksSize() !== 0)
         if (subtasksExist) {
             DomCtrl.collapseHiddenDiv(taskId)
         }
@@ -246,7 +239,6 @@ function delegate(event) {
         let [label, color] = DomCtrl.getBarLabelColor(null, true) 
         // let color = DomCtrl.cache.barCssVars.barColorGreenName
         // let label = "Complete!"
-
         DomCtrl.renderProgressBar(label, color, `${pct}%`, taskId)
         DomCtrl.closeEditor(confirmBtn)
     }
@@ -263,7 +255,7 @@ function delegate(event) {
     }
     if (taskOptionsPopupMenu) {
         const taskId = DomCtrl.getTaskOptionsPopupTaskId()
-        const task = projectMap.get(viewingProject).get(taskId)        
+        const task = projectMap.get(DEAFULT_PROJECT_NAME).get(taskId)        
         const btnClicked = event.target
         const editBtn = btnClicked.classList.contains("popover-edit") 
         const resetBtn = btnClicked.classList.contains("popover-reset")
@@ -367,24 +359,20 @@ function delegate(event) {
         }
         // console.log(moveToProject)
     }
+    saveTasks() 
 }
 
 function makeProjectAndProjectMap(taskListToLoad) {
+    projectMap.set("deleted tasks", new Map())
+    projectMap.set(DEAFULT_PROJECT_NAME, new Map())
     for (const task of taskListToLoad) {
         let taskProjectNames = task.projectNames
         for (const projName of taskProjectNames) {
-            if (!projectMap.has(projName)) {
-                addNewProjectToProjectMap(projName) // {now: new Map(), later: new Map()}
-                // condition below is to not add "All tasks" as a project div
-                if (projName !== DEAFULT_PROJECT_NAME ) {
+            if (!projectMap.has(projName) && projName !== DEAFULT_PROJECT_NAME && projName !== "deleted tasks") {
                     addProject(projName)                            
-                }
             }
             projectMap.set(projName, projectMap.get(projName).set(task.id, task)) // {now: { {id: task} }}
         }
-    }
-    if (!projectMap.has("deleted tasks")) {
-        projectMap.set("deleted tasks", new Map())
     }
 }
 
@@ -400,18 +388,20 @@ function init() {
     console.log(` > init()`)
     Task.defaultTaskProjectName = DEAFULT_PROJECT_NAME
     setViewingProject(DEAFULT_PROJECT_NAME)
+
+    // Persistence.load()
     DomCtrl.cacheStaticDomElements()
-    let tasksList = TaskLoader.testLoadTasks(1)
+    DomCtrl.setTheme("dark")
+    // let tasksList = Persistence.testLoadTasks(1)
+    const tasksList = Persistence.load()
     makeProjectAndProjectMap(tasksList)
-
-    addProject("test", true)
-
     checkAndMarkOverdueTasks()
     // printOverdueTasks()
-    
-    DomCtrl.buildAllTasksElements(viewingProject, projectMap.get(viewingProject))
+    // const mergedTasks = [...projectMap.get(DEAFULT_PROJECT_NAME).values()].concat(projectMap.get("deleted tasks").values())
+    DomCtrl.buildAllTasksElements(DEAFULT_PROJECT_NAME, tasksList)
     DomCtrl.setTaskElementsMap()
-    DomCtrl.setTheme("dark")
+    refreshDomTasks()
+    // console.table([...projectMap.get(DEAFULT_PROJECT_NAME).values()])
 
     DomCtrl.cache.body.addEventListener("click", (event) => {
         delegate(event)
@@ -430,8 +420,6 @@ function init() {
                 addProject(newProjectName)
             }            
             newTask(myData)
-            // TODO: if a newproj is added via new task form, means that it gets added to projectMap and thus exists
-            //      but it still wouldnt exist in the dom, figure out a way to add this proj to dom  
         }
         if (event.target.dataset.formName === "editForm") {
             console.log("editForm")
@@ -450,6 +438,9 @@ function init() {
             if (!projectsExists) {
                 addProject(projName)
             }
+        }
+        if (event.target.dataset.formName) {
+            saveTasks()
         }
     })
 }

@@ -1,38 +1,55 @@
 import Task from "./modules/Task.js"
-import TaskLoader from "./modules/TaskLoader.js"
+import Persistence from "./modules/Persistence.js"
 // const a = new Date()
 // console.log(a.toLocaleTimeString())
 
-let projectMap = new Map().set("allTasks", new Map())
 
-function mapProjectToTasks(taskList) {
-    for (const task of taskList) {
-
-        let taskProjectNames = task.projectNames
-        for (const projName of taskProjectNames) {
-            if (!projectMap.has(projName)) {
-                projectMap.set(projName, new Map()) // {now: new Map(), later: new Map()}
-            }
-            // projectMap.set("allTasks", projectMap.get("allTasks").set(task.getShortId(), task))
-            projectMap.set(projName, projectMap.get(projName).set(task.getShortId(), task)) // {now: { {id: task} }}
-        }
-        
-    }
-}
 
 function test() {
-    let lst = TaskLoader.testLoadTasks(3)
-    mapProjectToTasks(lst)
-    console.log(projectMap)
+const taskList = Persistence.testLoadTasks(1)
+const TaskListStr = JSON.stringify(taskList, " | ", 1)
+// console.log("taskList stringified")
+// console.log(TaskListStr)
+// console.log()
 
-    const getProjName = "allTasks"
-    const resProject = projectMap.get(getProjName)
-    const resProjObj = Object.fromEntries(resProject)
+// console.log("taskList back to plain object")
+// console.log(JSON.parse(TaskListStr)[0])
+// console.log()
 
-    console.log(`get project named "${getProjName}" size: ${resProject.size} `)
-    console.log(`get project named "${getProjName}": ${JSON.stringify(resProjObj, null, 2)}`)
+// console.log("to get conv. taskList subtasks :") 
+// console.log(JSON.parse(TaskListStr)[0].subtasks)
+// console.log()
+
+
+
+
 }
 
 
-// test()
+test()
 
+
+// taskList[0].toJSON():
+//
+// {
+//   id: '3794f124-9c52-49c7-aa39-f3728ec97965',
+//   title: 'a in X',
+//   description: 'testDesc',
+//   date: 2026-09-16T00:00:00.000Z,
+//   time: '05:00',
+//   priority: 'high',
+//   note: 'testAaa',
+//   projectName: 'My Project X',
+//   subtasks: [
+//     {
+//       isDone: false,
+//       key: 'subtaskTitle1',
+//       title: 'test - Do the dishes'
+//     }
+//   ],
+//   finishedSubtasks: 0,
+//   unFinishedSubtasks: 1,
+//   _isFinished: false,
+//   isDeleted: false,
+//   isOverdue: false
+// }
