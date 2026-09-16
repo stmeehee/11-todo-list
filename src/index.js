@@ -385,7 +385,7 @@ function printOverdueTasks() {
 
 // app
 function init() {
-    console.log(` > init()`)
+    // console.log(` > init()`)
     Task.defaultTaskProjectName = DEAFULT_PROJECT_NAME
     setViewingProject(DEAFULT_PROJECT_NAME)
 
@@ -422,8 +422,8 @@ function init() {
             newTask(myData)
         }
         if (event.target.dataset.formName === "editForm") {
-            console.log("editForm")
-            console.log(Object.fromEntries(myData))
+            // console.log("editForm")
+            // console.log(Object.fromEntries(myData))
             const taskId = DomCtrl.getTaskIdFromElement(event.target)
             editTask(taskId, myData)
             const submitBtn = event.submitter

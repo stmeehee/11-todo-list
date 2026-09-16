@@ -2,20 +2,13 @@
 (add a commit msg log below after every TODO/bugfix TODO; erase once done so):
 
 fixes:  
-- eror when: make task "a in X" in "My Project X", make task "b in Y" in "My Project Y", click Upcoming,
-    click "My Project X", click complete on "b in Y"
-- error when: make overdue task "a in X" in "My Project X", make overdue task "b in Y" in "My Project Y", 
-    click "My Project X", click Overdue, click reset on "b in Y" 
-- error when submitting edited form on a loaded task
-- deleted task causes the default object to appear 
-- task subtasks checkboxes not in sync with task progress when reloading 
+-
 
 added: 
-- task.isDelete getter
-- task persistence via Storage api
+-
 
 removed:
-- Filter.getTaskByCreationDate()
+-
 
 ---------------------------------------------------------------------------------------------------
 TODO:             

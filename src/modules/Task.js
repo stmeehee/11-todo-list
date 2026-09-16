@@ -314,7 +314,7 @@ export default class Task {
 
     changeProject(changeProjectTo) {
         if (this.#projectNames.has("deleted tasks")) {
-            console.log("cant move deleted project!")
+            // console.log("cant move deleted project!")
             return
         }
         this.#projectNames.clear()
@@ -351,21 +351,4 @@ export default class Task {
 
 
 }
-
-// test get subtasks progression
-// const task = Task.testGetTask()
-
-// task.updateProgress("subtaskTitle1", true)
-// task.updateProgress("subtaskTitle1", false)
-// task.updateProgress("subtaskTitle2", true)
-// task.updateProgress("subtaskTitle3", true)
-// task.updateProgress("subtaskTitle4", true)
-
-// console.log(`tickedSubtasks: ${task.finishedSubtasks}`)
-// console.log(`unTickedSubtasks: ${task.unFinishedSubtasks}`)
-
-// let pct = task.taskProgress 
-// console.log(task)
-// console.log(`completed: ${pct}%`) // expected: 75%
-
 
