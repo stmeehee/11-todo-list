@@ -361,7 +361,7 @@ export default class HtmlMaker {
                     childSubtaskDivs +=
                     `
                     <hr>
-                    ${this.getSubTaskChildDiv(subtaskTitles[i], i+1, task.getShortId(), subtasks[i].checked)}
+                    ${this.getSubTaskChildDiv(subtaskTitles[i], i+1, task.getShortId(), subtasks[i].isDone)}
                     `
                 }
                 hiddenSubtaskDiv += childSubtaskDivs + `</div>`
@@ -369,7 +369,7 @@ export default class HtmlMaker {
             }
 
                 static getSubTaskChildDiv(title, subtaskNo, shortId, isChecked) {
-                    const checked = (isChecked)? checked: ""
+                    const checked = (isChecked)? "checked": ""
                     const subtaskChildDiv = 
                     `
                     <div class="subtask-${subtaskNo}-div">
